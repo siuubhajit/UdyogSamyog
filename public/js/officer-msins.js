@@ -284,7 +284,7 @@ async function inspectApexDossier(id) {
       const planItems = [
         {
           key: "environmental",
-          title: "🌿 Environmental & ETP Plan (MPCB)",
+          title: "🌿 Environmental Plan & ETP · MPCB (Maharashtra Pollution Control Board)",
           doc:
             data.plans?.environmental ||
             (data.documents || []).find(
@@ -295,7 +295,7 @@ async function inspectApexDossier(id) {
         },
         {
           key: "civil",
-          title: "📐 Civil & Infrastructure Layout (MIDC)",
+          title: "📐 Civil Master Layout & Infra · MIDC (Maharashtra Industrial Development Corp)",
           doc:
             data.plans?.civil ||
             (data.documents || []).find(
@@ -307,7 +307,7 @@ async function inspectApexDossier(id) {
         },
         {
           key: "factorySafety",
-          title: `🛡️ Factory Safety Blueprint (DISH) - ${data.hazardLevel || "Standard"}`,
+          title: `🛡️ Factory Safety Blueprint · DISH (Directorate of Industrial Safety & Health) - ${data.hazardLevel || "Standard"} Hazard`,
           doc:
             data.plans?.factorySafety ||
             (data.documents || []).find(
@@ -318,7 +318,7 @@ async function inspectApexDossier(id) {
         },
         {
           key: "fireSafety",
-          title: "🚒 Fire Hydrant & Evacuation Layout (Fire Services)",
+          title: "🚒 Fire Hydrant & Evacuation Layout · Directorate of Maharashtra Fire Services",
           doc:
             data.plans?.fireSafety ||
             (data.documents || []).find(
@@ -361,25 +361,25 @@ async function inspectApexDossier(id) {
       const depts = [
         {
           code: "mpcb",
-          name: "MPCB (Environmental)",
+          name: "MPCB · Maharashtra Pollution Control Board (Phase 1 Environmental Gateway)",
           info: stages.mpcb,
           icon: "🌿",
         },
         {
           code: "midc",
-          name: "MIDC (Civil & Infra)",
+          name: "MIDC · Maharashtra Industrial Development Corp (Phase 2 Civil & Infra)",
           info: stages.midc,
           icon: "📐",
         },
         {
           code: "dish",
-          name: "DISH (Factory Safety)",
+          name: "DISH · Directorate of Industrial Safety & Health (Phase 2 Factory Safety)",
           info: stages.dish,
           icon: "🛡️",
         },
         {
           code: "fire",
-          name: "Maharashtra Fire Services",
+          name: "Directorate of Maharashtra Fire Services (Phase 2 Life Safety NOC)",
           info: stages.fire,
           icon: "🚒",
         },

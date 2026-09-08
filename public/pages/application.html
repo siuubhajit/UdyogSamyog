@@ -463,16 +463,16 @@
                   <select name="documentType" id="docTypeSelect" onchange="updatePlanType(this)">
                     <optgroup label="Mandatory Statutory Plan Blueprints (PDF Format)">
                       <option value="Environmental Management & ETP Plan" data-plantype="environmental_plan" selected>
-                        🌿 Environmental Plan (PDF) &rarr; MPCB (Phase 1 Gateway)
+                        🌿 Environmental Plan (PDF) &rarr; MPCB (Maharashtra Pollution Control Board · Phase 1)
                       </option>
                       <option value="Civil Infrastructure & Building Layout Plan" data-plantype="civil_plan">
-                        📐 Civil Plan (PDF) &rarr; MIDC Civil (Phase 2)
+                        📐 Civil Plan (PDF) &rarr; MIDC (Maharashtra Industrial Development Corp · Phase 2)
                       </option>
                       <option value="Factory Safety & Hazardous Materials Blueprint" data-plantype="factory_safety_plan">
-                        🛡️ Factory Safety Blueprint (PDF) &rarr; DISH (Phase 2)
+                        🛡️ Factory Safety Blueprint (PDF) &rarr; DISH (Directorate of Industrial Safety &amp; Health · Phase 2)
                       </option>
                       <option value="Fire Hydrant & Evacuation Layout Plan" data-plantype="fire_safety_plan">
-                        🚒 Fire Safety Plan (PDF) &rarr; Fire Services (Phase 2)
+                        🚒 Fire Safety Plan (PDF) &rarr; Fire Services (Directorate of Maharashtra Fire Services · Phase 2)
                       </option>
                     </optgroup>
                     <optgroup label="General Statutory Supporting Documents">
@@ -794,13 +794,13 @@
               (d) => {
                 let planBadge = "";
                 if (d.plan_type === "environmental_plan") {
-                  planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;">🌿 Phase 1: MPCB</span>';
+                  planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Pollution Control Board">🌿 MPCB (Pollution Board)</span>';
                 } else if (d.plan_type === "civil_plan") {
-                  planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;">📐 Phase 2: MIDC</span>';
+                  planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Industrial Development Corporation">📐 MIDC (Civil &amp; Infra)</span>';
                 } else if (d.plan_type === "factory_safety_plan") {
-                  planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;">🛡️ Phase 2: DISH</span>';
+                  planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Industrial Safety &amp; Health">🛡️ DISH (Industrial Safety)</span>';
                 } else if (d.plan_type === "fire_safety_plan") {
-                  planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;">🚒 Phase 2: Fire</span>';
+                  planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Maharashtra Fire Services">🚒 Fire Services (Life Safety)</span>';
                 }
 
                 return `

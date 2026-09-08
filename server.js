@@ -855,9 +855,9 @@ function evaluateRegulatoryChecklist(data) {
   // 3. Clearances Required
   const clearances = [
     {
-      name: "MIDC / Local Body Land Use & Building Plan Approval",
-      dept: "MIDC / Directorate of Town Planning",
-      statutoryAct: "Maharashtra Regional and Town Planning Act, 1966",
+      name: "MIDC Building Plan & Land Use Approval (Maharashtra Industrial Development Corporation)",
+      dept: "MIDC (Maharashtra Industrial Development Corporation)",
+      statutoryAct: "Maharashtra Regional and Town Planning (MRTP) Act, 1966",
       status: "In Progress",
       taskDept: "midc",
       docs: [
@@ -867,21 +867,21 @@ function evaluateRegulatoryChecklist(data) {
       ],
     },
     {
-      name: `MPCB Consent to Establish (CTE - ${riskTier} Category)`,
-      dept: "Maharashtra Pollution Control Board (MPCB)",
+      name: `MPCB Consent to Establish (CTE - ${riskTier} Category · Maharashtra Pollution Control Board)`,
+      dept: "MPCB (Maharashtra Pollution Control Board)",
       statutoryAct: "Water (P&CP) Act 1974 & Air (P&CP) Act 1981",
       status: "Under Review",
       taskDept: "mpcb",
       docs: [
-        "Water Balance Chart & Effluent Treatment Scheme",
+        "Water Balance Chart & Effluent Treatment Scheme (ETP)",
         "Manufacturing Process Flowsheet",
         "Ambient Air & Noise Mitigation Plan",
       ],
     },
     {
-      name: "Provisional Fire Safety No-Objection Certificate (NOC)",
-      dept: "Maharashtra Fire Services",
-      statutoryAct: "Maharashtra Fire Prevention and Life Safety Measures Act",
+      name: "Provisional Fire Safety NOC (Directorate of Maharashtra Fire Services)",
+      dept: "Maharashtra Fire Services Directorate",
+      statutoryAct: "Maharashtra Fire Prevention and Life Safety Measures Act, 2006",
       status: "Under Review",
       taskDept: "fire",
       docs: [
@@ -890,22 +890,22 @@ function evaluateRegulatoryChecklist(data) {
       ],
     },
     {
-      name: "Factory Registration & Machinery Layout Approval",
-      dept: "Directorate of Industrial Safety and Health (DISH)",
+      name: "Factory Registration & Plant Safety Approval (DISH - Directorate of Industrial Safety & Health)",
+      dept: "DISH (Directorate of Industrial Safety & Health)",
       statutoryAct: "Factories Act, 1948",
       status: "In Progress",
       taskDept: "dish",
       docs: [
-        "Factory Layout Blueprint",
+        "Factory Layout Blueprint & Machine Guarding",
         "List of Plant & Machinery with Power Ratings",
       ],
     },
     {
       name:
         power > 500
-          ? "High Tension (HT) Industrial Power Sanction"
-          : "Low Tension (LT) Industrial Power Sanction",
-      dept: "MSEDCL (Mahavitaran)",
+          ? "High Tension (HT) Industrial Power Sanction (MSEDCL)"
+          : "Low Tension (LT) Industrial Power Sanction (MSEDCL)",
+      dept: "MSEDCL (Maharashtra State Electricity Distribution Co. / Mahavitaran)",
       statutoryAct: "Electricity Act, 2003",
       status: "In Progress",
       taskDept: "msedcl",
@@ -2564,12 +2564,12 @@ app.patch("/api/documents/:id/verify", auth, official, (req, res) => {
 // =================================================================
 const PIPELINE_STAGES = ["mpcb", "parallel_scrutiny", "msins"];
 const STAGE_LABELS = {
-  mpcb: "MPCB (Environmental Clearance)",
-  midc: "MIDC (Civil & Infrastructure)",
-  dish: "DISH (Factory Safety)",
-  fire: "Maharashtra Fire Services",
-  parallel_scrutiny: "Simultaneous Departmental Scrutiny (MIDC, DISH, Fire)",
-  msins: "MSInS Apex Officer (Final Single-Window Approval)",
+  mpcb: "Maharashtra Pollution Control Board (MPCB) · Environmental Review",
+  midc: "MIDC (Maharashtra Industrial Development Corporation) · Civil & Infrastructure",
+  dish: "DISH (Directorate of Industrial Safety & Health) · Factory Safety",
+  fire: "Directorate of Maharashtra Fire Services · Life Safety NOC",
+  parallel_scrutiny: "Simultaneous Departmental Scrutiny (MIDC Civil, DISH Safety, Fire Services)",
+  msins: "Department Officer - MSInS Apex Authority (Maharashtra State Innovation Society / Industries Dept)",
 };
 
 app.post(

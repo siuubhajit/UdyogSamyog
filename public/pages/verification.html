@@ -628,35 +628,35 @@
         if (currentUser.isApex) {
           icon.textContent = "🏛️";
           title.textContent = "Apex Multi-Department Scrutiny Vault";
-          badge.textContent = "Apex Authority (All Vaults)";
+          badge.textContent = "MSInS Apex Authority · All Statutory Vaults";
           badge.className = "badge blue";
-          subtitle.textContent = "Statutory oversight over all departmental plans (MPCB, MIDC, DISH, Fire).";
+          subtitle.textContent = "Consolidated statutory oversight across MPCB (Pollution Control), MIDC (Civil & Infra), DISH (Factory Safety), and Fire Services.";
           if (apexFilters) apexFilters.style.display = "flex";
         } else {
           const dept = currentUser.deptCode || "midc";
           const info = {
             mpcb: {
               icon: "🌿",
-              title: "MPCB Environmental Scrutiny Vault",
-              badge: "MPCB Vault Only",
-              subtitle: "Restricted strictly to Environmental Management & ETP Blueprints under MPCB jurisdiction.",
+              title: "MPCB (Maharashtra Pollution Control Board) Environmental Vault",
+              badge: "MPCB Vault · Environmental Scrutiny",
+              subtitle: "Restricted strictly to Environmental Management Plans, ETP/STP schemes, and Air Emission designs under MPCB jurisdiction.",
             },
             midc: {
               icon: "🏗️",
-              title: "MIDC Civil & Infrastructure Vault",
-              badge: "MIDC Vault Only",
-              subtitle: "Restricted strictly to Site Master Layouts & Civil Infrastructure Drawings under MIDC jurisdiction.",
+              title: "MIDC (Maharashtra Industrial Development Corp) Civil Vault",
+              badge: "MIDC Vault · Civil & Infrastructure",
+              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under MIDC jurisdiction.",
             },
             dish: {
               icon: "⚙️",
-              title: "DISH Factory Safety Vault",
-              badge: "DISH Vault Only",
+              title: "DISH (Directorate of Industrial Safety & Health) Factory Safety Vault",
+              badge: "DISH Vault · Factory Safety",
               subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under DISH jurisdiction.",
             },
             fire: {
               icon: "🚒",
-              title: "Maharashtra Fire Services Vault",
-              badge: "Fire Services Vault Only",
+              title: "Directorate of Maharashtra Fire Services Vault",
+              badge: "Fire Services Vault · Life Safety NOC",
               subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Fire Services jurisdiction.",
             },
           }[dept] || {
@@ -811,11 +811,11 @@
       }
 
       const DEPT_BADGES = {
-        mpcb: { name: "MPCB (Env)", icon: "🌿", color: "#166534", bg: "#dcfce7" },
-        midc: { name: "MIDC (Civil)", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
-        dish: { name: "DISH (Safety)", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
-        fire: { name: "Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
-        other: { name: "General Vault", icon: "📄", color: "#475569", bg: "#f1f5f9" },
+        mpcb: { name: "MPCB (Pollution Board)", icon: "🌿", color: "#166534", bg: "#dcfce7" },
+        midc: { name: "MIDC (Civil & Infra)", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
+        dish: { name: "DISH (Factory Safety)", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
+        fire: { name: "Fire Services (Life Safety)", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
+        other: { name: "General Supporting Vault", icon: "📄", color: "#475569", bg: "#f1f5f9" },
       };
 
       function renderDocuments(allDocs) {
@@ -837,7 +837,7 @@
             <button class="btn sm ${currentDeptFilter === "mpcb" ? "emerald" : "outline"}" onclick="setDocFilter('mpcb')" style="font-size: 0.72rem; padding: 3px 8px;">🌿 MPCB (${counts.mpcb})</button>
             <button class="btn sm ${currentDeptFilter === "midc" ? "blue" : "outline"}" onclick="setDocFilter('midc')" style="font-size: 0.72rem; padding: 3px 8px;">🏗️ MIDC (${counts.midc})</button>
             <button class="btn sm ${currentDeptFilter === "dish" ? "saffron" : "outline"}" onclick="setDocFilter('dish')" style="font-size: 0.72rem; padding: 3px 8px;">⚙️ DISH (${counts.dish})</button>
-            <button class="btn sm ${currentDeptFilter === "fire" ? "rust" : "outline"}" onclick="setDocFilter('fire')" style="font-size: 0.72rem; padding: 3px 8px;">🚒 Fire (${counts.fire})</button>
+            <button class="btn sm ${currentDeptFilter === "fire" ? "rust" : "outline"}" onclick="setDocFilter('fire')" style="font-size: 0.72rem; padding: 3px 8px;">🚒 Fire Services (${counts.fire})</button>
           `;
         }
 
@@ -1116,32 +1116,32 @@
 
       const DEPT_INFO = {
         midc: {
-          title: "MIDC Civil & Infrastructure Scrutiny",
+          title: "MIDC · Civil & Infrastructure Scrutiny",
           icon: "🏗️",
-          badge: "MIDC Civil",
-          desc: "Evaluate site master plan, building setbacks, FSI/FAR compliance, and drainage/road connection per MRTP Act.",
-          subtext: "Civil Engineering Wing · MIDC",
+          badge: "MIDC · Maharashtra Industrial Development Corp",
+          desc: "Evaluate site master plan, building setbacks, FSI/FAR (Floor Space Index) compliance, and road/drainage infrastructure per MRTP Act 1966.",
+          subtext: "Civil Engineering Wing · MIDC (Govt. of Maharashtra)",
         },
         mpcb: {
-          title: "MPCB Environmental Scrutiny",
+          title: "MPCB · Environmental Scrutiny & CTE",
           icon: "🌱",
-          badge: "MPCB Pollution Control",
-          desc: "Evaluate CTE/CTO conditions, water balance, effluent treatment (ETP/STP), and stack emissions per Water/Air Acts.",
-          subtext: "Maharashtra Pollution Control Board",
+          badge: "MPCB · Maharashtra Pollution Control Board",
+          desc: "Evaluate Consent to Establish (CTE), trade effluent & sewage treatment (ETP/STP), and stack emissions per Water & Air Pollution Control Acts.",
+          subtext: "Maharashtra Pollution Control Board (Govt. of Maharashtra)",
         },
         fire: {
-          title: "Maharashtra Fire Services Scrutiny",
+          title: "Fire Services · Life Safety Scrutiny",
           icon: "🚒",
-          badge: "Fire Safety NOC",
-          desc: "Evaluate fire hydrant networks, underground static water reservoirs, and life safety evacuation routes.",
-          subtext: "Directorate of Maharashtra Fire Services",
+          badge: "Directorate of Maharashtra Fire Services",
+          desc: "Evaluate hydrant loops, static water reservoir demands, sprinkler systems, and life safety evacuation egress per Maharashtra Fire Prevention Act 2006.",
+          subtext: "Directorate of Maharashtra Fire Services (Govt. of Maharashtra)",
         },
         dish: {
-          title: "DISH Factory Safety Scrutiny",
+          title: "DISH · Factory Safety Scrutiny",
           icon: "⚙️",
-          badge: "DISH Factory Safety",
-          desc: "Evaluate factory blueprint, hazardous machinery guarding, ventilation, and worker safety safeguards under Factories Act 1948.",
-          subtext: "Directorate of Industrial Safety & Health",
+          badge: "DISH · Directorate of Industrial Safety & Health",
+          desc: "Evaluate factory layout blueprint, machinery hazard zones, worker welfare facilities, and chemical safety safeguards under The Factories Act, 1948.",
+          subtext: "Directorate of Industrial Safety & Health (Labour Dept, Govt. of Maharashtra)",
         },
       };
 

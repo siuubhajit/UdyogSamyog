@@ -161,6 +161,9 @@
             </div>
           </div>
 
+          <!-- 3-Phase Statutory Clearance Matrix -->
+          <div id="applicantWorkflowContainer" style="margin-bottom: 24px"></div>
+
           <!-- 1. Parallel Departmental Workflow Bar -->
           <div class="no-print" style="margin-bottom: 24px">
             <h3
@@ -471,6 +474,7 @@
     </div>
 
     <script src="/js/common.js"></script>
+    <script src="/js/applicant-workflow.js"></script>
     <script>
       let currentAppId = new URLSearchParams(location.search).get("id");
       let allApps = [];
@@ -538,6 +542,11 @@
           // Parallel Workflow Rendering
           renderParallelWorkflows(app);
 
+          // 3-Phase Statutory Clearance Matrix
+          if (typeof loadApplicantWorkflow === "function") {
+            loadApplicantWorkflow(id);
+          }
+
           // Queries Rendering
           renderQueries(app.queries || []);
 
@@ -558,33 +567,33 @@
 
         const depts = [
           {
-            key: "midc",
-            name: "MIDC / Town Planning",
-            title: "Building & Land Use Plan",
-            defaultStatus: "Under Review",
-          },
-          {
             key: "mpcb",
-            name: "Pollution Control (MPCB)",
-            title: "Consent to Establish (CTE)",
+            name: "MPCB · Pollution Control Board",
+            title: "Consent to Establish (CTE) · Phase 1 Gateway",
             defaultStatus: "Under Review",
           },
           {
-            key: "fire",
-            name: "Maharashtra Fire Services",
-            title: "Provisional Fire NOC",
+            key: "midc",
+            name: "MIDC · Industrial Development Corp",
+            title: "Building & Land Use Plan · Phase 2 Civil",
             defaultStatus: "Under Review",
           },
           {
             key: "dish",
-            name: "DISH Factory Safety",
-            title: "Machinery Layout & Safety",
+            name: "DISH · Industrial Safety & Health",
+            title: "Factory Safety Blueprint · Phase 2 Safety",
             defaultStatus: "In Progress",
           },
           {
+            key: "fire",
+            name: "Fire Services · Maharashtra Fire Directorate",
+            title: "Provisional & Final Fire NOC · Phase 2 Fire",
+            defaultStatus: "Under Review",
+          },
+          {
             key: "msedcl",
-            name: "MSEDCL Power Utility",
-            title: "Industrial Connected Load",
+            name: "MSEDCL · Electricity Distribution Co.",
+            title: "Industrial Connected Load · Grid Feasibility",
             defaultStatus: "Under Review",
           },
         ];
