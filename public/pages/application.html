@@ -307,6 +307,21 @@
                   toxic waste.</span
                 >
               </label>
+
+              <label style="margin-top: 14px; display: block;">
+                <b>DISH Factory Safety &middot; Hazard Classification Level:</b>
+                <select id="hazardLevel" name="hazardLevel" style="margin-top: 6px; font-weight: 600;">
+                  <option value="Chemical Hazard (Flammables, Solvents, Toxicants)">Chemical Hazard (Flammables, Solvents, Toxicants &amp; MAH)</option>
+                  <option value="Thermal Hazard (High Pressure Boilers & Furnaces)">Thermal Hazard (High Pressure Boilers, Furnaces &amp; Heat)</option>
+                  <option value="Metallurgical Hazard (Heavy Foundry & Smelting)">Metallurgical Hazard (Heavy Foundry, Molten Metal &amp; Casting)</option>
+                  <option value="Mechanical Hazard (Heavy Power Presses & Machinery)">Mechanical Hazard (Heavy Power Presses &amp; Automated Lines)</option>
+                  <option value="Electrical Hazard (High Voltage HT Substation)">Electrical Hazard (High Voltage HT Substation &amp; Switchgear)</option>
+                  <option value="Low Risk / General Light Manufacturing" selected>Low Risk / General Light Manufacturing &amp; Assembly</option>
+                </select>
+                <div class="input-hint">
+                  Statutory hazard tier scrutinized by Directorate of Industrial Safety &amp; Health (DISH) in Phase 2.
+                </div>
+              </label>
             </div>
 
             <!-- Real-time Regulatory Clearance Checklist -->
@@ -418,34 +433,42 @@
             <form id="uploadForm">
               <div class="formgrid">
                 <label
-                  >Document Category
-                  <select name="documentType" id="docTypeSelect">
-                    <option value="Site Master Plan & Layout Drawing">
-                      Site Master Plan & Layout Blueprint
-                    </option>
-                    <option value="Land Title Deed / MIDC Allotment">
-                      Land Title Deed / MIDC Allotment Letter
-                    </option>
-                    <option value="Water Balance & Effluent Scheme">
-                      Water Balance & Effluent Treatment Scheme (ETP)
-                    </option>
-                    <option value="Fire Hydrant & Evacuation Layout">
-                      Fire Hydrant & Emergency Evacuation Layout
-                    </option>
-                    <option value="Plant & Machinery List">
-                      Plant & Machinery Power Rating List
-                    </option>
-                    <option value="Project Detailed Report (DPR)">
-                      Detailed Project Feasibility Report (DPR)
-                    </option>
-                    <option value="Incorporation & PAN / GSTIN">
-                      Company PAN, GSTIN & Identity Proof
-                    </option>
+                  >Document Category &amp; Statutory Plan Type
+                  <select name="documentType" id="docTypeSelect" onchange="updatePlanType(this)">
+                    <optgroup label="Mandatory Statutory Plan Blueprints (PDF Format)">
+                      <option value="Environmental Management & ETP Plan" data-plantype="environmental_plan" selected>
+                        🌿 Environmental Plan (PDF) &rarr; MPCB (Phase 1 Gateway)
+                      </option>
+                      <option value="Civil Infrastructure & Building Layout Plan" data-plantype="civil_plan">
+                        📐 Civil Plan (PDF) &rarr; MIDC Civil (Phase 2)
+                      </option>
+                      <option value="Factory Safety & Hazardous Materials Blueprint" data-plantype="factory_safety_plan">
+                        🛡️ Factory Safety Blueprint (PDF) &rarr; DISH (Phase 2)
+                      </option>
+                      <option value="Fire Hydrant & Evacuation Layout Plan" data-plantype="fire_safety_plan">
+                        🚒 Fire Safety Plan (PDF) &rarr; Fire Services (Phase 2)
+                      </option>
+                    </optgroup>
+                    <optgroup label="General Statutory Supporting Documents">
+                      <option value="Land Title Deed / MIDC Allotment" data-plantype="">
+                        Land Title Deed / MIDC Allotment Letter
+                      </option>
+                      <option value="Plant & Machinery List" data-plantype="">
+                        Plant &amp; Machinery Power Rating List
+                      </option>
+                      <option value="Project Detailed Report (DPR)" data-plantype="">
+                        Detailed Project Feasibility Report (DPR)
+                      </option>
+                      <option value="Incorporation & PAN / GSTIN" data-plantype="">
+                        Company PAN, GSTIN &amp; Identity Proof
+                      </option>
+                    </optgroup>
                   </select>
                 </label>
+                <input type="hidden" name="planType" id="planTypeInput" value="environmental_plan" />
 
                 <label
-                  >Select PDF / JPG / PNG File (Max 15MB)
+                  >Select Statutory Plan PDF or Document File
                   <input
                     name="document"
                     type="file"
@@ -653,12 +676,19 @@
 
       runKnowledgeEngine();
 
+      function updatePlanType(selectEl) {
+        const opt = selectEl.options[selectEl.selectedIndex];
+        const pt = opt.getAttribute("data-plantype") || "";
+        document.getElementById("planTypeInput").value = pt;
+      }
+
       // Application Form Submission
       const appForm = document.getElementById("appForm");
       appForm.onsubmit = async (e) => {
         e.preventDefault();
         const payload = Object.fromEntries(new FormData(appForm));
         payload.hazardous = document.getElementById("hazardous").checked;
+        payload.hazardLevel = document.getElementById("hazardLevel") ? document.getElementById("hazardLevel").value : "Low Risk / General Light Manufacturing";
 
         try {
           show(
@@ -677,7 +707,7 @@
 
           show(
             "msg",
-            `Application ${res.applicationNo} created successfully! Please upload mandatory documents below.`,
+            `Application ${res.applicationNo} created successfully! Please upload your statutory plans (Environmental, Civil, Safety, Fire) below.`,
             true,
           );
 
@@ -707,15 +737,16 @@
         try {
           show(
             "upmsg",
-            "Encrypting and uploading file to Udyog Samyog vault...",
+            "Encrypting and uploading statutory plan to Udyog Samyog vault...",
           );
           await api(`/api/applications/${createdAppId}/documents`, {
             method: "POST",
             body: new FormData(uploadForm),
           });
 
-          show("upmsg", "Document uploaded and attached successfully.", true);
+          show("upmsg", "Statutory Plan uploaded and attached to dossier successfully.", true);
           uploadForm.reset();
+          updatePlanType(document.getElementById("docTypeSelect"));
           refreshUploadedDocs();
         } catch (err) {
           show("upmsg", err.message);
@@ -728,23 +759,36 @@
           const docs = await api(`/api/applications/${createdAppId}/documents`);
           const tbody = document.getElementById("uploadedDocsRows");
           if (docs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--ink-muted); padding: 20px;">No documents uploaded yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--ink-muted); padding: 20px;">No documents uploaded yet. Choose a file above and click Upload.</td></tr>`;
             return;
           }
 
           tbody.innerHTML = docs
             .map(
-              (d) => `
-            <tr>
-              <td><b>${d.document_type}</b></td>
-              <td>${d.original_name}</td>
-              <td>${formatBytes(d.size)}</td>
-              <td><span class="badge ${d.verification_status === "Verified" ? "green" : "orange"}">${d.verification_status || "Pending"}</span></td>
-              <td>
-                <a class="btn outline sm" href="/api/documents/${d.id}/view" target="_blank">↗ View Inline</a>
-              </td>
-            </tr>
-          `,
+              (d) => {
+                let planBadge = "";
+                if (d.plan_type === "environmental_plan") {
+                  planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;">🌿 Phase 1: MPCB</span>';
+                } else if (d.plan_type === "civil_plan") {
+                  planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;">📐 Phase 2: MIDC</span>';
+                } else if (d.plan_type === "factory_safety_plan") {
+                  planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;">🛡️ Phase 2: DISH</span>';
+                } else if (d.plan_type === "fire_safety_plan") {
+                  planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;">🚒 Phase 2: Fire</span>';
+                }
+
+                return `
+                <tr>
+                  <td><b>${d.document_type}</b> ${planBadge}</td>
+                  <td>${d.original_name}</td>
+                  <td>${formatBytes(d.size)}</td>
+                  <td><span class="badge ${d.verification_status === "Verified" ? "green" : "orange"}">${d.verification_status || "Pending"}</span></td>
+                  <td>
+                    <a class="btn outline sm" href="/api/documents/${d.id}/view" target="_blank">↗ View Inline</a>
+                  </td>
+                </tr>
+              `;
+              }
             )
             .join("");
         } catch (err) {

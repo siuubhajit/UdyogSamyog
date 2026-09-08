@@ -107,13 +107,36 @@
 
             <div class="grid">
               <div class="card card-kpi"><span class="card-label">State Dossiers Total</span><span class="card-value" id="kpiTotal">0</span><span class="card-sub">All Districts</span></div>
-              <div class="card card-kpi saffron"><span class="card-label">In-Progress Pipeline</span><span class="card-value" id="kpiPending">0</span><span class="card-sub">Departmental Review</span></div>
-              <div class="card card-kpi ruby"><span class="card-label">Flagged / Queries</span><span class="card-value" id="kpiFlagged">0</span><span class="card-sub">Statutory Queries</span></div>
-              <div class="card card-kpi emerald"><span class="card-label">Consolidated Approved</span><span class="card-value" id="kpiApproved">0</span><span class="card-sub">Final NOC Granted</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Awaiting Final Apex NOC</span><span class="card-value" id="kpiPendingApex">0</span><span class="card-sub">Phase 3 Action Ready</span></div>
+              <div class="card card-kpi ruby"><span class="card-label">Simultaneous Review</span><span class="card-value" id="kpiParallelReview">0</span><span class="card-sub">Phase 2 Parallel</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Licensed Enterprises</span><span class="card-value" id="kpiApprovedApex">0</span><span class="card-sub">Final NOC Issued</span></div>
+            </div>
+
+            <!-- COMPANY NAME SEARCH & LICENSE STATUS CONSOLE -->
+            <div class="panel" style="margin-top:24px; border:2px solid var(--navy); background:linear-gradient(135deg, #ffffff, #f8fafc); border-radius:8px; padding:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <div>
+                  <h2 style="font-size:1.2rem; color:var(--navy); margin:0;">
+                    🔎 Enterprise Clearance &amp; License Search Console
+                  </h2>
+                  <p style="font-size:0.82rem; color:var(--ink-light); margin:4px 0 0 0;">
+                    Search by Company Name, GSTIN, or District to inspect multi-departmental clearance milestones, statutory remarks, and license status.
+                  </p>
+                </div>
+                <span class="badge blue">Live State Dossier Query</span>
+              </div>
+              <div style="display:flex; gap:10px; margin-top:8px;">
+                <input type="text" id="companySearchInput" class="search-input" style="flex:1; border-color:#94a3b8;" placeholder="Search by Company Name (e.g. Sahyadri, Mahindra), GSTIN, or App ID..." />
+                <button class="btn saffron" onclick="loadApplications(document.getElementById('companySearchInput').value)">Search Company</button>
+                <button class="btn outline" onclick="document.getElementById('companySearchInput').value=''; loadApplications();">Reset</button>
+              </div>
+              <div id="companySearchResults" style="margin-top:16px;">
+                <!-- Populated live via officer-msins.js -->
+              </div>
             </div>
 
             <div class="filter-bar" style="margin-top:24px">
-              <input type="text" id="filterSearch" class="search-input" placeholder="Search by App No., Company Name, Location..." />
+              <input type="text" id="filterSearch" class="search-input" placeholder="Filter queue by App No., Company Name, Location..." />
               <select id="filterStatus">
                 <option value="all">Status: All</option>
                 <option value="In Progress">In Progress</option>
@@ -312,14 +335,62 @@
       </div>
     </div>
 
+    <!-- APEX INSPECT DOSSIER MODAL (COLLATED PLANS & REMARKS) -->
+    <div id="apexInspectModal" class="modal-overlay" style="display:none">
+      <div class="modal-card" style="max-width:760px; max-height:90vh; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
+          <div>
+            <h2 style="margin:0; color:var(--navy); font-size:1.2rem;">📑 Consolidated Statutory Dossier &amp; Blueprint Scrutiny</h2>
+            <div style="font-size:0.8rem; color:var(--ink-light); margin-top:2px;">
+              App: <b id="modalInspectAppNo">---</b> · Enterprise: <b id="modalInspectCompany">---</b> (GSTIN: <span id="modalInspectGstin">---</span>)
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
+        </div>
+
+        <div style="font-size:0.82rem; color:#475569; margin-bottom:14px;">
+          Location: <b id="modalInspectLocation">---</b> · Current Pipeline Phase: <span class="badge blue" id="modalInspectStage">---</span>
+        </div>
+
+        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">1. Collated Statutory Plan Blueprints (PDFs)</h3>
+        <div id="modalAllPlansList" style="margin-bottom:18px;">
+          <!-- Loaded dynamically -->
+        </div>
+
+        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">2. Confirming Department Clearance Decisions &amp; Remarks</h3>
+        <div id="modalDepartmentRemarksList" style="margin-bottom:18px;">
+          <!-- Loaded dynamically -->
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn outline sm" onclick="closeModals()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINAL SINGLE-WINDOW APPROVAL MODAL -->
+    <div id="finalApprovalModal" class="modal-overlay" style="display:none">
+      <div class="modal-card" style="max-width:540px;">
+        <h2 style="color:#15803d;">🏆 Grant Final Single-Window Clearance &amp; Master NOC</h2>
+        <p style="font-size:0.85rem; color:var(--ink-light); margin-bottom:14px;">
+          As Department Officer (MSInS / Industries Apex Authority), grant the consolidated statutory sanction for Application <b id="finalModalAppNo">---</b> (<span id="finalModalCompany">---</span>).
+        </p>
+        <label style="font-weight:700; color:var(--navy); font-size:0.85rem; display:block; margin-bottom:6px;">
+          Official Single-Window Sanction Order / Conditions:
+          <textarea id="finalModalRemarks" rows="3" style="width:100%; margin-top:6px;" placeholder="Record final single-window clearance determination, deemed license issue terms, or statutory reference..."></textarea>
+        </label>
+        <div class="modal-actions" style="margin-top:16px;">
+          <button type="button" class="btn outline sm" onclick="closeModals()">Cancel</button>
+          <button type="button" class="btn saffron sm" style="font-weight:700;" onclick="submitFinalApexDecision('Approved')">
+            ✓ Grant Final Single-Window Clearance
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="/js/common.js"></script>
+    <script src="/js/officer-msins.js"></script>
     <script>
-      const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
-      const STAGE_LABELS = { mpcb:"MPCB Env.", midc:"MIDC Civil", dish:"DISH Safety", fire:"Fire NOC", msins:"Apex Final" };
-
-      let allApplications = [], allEnterprises = [], currentOfficer = null;
-      let activeDecisionAppId = null, activeBanEnterpriseId = null;
-
       function switchView(view) {
         document.getElementById("queueSection").style.display = view === "queue" ? "block" : "none";
         document.getElementById("enterpriseSection").style.display = view === "enterprises" ? "block" : "none";
@@ -328,265 +399,10 @@
         document.getElementById("navEnterprises").classList.toggle("active", view === "enterprises");
         document.getElementById("navPsi").classList.toggle("active", view === "psi");
         if (view === "enterprises") loadEnterprises();
-        else if (view === "psi") calculatePsi();
+        else if (view === "psi") runPsiCalc();
         else loadApplications();
       }
-
-      async function loadApplications() {
-        try {
-          const params = new URLSearchParams();
-          const st = document.getElementById("filterStatus").value;
-          const ri = document.getElementById("filterRisk").value;
-          const di = document.getElementById("filterDistrict").value;
-          const se = document.getElementById("filterSearch").value.trim();
-          if (st !== "all") params.append("status", st);
-          if (ri !== "all") params.append("risk_tier", ri);
-          if (di !== "all") params.append("district", di);
-          if (se) params.append("search", se);
-          const apps = await api("/api/applications?" + params.toString());
-          allApplications = apps;
-          document.getElementById("kpiTotal").textContent = apps.length;
-          document.getElementById("kpiPending").textContent = apps.filter(x => x.status === "In Progress").length;
-          document.getElementById("kpiFlagged").textContent = apps.filter(x => x.status === "Flagged").length;
-          document.getElementById("kpiApproved").textContent = apps.filter(x => x.status === "Approved").length;
-          renderTable(apps);
-        } catch (err) {
-          document.getElementById("rows").innerHTML = "<tr><td colspan='7' style='color:red;text-align:center;padding:20px'>Failed to load: " + err.message + "</td></tr>";
-        }
-      }
-
-      function resetFilters() {
-        document.getElementById("filterSearch").value = "";
-        document.getElementById("filterStatus").value = "all";
-        document.getElementById("filterRisk").value = "all";
-        document.getElementById("filterDistrict").value = "all";
-        loadApplications();
-      }
-
-      function renderTable(apps) {
-        const tbody = document.getElementById("rows");
-        if (!apps.length) {
-          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:40px;color:var(--ink-light)'>No applications match your filter criteria.</td></tr>";
-          return;
-        }
-
-        tbody.innerHTML = apps.map(app => {
-          let parallel = {};
-          try { parallel = JSON.parse(app.parallel_status_json || "{}"); } catch(_) {}
-          let stages = {};
-          try { stages = JSON.parse(app.stage_statuses || "{}"); } catch(_) {}
-
-          const depts = ["mpcb", "midc", "dish", "fire"];
-          const milestonePills = depts.map(d => {
-            const isApproved = stages[d]?.decision === "Approved" || parallel[d]?.status === "Approved";
-            const isFlagged = parallel[d]?.status === "Query Raised" || stages[d]?.decision === "Query";
-            const cls = isApproved ? "ok" : isFlagged ? "flagged" : "pending";
-            const icon = isApproved ? "✓" : isFlagged ? "!" : "○";
-            return "<span class='matrix-pill " + cls + "'>" + d.toUpperCase() + " " + icon + "</span>";
-          }).join("");
-
-          const badgeClass = app.status === "Approved" ? "green" : (app.status === "Flagged" || app.status === "Rejected") ? "red" : "orange";
-          const riskClass = app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green";
-          const canFinalApprove = app.status !== "Approved" && app.status !== "Rejected";
-
-          return "<tr>" +
-            "<td><b style='color:var(--navy);font-size:.85rem'>" + app.application_no + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + new Date(app.created_at).toLocaleDateString() + "</div></td>" +
-            "<td><b style='color:var(--navy)'>" + escapeHtml(app.company_name) + "</b><div style='font-size:.74rem;color:var(--ink-light)'>" + (app.district || "Pune") + " &middot; " + (app.industry_category || "Industry") + "</div></td>" +
-            "<td><span class='badge' style='background:#f1f5f9;color:#334155'>" + (STAGE_LABELS[app.current_stage] || app.current_stage || "Apex") + "</span></td>" +
-            "<td>" + milestonePills + "</td>" +
-            "<td><span class='risk-tag " + riskClass + "'>" + (app.risk_tier || "Standard") + "</span> <span class='badge gray' style='font-size:.65rem'>" + (app.msme_category || "MSME") + "</span></td>" +
-            "<td><span class='badge " + badgeClass + "'>" + app.status + "</span></td>" +
-            "<td style='white-space:nowrap'>" +
-            (canFinalApprove ? "<button class='btn sm' style='background:var(--navy);color:#fff;margin-right:4px' onclick='openApexDecision(" + app.id + ")'>&#9878; Act</button>" : "") +
-            "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>&#128269; Dossier</a>" +
-            "</td></tr>";
-        }).join("");
-      }
-
-      function buildMiniPipeline(currentStage, stageStatuses) {
-        stageStatuses = stageStatuses || {};
-        return PIPELINE_STAGES.map((s, i) => {
-          const ss = stageStatuses[s];
-          let cls = "pipe-dot", icon = String(i + 1);
-          if (ss && ss.decision === "Approved") { cls += " done"; icon = "✓"; }
-          else if (ss && ss.decision === "Rejected") { cls += " rejected"; icon = "✕"; }
-          else if (s === currentStage) { cls += " active"; icon = "→"; }
-          return "<div class='pipe-step'><div class='" + cls + "'>" + icon + "</div><div class='pipe-label'>" + STAGE_LABELS[s] + "</div></div>";
-        }).join("");
-      }
-
-      async function openApexDecision(appId) {
-        activeDecisionAppId = appId;
-        document.getElementById("decisionMsg").textContent = "";
-        document.getElementById("decisionRemarks").value = "";
-        try {
-          const app = await api("/api/applications/" + appId);
-          document.getElementById("decAppNo").textContent = app.application_no;
-          document.getElementById("decCompany").textContent = app.company_name;
-          document.getElementById("decDistrict").textContent = app.district || "Maharashtra";
-          document.getElementById("decDossierLink").href = "verification.html?id=" + appId;
-          document.getElementById("miniPipeline").innerHTML = buildMiniPipeline(app.current_stage, app.stageStatuses);
-          document.getElementById("decisionModal").style.display = "grid";
-        } catch (err) {
-          alert("Failed to load application: " + err.message);
-        }
-      }
-
-      function closeDecisionModal() {
-        document.getElementById("decisionModal").style.display = "none";
-        activeDecisionAppId = null;
-      }
-
-      async function submitApexFinal(status) {
-        if (!activeDecisionAppId) return;
-        const remarks = document.getElementById("decisionRemarks").value.trim() || "Consolidated statutory single-window clearance approved by MSInS Apex Directorate.";
-        const msgEl = document.getElementById("decisionMsg");
-        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Granting Consolidated Approval & NOC…";
-        try {
-          const res = await api("/api/applications/" + activeDecisionAppId + "/status", {
-            method: "PATCH",
-            body: JSON.stringify({ status: "Approved", remarks, department: "msins" })
-          });
-          msgEl.style.color = "#16a34a"; msgEl.textContent = "✓ Final Single-Window Clearance Granted! Digital NOC generated.";
-          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
-        } catch (err) {
-          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
-        }
-      }
-
-      async function submitApexDecision(decision) {
-        if (!activeDecisionAppId) return;
-        const remarks = document.getElementById("decisionRemarks").value.trim();
-        const msgEl = document.getElementById("decisionMsg");
-        if (!remarks) { msgEl.style.color = "#dc2626"; msgEl.textContent = "Please enter official remarks before submitting."; return; }
-        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Recording decision…";
-        try {
-          const res = await api("/api/applications/" + activeDecisionAppId + "/stage-decision", {
-            method: "POST", body: JSON.stringify({ decision, remarks })
-          });
-          msgEl.style.color = "#16a34a"; msgEl.textContent = res.message;
-          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
-        } catch (err) {
-          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
-        }
-      }
-
-      async function loadEnterprises() {
-        const tbody = document.getElementById("enterpriseRows");
-        try {
-          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:30px;color:var(--ink-light)'>Fetching enterprise records…</td></tr>";
-          const ents = await api("/api/admin/enterprises");
-          allEnterprises = ents;
-          if (!ents.length) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:40px;color:var(--ink-light)'>No registered enterprises.</td></tr>"; return; }
-          tbody.innerHTML = ents.map(ent => {
-            const banned = ent.is_banned === 1;
-            const statusBadge = banned
-              ? "<span class='badge red'>🚫 Blacklisted</span><div style='font-size:.7rem;color:#991b1b;max-width:160px'>" + escapeHtml(ent.ban_reason || "Statutory Breach") + "</div>"
-              : "<span class='badge green'>✓ Active &amp; Eligible</span>";
-            const actionBtn = banned
-              ? "<button class='btn emerald sm' onclick='unbanEnterprise(" + ent.id + ")'>✓ Reinstate</button>"
-              : "<button class='btn danger sm' onclick='openBanModal(" + ent.id + ")'>🚫 Ban</button>";
-            return "<tr>" +
-              "<td><b style='color:var(--navy)'>" + escapeHtml(ent.company_name) + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>Registered: " + new Date(ent.created_at).toLocaleDateString() + "</div></td>" +
-              "<td><span style='font-family:monospace;font-size:.8rem;font-weight:600'>" + escapeHtml(ent.registration_no || "GSTIN-PENDING") + "</span></td>" +
-              "<td><b>" + escapeHtml(ent.contact_person || "Contact Head") + "</b><div style='font-size:.72rem;color:var(--ink-light)'>" + escapeHtml(ent.email) + " · " + escapeHtml(ent.phone || "") + "</div></td>" +
-              "<td><b>" + escapeHtml(ent.district || "Maharashtra") + "</b></td>" +
-              "<td><span class='badge gray'>" + (ent.applications_count || 0) + " Dossiers</span></td>" +
-              "<td>" + statusBadge + "</td><td>" + actionBtn + "</td></tr>";
-          }).join("");
-        } catch (err) {
-          tbody.innerHTML = "<tr><td colspan='7' style='color:red;text-align:center;padding:20px'>Failed: " + err.message + "</td></tr>";
-        }
-      }
-
-      function escapeHtml(str) {
-        if (!str) return "";
-        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-      }
-
-      function openBanModal(id) {
-        activeBanEnterpriseId = id;
-        const ent = allEnterprises.find(e => e.id === id);
-        document.getElementById("banTargetName").textContent = ent ? ent.company_name : ("Enterprise #" + id);
-        document.getElementById("banReasonInput").value = "";
-        document.getElementById("banModalMsg").textContent = "";
-        document.getElementById("banModal").style.display = "grid";
-      }
-
-      function closeBanModal() {
-        activeBanEnterpriseId = null;
-        document.getElementById("banModal").style.display = "none";
-      }
-
-      function setBanChip(r) {
-        document.getElementById("banReasonInput").value = r;
-      }
-
-      async function submitBanEnterprise() {
-        if (!activeBanEnterpriseId) return;
-        const reason = document.getElementById("banReasonInput").value.trim();
-        if (!reason) { show("banModalMsg", "Specify statutory grounds."); return; }
-        try {
-          show("banModalMsg", "Enforcing blacklist…");
-          const res = await api("/api/admin/enterprises/" + activeBanEnterpriseId + "/ban", { method: "POST", body: JSON.stringify({ reason }) });
-          closeBanModal(); loadEnterprises(); alert(res.message);
-        } catch (err) { show("banModalMsg", err.message); }
-      }
-
-      async function unbanEnterprise(id) {
-        const ent = allEnterprises.find(e => e.id === id);
-        const name = ent ? ent.company_name : ("Enterprise #" + id);
-        if (!confirm("Reinstate '" + name + "' and restore permit rights?")) return;
-        try {
-          const res = await api("/api/admin/enterprises/" + id + "/unban", { method: "POST", body: JSON.stringify({}) });
-          loadEnterprises(); alert(res.message);
-        } catch (err) { alert("Failed: " + err.message); }
-      }
-
-      function calculatePsi() {
-        const inv = parseFloat(document.getElementById("psiInvestment")?.value) || 10;
-        const taluka = document.getElementById("psiTaluka")?.value || "C";
-        const msme = document.getElementById("psiMsme")?.value || "Small";
-
-        let subsidyPct = 40;
-        let stampDuty = "100% Exemption";
-        let elecYears = 7;
-        if (taluka === "B") { subsidyPct = 40; elecYears = 7; }
-        else if (taluka === "C") { subsidyPct = 50; elecYears = 8; }
-        else if (taluka === "D") { subsidyPct = 60; elecYears = 9; }
-        else if (taluka === "D_PLUS") { subsidyPct = 80; elecYears = 10; }
-        else if (taluka === "VIDARBHA") { subsidyPct = 85; elecYears = 10; }
-        else { subsidyPct = 25; stampDuty = "50% Exemption"; elecYears = 5; }
-
-        const maxSubsidyCap = msme === "Micro" ? 0.5 : msme === "Small" ? 2.5 : msme === "Medium" ? 7.5 : 25.0;
-        const estimatedSubsidy = Math.min(inv * (subsidyPct / 100), maxSubsidyCap);
-
-        document.getElementById("psiResultBox").innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-            <div>
-              <div style="font-size:.78rem;color:var(--ink-light);text-transform:uppercase;font-weight:700">Estimated Capital Subsidy</div>
-              <div style="font-size:1.5rem;font-weight:800;color:#15803d">&#8377; ${estimatedSubsidy.toFixed(2)} Crores (${subsidyPct}% of FCI)</div>
-            </div>
-            <div style="text-align:right">
-              <span class="badge green">Eligible for PSI 2024</span>
-              <div style="font-size:.75rem;color:var(--ink-muted);margin-top:2px">Cap: &#8377; ${maxSubsidyCap} Cr for ${msme}</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:10px;margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:12px;font-size:.82rem">
-            <div><b>Stamp Duty:</b> <span style="color:#1e40af">${stampDuty}</span></div>
-            <div><b>Electricity Duty Waiver:</b> <span style="color:#15803d">${elecYears} Years (100% waiver)</span></div>
-            <div><b>MSInS Innovation Voucher:</b> <span style="color:#d97706">&#8377; 15 Lakhs Seed Grant</span></div>
-          </div>
-        `;
-      }
-
-      document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
-
-      guard("official").then(user => {
-        currentOfficer = user;
-        loadApplications();
-        calculatePsi();
-      });
+      document.addEventListener("DOMContentLoaded", initMsinsPortal);
     </script>
   </body>
 </html>

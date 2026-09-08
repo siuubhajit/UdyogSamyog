@@ -235,6 +235,9 @@
             </div>
           </div>
 
+          <!-- Live 3-Phase Statutory Clearance Matrix -->
+          <div id="applicantWorkflowContainer"></div>
+
           <!-- Active Applications Table -->
           <div
             class="panel"
@@ -807,6 +810,7 @@
     </div>
 
     <script src="/js/common.js"></script>
+    <script src="/js/applicant-workflow.js"></script>
     <script>
       let accountProfile = null;
 
@@ -966,6 +970,10 @@
               `tracker.html?id=${flaggedList[0].id}`;
           }
 
+          if (a.length > 0 && typeof loadApplicantWorkflow === "function") {
+            loadApplicantWorkflow(a[0].id);
+          }
+
           // Pipeline tracker constants
           const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
           const STAGE_NAMES = { mpcb:"MPCB\nEnvironmental", midc:"MIDC\nCivil", dish:"DISH\nFactory Safety", fire:"Fire\nServices", msins:"Apex\nFinal" };
@@ -1037,9 +1045,12 @@
                 <td><span class="risk-tag ${riskClass}">${x.risk_tier || "Standard"}</span></td>
                 <td><span class="badge ${badgeClass}">${x.status}</span></td>
                 <td>
-                  <a class="btn saffron sm" href="tracker.html?id=${x.id}">
+                  <a class="btn saffron sm" href="tracker.html?id=${x.id}" style="display:inline-block; margin-bottom:4px; font-size:0.75rem; padding:4px 8px;">
                     View &amp; Respond &rarr;
                   </a>
+                  <button class="btn outline sm" style="display:inline-block; font-size:0.75rem; padding:4px 8px; width:100%;" onclick="loadApplicantWorkflow(${x.id})">
+                    🏛️ Clearance Matrix
+                  </button>
                 </td>
               </tr>
               <tr>

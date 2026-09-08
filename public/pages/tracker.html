@@ -607,6 +607,11 @@
             else if (status === "Query Raised" || status === "Deficient" || status === "Rejected") badgeClass = "red";
 
             const remarks = info.remarks || stageInfo?.remarks || "";
+            const planDoc = d.key === "midc" ? app.plans?.civil
+              : d.key === "mpcb" ? app.plans?.environmental
+              : d.key === "fire" ? app.plans?.fireSafety
+              : d.key === "dish" ? app.plans?.factorySafety
+              : null;
 
             return `
             <div class="card">
@@ -617,6 +622,7 @@
                 <span style="font-size: 0.7rem; color: var(--ink-muted);">SLA: 7d</span>
               </div>
               ${remarks ? `<div style="font-size: 0.72rem; color: var(--ink-light); margin-top: 8px;"><b>Note:</b> ${remarks}</div>` : ""}
+              ${planDoc ? `<div style="margin-top: 8px;"><a href="/api/documents/${planDoc.id}/view" target="_blank" class="btn outline sm" style="font-size: 0.72rem; padding: 3px 8px;">📄 View Plan PDF</a></div>` : ""}
             </div>
           `;
           })

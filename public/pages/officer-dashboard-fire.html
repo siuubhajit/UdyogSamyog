@@ -85,39 +85,26 @@
           <!-- QUEUE SECTION -->
           <div id="sectionQueue">
             <div class="page-header">
-              <div class="page-pretitle">Directorate of Maharashtra Fire Services &middot; Stage 4 Clearance</div>
+              <div class="page-pretitle">Directorate of Maharashtra Fire Services &middot; Phase 2 Simultaneous Scrutiny</div>
               <h1 class="page-title">Provisional Fire NOC Scrutiny Queue</h1>
-              <p class="page-subtitle">Evaluate hydrant layouts, static water storage, sprinkler systems, and fire tender turning clearances for industrial manufacturing units.</p>
+              <p class="page-subtitle">Evaluate hydrant layouts, static water storage, sprinkler systems, and fire tender turning clearances concurrently with MIDC and DISH.</p>
             </div>
 
             <div class="stage-info-box">
-              <b style="color:var(--dept-color);font-size:.95rem">&#128658; Fire Services Officer &middot; Sequential Pipeline Stage 4</b>
-              <div style="margin-top:4px;color:var(--ink-light)">Applications arrive here after <b>DISH Factory Safety</b> certification. Granting the Fire NOC advances the dossier to the <b>MSInS Apex Authority</b> for final consolidated single-window licensing.</div>
+              <b style="color:var(--dept-color);font-size:.95rem">&#128658; Fire Services Officer &middot; Phase 2 Simultaneous Pipeline</b>
+              <div style="margin-top:4px;color:var(--ink-light)">Applications arrive here after MPCB environmental clearance. Review the applicant's <b>Fire Safety &amp; Evacuation Plan PDF</b>. Your determination progresses concurrently alongside MIDC Civil and DISH Factory Safety towards MSInS Apex final clearance.</div>
             </div>
 
             <div class="grid">
-              <div class="card card-kpi"><span class="card-label">Assigned to Fire</span><span class="card-value" id="kpiTotal">0</span><span class="card-sub">Active Dossiers</span></div>
-              <div class="card card-kpi saffron"><span class="card-label">Fire NOCs Pending</span><span class="card-value" id="kpiPending">0</span><span class="card-sub">Awaiting Decision</span></div>
-              <div class="card card-kpi ruby"><span class="card-label">Hydrant Queries Raised</span><span class="card-value" id="kpiFlagged">0</span><span class="card-sub">Safety Deficiencies</span></div>
-              <div class="card card-kpi emerald"><span class="card-label">Fire NOCs Issued</span><span class="card-value" id="kpiApproved">0</span><span class="card-sub">Forwarded to MSInS Apex</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Fire NOCs Pending</span><span class="card-value" id="kpiPendingFire">0</span><span class="card-sub">Awaiting Decision</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Fire NOCs Issued</span><span class="card-value" id="kpiApprovedFire">0</span><span class="card-sub">Provisional Sanction</span></div>
+              <div class="card card-kpi"><span class="card-label">Total Inward Dossiers</span><span class="card-value" id="kpiTotalDossiers">0</span><span class="card-sub">All Applications</span></div>
             </div>
 
             <div class="filter-bar" style="margin-top:24px">
               <input type="text" id="filterSearch" class="search-input" placeholder="Search by App No., Enterprise, District..." />
-              <select id="filterStatus">
-                <option value="all">Status: All</option>
-                <option value="In Progress">In Progress (Awaiting Review)</option>
-                <option value="Flagged">Flagged / Query Raised</option>
-                <option value="Approved">Approved</option>
-              </select>
-              <select id="filterRisk">
-                <option value="all">Hazard Level: All</option>
-                <option value="Red">High Hazard (Chemical/Petro)</option>
-                <option value="Orange">Medium Hazard (Engineering/Fabrication)</option>
-                <option value="Green">Low Hazard (IT/Assembly)</option>
-              </select>
-              <button class="btn saffron sm" onclick="loadApplications()">Filter Queue</button>
-              <button class="btn outline sm" onclick="resetFilters()">Reset</button>
+              <button class="btn saffron sm" onclick="renderApplicationsTable()">Search</button>
+              <button class="btn outline sm" onclick="document.getElementById('filterSearch').value=''; renderApplicationsTable();">Reset</button>
             </div>
 
             <div class="panel" style="padding:0;overflow:hidden;margin-top:16px">
@@ -128,15 +115,13 @@
                       <th>Application No.</th>
                       <th>Enterprise / Unit</th>
                       <th>Industry &amp; Hazard</th>
-                      <th>District &amp; Site</th>
-                      <th>Land / Built-up</th>
-                      <th>SLA Tracker</th>
-                      <th>Status</th>
+                      <th>Land &amp; Perimeter</th>
+                      <th>Phase Status</th>
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody id="rows">
-                    <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink-light)">Loading Fire Services queue&hellip;</td></tr>
+                  <tbody id="applicationsTableBody">
+                    <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--ink-light)">Loading Fire Services queue&hellip;</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -154,26 +139,31 @@
             <div class="fire-tool-card">
               <h3 style="color:var(--navy);margin:0 0 14px">&#128295; Fire Hydrant &amp; Water Tank Demand Sizing (NBC Table 7)</h3>
               <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px">
-                <label>Total Plot Built-Up Area (sqm)
-                  <input type="number" id="calcFireBuiltUp" value="6000" min="500" oninput="runFireCalc()" />
-                </label>
-                <label>Industrial Hazard Classification
-                  <select id="calcHazard" onchange="runFireCalc()">
-                    <option value="Low">Low Hazard (Light Engineering, Warehousing)</option>
-                    <option value="Medium" selected>Medium Hazard (Machinery, Plastic, Textiles)</option>
-                    <option value="High">High Hazard (Chemicals, Solvents, Flammable)</option>
+                <label>Industrial Hazard Grading
+                  <select id="calcHazardGrading">
+                    <option value="low">Low Hazard (Light Engineering, IT, Warehousing)</option>
+                    <option value="medium" selected>Medium Hazard (Machinery, Plastic, Fabrication)</option>
+                    <option value="high">High Hazard (Chemicals, Solvents, Flammables)</option>
                   </select>
                 </label>
-                <label>Building Height (Metres)
-                  <input type="number" id="calcHeight" value="12" min="3" oninput="runFireCalc()" />
-                </label>
-                <label>Access Driveway Perimeter Width (m)
-                  <input type="number" id="calcDriveway" value="7.5" step="0.5" oninput="runFireCalc()" />
+                <label>Total Plot Built-Up Area (sq.m)
+                  <input type="number" id="calcBuiltUpArea" value="3000" min="500" />
                 </label>
               </div>
 
               <div id="fireCalcResult" style="margin-top:18px;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:6px;padding:16px">
-                <!-- Dynamically calculated -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px">
+                  <div>
+                    <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Underground Static Tank</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:#b91c1c" id="calcStaticTank">100 kL (Underground)</div>
+                    <div style="font-size:.72rem;color:#b91c1c">&#10003; Dedicated Fire Storage</div>
+                  </div>
+                  <div>
+                    <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Fire Pump Discharge Rating</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:#15803d" id="calcPumpRating">2280 LPM @ 7 bar</div>
+                    <div style="font-size:.72rem;color:#15803d">&#10003; Electric + Diesel Standby</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -181,60 +171,80 @@
       </div>
     </div>
 
-    <!-- DECISION MODAL -->
-    <div id="decisionModal" class="modal-overlay" style="display:none">
-      <div class="modal-card" style="max-width:620px">
-        <h2 style="color:var(--dept-color)">&#128658; Provisional Fire NOC Determination</h2>
-        <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Evaluate fire safety measures and issue Provisional Fire Safety NOC.</p>
-        
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:.85rem">
-          <div>Dossier: <b id="decAppNo" style="color:var(--navy)">---</b> &middot; Enterprise: <b id="decCompany">---</b></div>
-          <div style="font-size:.78rem;color:var(--ink-muted);margin-top:2px">Location: <span id="decDistrict">---</span></div>
+    <!-- FIRE INSPECT DOSSIER MODAL -->
+    <div id="fireInspectModal" class="modal modal-overlay">
+      <div class="modal-card" style="max-width:760px">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
+          <div>
+            <h2 style="margin:0; color:var(--dept-color); font-size:1.2rem;">&#128658; Fire Safety &amp; Evacuation Plan Scrutiny</h2>
+            <div style="font-size:0.8rem; color:var(--ink-light); margin-top:2px;">
+              App: <b id="modalInspectAppNo">---</b> &middot; Enterprise: <b id="modalInspectCompany">---</b>
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
         </div>
 
-        <div id="miniPipeline" class="pipeline-mini"></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:14px; font-size:0.82rem;">
+          <div>Hazard: <b id="modalInspectRisk">---</b></div>
+          <div>Land: <b id="modalInspectLand">---</b></div>
+        </div>
 
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-top:12px">
-          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Maharashtra Fire Services Scrutiny Checklist:</div>
+        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">Uploaded Fire Hydrant &amp; Evacuation Layout Plan (PDF)</h3>
+        <div id="modalFirePlanContainer" style="margin-bottom:16px;">
+          <!-- Loaded dynamically -->
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn outline sm" onclick="closeModals()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIRE DECISION MODAL -->
+    <div id="fireModal" class="modal modal-overlay">
+      <div class="modal-card" style="max-width:580px">
+        <h2 style="color:var(--dept-color);">&#128658; Provisional Fire NOC Determination</h2>
+        <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">
+          Issue provisional fire safety clearance under Maharashtra Fire Act for <b id="fireModalAppNo">---</b> (<span id="fireModalCompany">---</span>).
+        </p>
+
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-bottom:12px">
+          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Fire Services Compliance Checklist:</div>
           <ul class="checklist">
-            <li>Fire hydrant layout and internal wet riser design verified</li>
-            <li>Static water storage capacity (Underground &amp; Overhead) compliant with NBC Part 4</li>
-            <li>Main electric pump (2,280 - 4,500 LPM) &amp; standby diesel pump specified</li>
-            <li>6m all-round clear paved access for 45-tonne fire tenders verified</li>
-            <li>Automatic smoke/heat detection and alarm system layout approved</li>
-            <li>Maximum travel distance to fire exit compliant (&le; 30m)</li>
+            <li>Fire hydrant &amp; riser system layout verified</li>
+            <li>Static water storage demand compliant with NBC Part 4</li>
+            <li>Main and diesel standby pump ratings verified</li>
+            <li>6m unobstructed all-round perimeter access confirmed</li>
           </ul>
         </div>
 
-        <div style="margin-top:14px">
+        <div>
           <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
-            Official Fire Review Remarks &middot; NOC Terms <span style="color:#dc2626">*</span>
+            Official Fire Review Remarks &middot; NOC Terms:
           </label>
-          <textarea id="decisionRemarks" rows="3"
+          <textarea id="fireModalRemarks" rows="3"
             placeholder="Record hydrant inspection conditions, static tank requirements, or fire NOC terms..."
             style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
         </div>
 
-        <div class="decision-btn-row">
-          <button class="btn btn-approve" onclick="submitDecision('Approved')">&#10003; Issue Provisional Fire NOC &rarr;</button>
-          <button class="btn btn-reject" onclick="submitDecision('Rejected')">&#10005; Reject Fire NOC</button>
-          <button class="btn btn-query" onclick="submitDecision('Query')">&#10067; Raise Query (Hydrant/Access)</button>
-          <button class="btn outline sm" onclick="closeDecisionModal()">Cancel</button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
+          <button class="btn" style="background:#16a34a; color:#fff;" onclick="submitFireDecision('Approved')">
+            &#10003; Issue Provisional Fire NOC
+          </button>
+          <button class="btn" style="background:#d97706; color:#fff;" onclick="submitFireDecision('Query')">
+            &#10067; Raise Query
+          </button>
+          <button class="btn" style="background:#dc2626; color:#fff;" onclick="submitFireDecision('Rejected')">
+            &#10005; Reject NOC
+          </button>
+          <button class="btn outline sm" onclick="closeModals()">Cancel</button>
         </div>
-        <div style="margin-top:8px;font-size:.8rem">
-          <a id="decDossierLink" href="#" target="_blank" style="color:var(--navy)">&#128269; Open Fire Safety Blueprints &amp; Technical Drawings &rarr;</a>
-        </div>
-        <div id="decisionMsg" class="msg" style="margin-top:10px"></div>
       </div>
     </div>
 
     <script src="/js/common.js"></script>
+    <script src="/js/officer-fire.js"></script>
     <script>
-      const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
-      const STAGE_LABELS = { mpcb:"MPCB Env.", midc:"MIDC Civil", dish:"DISH Safety", fire:"Fire NOC", msins:"Apex Final" };
-
-      let allApplications = [], activeDecisionAppId = null;
-
       function switchTab(tab) {
         document.getElementById("sectionQueue").style.display = tab === "queue" ? "block" : "none";
         document.getElementById("sectionCalc").style.display = tab === "calculator" ? "block" : "none";
@@ -242,187 +252,7 @@
         else loadApplications();
       }
 
-      async function loadApplications() {
-        try {
-          const params = new URLSearchParams();
-          const st = document.getElementById("filterStatus").value;
-          const ri = document.getElementById("filterRisk").value;
-          const se = document.getElementById("filterSearch").value.trim();
-          if (st !== "all") params.append("status", st);
-          if (ri !== "all") params.append("risk_tier", ri);
-          if (se) params.append("search", se);
-          const apps = await api("/api/applications?" + params.toString());
-          allApplications = apps;
-          document.getElementById("kpiTotal").textContent = apps.length;
-          document.getElementById("kpiPending").textContent = apps.filter(x => x.status === "In Progress" && x.current_stage === "fire").length;
-          document.getElementById("kpiFlagged").textContent = apps.filter(x => x.status === "Flagged").length;
-          
-          const approvedCount = apps.filter(x => {
-            if (x.status === "Approved") return true;
-            try {
-              const ss = JSON.parse(x.stage_statuses || "{}");
-              return ss.fire && ss.fire.decision === "Approved";
-            } catch (_) { return false; }
-          }).length;
-          document.getElementById("kpiApproved").textContent = approvedCount;
-
-          renderTable(apps);
-        } catch (err) {
-          document.getElementById("rows").innerHTML = "<tr><td colspan='8' style='color:red;text-align:center;padding:20px'>Failed to load: " + err.message + "</td></tr>";
-        }
-      }
-
-      function resetFilters() {
-        document.getElementById("filterSearch").value = "";
-        document.getElementById("filterStatus").value = "all";
-        document.getElementById("filterRisk").value = "all";
-        loadApplications();
-      }
-
-      function renderTable(apps) {
-        const tbody = document.getElementById("rows");
-        if (!apps.length) {
-          tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;padding:40px;color:var(--ink-light)'>No applications currently at Fire Services review stage.</td></tr>";
-          return;
-        }
-
-        tbody.innerHTML = apps.map(app => {
-          const elapsed = Math.floor((Date.now() - new Date(app.created_at)) / 86400000);
-          const sla = 7;
-          const left = sla - elapsed;
-          let slaBadge = "<span style='font-size:.76rem;font-weight:600;color:var(--emerald)'>Day " + elapsed + "/7 (" + left + "d left)</span>";
-          if (left <= 2 && left >= 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--saffron)'>&#9888; Due in " + left + "d</span>";
-          else if (left < 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--ruby)'>&#128680; SLA Breached (" + Math.abs(left) + "d overdue)</span>";
-
-          const riskClass = app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green";
-          const badgeClass = app.status === "Approved" ? "green" : (app.status === "Flagged" || app.status === "Rejected") ? "red" : "orange";
-          const canAct = (app.current_stage === "fire" && app.status !== "Approved" && app.status !== "Rejected");
-
-          return "<tr>" +
-            "<td><b style='color:var(--navy);font-size:.85rem'>" + app.application_no + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + new Date(app.created_at).toLocaleDateString() + "</div></td>" +
-            "<td><b style='color:var(--navy)'>" + escapeHtml(app.company_name) + "</b><div style='font-size:.74rem;color:var(--ink-light)'>" + (app.registration_no || "GSTIN") + "</div></td>" +
-            "<td><div>" + (app.industry_category || "Manufacturing") + "</div><span class='risk-tag " + riskClass + "'>" + (app.risk_tier || "Standard") + " Hazard</span></td>" +
-            "<td><b>" + (app.district || "Pune") + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + (app.location || "Industrial Area") + "</div></td>" +
-            "<td>" + (app.land_size || "1.0") + " Acres</td>" +
-            "<td>" + slaBadge + "</td>" +
-            "<td><span class='badge " + badgeClass + "'>" + app.status + "</span></td>" +
-            "<td style='white-space:nowrap'>" +
-            (canAct ? "<button class='btn sm' style='background:var(--dept-color);color:#fff;margin-right:4px' onclick='openDecisionModal(" + app.id + ")'>&#128658; Inspect</button>" : "") +
-            "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>&#128269; Dossier</a>" +
-            "</td></tr>";
-        }).join("");
-      }
-
-      function buildMiniPipeline(currentStage, stageStatuses) {
-        stageStatuses = stageStatuses || {};
-        return PIPELINE_STAGES.map((s, i) => {
-          const ss = stageStatuses[s];
-          let cls = "pipe-dot", icon = String(i + 1);
-          if (ss && ss.decision === "Approved") { cls += " done"; icon = "✓"; }
-          else if (ss && ss.decision === "Rejected") { cls += " rejected"; icon = "✕"; }
-          else if (s === currentStage) { cls += " active"; icon = "→"; }
-          return "<div class='pipe-step'><div class='" + cls + "'>" + icon + "</div><div class='pipe-label'>" + STAGE_LABELS[s] + "</div></div>";
-        }).join("");
-      }
-
-      async function openDecisionModal(appId) {
-        activeDecisionAppId = appId;
-        document.getElementById("decisionMsg").textContent = "";
-        document.getElementById("decisionRemarks").value = "";
-        try {
-          const app = await api("/api/applications/" + appId);
-          document.getElementById("decAppNo").textContent = app.application_no;
-          document.getElementById("decCompany").textContent = app.company_name;
-          document.getElementById("decDistrict").textContent = app.district || "Maharashtra";
-          document.getElementById("decDossierLink").href = "verification.html?id=" + appId;
-          document.getElementById("miniPipeline").innerHTML = buildMiniPipeline(app.current_stage || "fire", app.stageStatuses);
-          document.getElementById("decisionModal").style.display = "grid";
-        } catch (err) {
-          alert("Failed to load application: " + err.message);
-        }
-      }
-
-      function closeDecisionModal() {
-        document.getElementById("decisionModal").style.display = "none";
-        activeDecisionAppId = null;
-      }
-
-      async function submitDecision(decision) {
-        if (!activeDecisionAppId) return;
-        const remarks = document.getElementById("decisionRemarks").value.trim();
-        const msgEl = document.getElementById("decisionMsg");
-        if (!remarks) { msgEl.style.color = "#dc2626"; msgEl.textContent = "Please enter official remarks before submitting."; return; }
-        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Recording Fire Services determination…";
-        try {
-          const res = await api("/api/applications/" + activeDecisionAppId + "/stage-decision", {
-            method: "POST", body: JSON.stringify({ decision, remarks })
-          });
-          msgEl.style.color = "#16a34a"; msgEl.textContent = res.message;
-          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
-        } catch (err) {
-          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
-        }
-      }
-
-      function runFireCalc() {
-        const built = parseFloat(document.getElementById("calcFireBuiltUp").value) || 6000;
-        const hazard = document.getElementById("calcHazard").value || "Medium";
-        const height = parseFloat(document.getElementById("calcHeight").value) || 12;
-        const driveway = parseFloat(document.getElementById("calcDriveway").value) || 7.5;
-
-        let undergroundTankL = 100000;
-        let terraceTankL = 10000;
-        let pumpLpm = 2280;
-
-        if (hazard === "High" || built > 10000) {
-          undergroundTankL = 200000;
-          terraceTankL = 25000;
-          pumpLpm = 4500;
-        } else if (built > 5000) {
-          undergroundTankL = 150000;
-          terraceTankL = 20000;
-          pumpLpm = 2850;
-        }
-
-        const drivewayAdequate = driveway >= 6.0;
-
-        document.getElementById("fireCalcResult").innerHTML = `
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px">
-            <div>
-              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Underground Static Tank</div>
-              <div style="font-size:1.4rem;font-weight:800;color:#b91c1c">${(undergroundTankL / 100000).toFixed(1)} Lakh Litres</div>
-              <div style="font-size:.72rem;color:#b91c1c">&#10003; Dedicated Fire Reserve (${undergroundTankL.toLocaleString()} L)</div>
-            </div>
-            <div>
-              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Terrace Head Tank</div>
-              <div style="font-size:1.4rem;font-weight:800;color:#1e40af">${(terraceTankL / 1000).toFixed(0)} Thousand Litres</div>
-              <div style="font-size:.72rem;color:#1e40af">&#10003; Gravity Feed Primary Pressure</div>
-            </div>
-            <div>
-              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Fire Pump Capacity</div>
-              <div style="font-size:1.4rem;font-weight:800;color:#15803d">${pumpLpm} LPM</div>
-              <div style="font-size:.72rem;color:#15803d">&#10003; Electric + Diesel Standby Pump</div>
-            </div>
-            <div>
-              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Fire Tender Access</div>
-              <div style="font-size:1.4rem;font-weight:800;color:${drivewayAdequate ? '#15803d' : '#dc2626'}">${driveway}m Width</div>
-              <div style="font-size:.72rem;color:${drivewayAdequate ? '#15803d' : '#dc2626'}">${drivewayAdequate ? '&#10003; Meets 6.0m Hydraulic Access' : '&#10005; Below 6m Mandate'}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      function escapeHtml(str) {
-        if (!str) return "";
-        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-      }
-
-      document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
-
-      guard("official").then(user => {
-        loadApplications();
-        runFireCalc();
-      });
+      document.addEventListener("DOMContentLoaded", initFirePortal);
     </script>
   </body>
 </html>

@@ -182,13 +182,39 @@ try {
 try {
   db.exec("ALTER TABLE users ADD COLUMN banned_at TEXT;");
 } catch (_) {}
-// Sequential pipeline columns
+// Sequential & parallel pipeline columns
 try {
   db.exec("ALTER TABLE applications ADD COLUMN current_stage TEXT DEFAULT 'mpcb';");
 } catch (_) {}
 try {
   db.exec("ALTER TABLE applications ADD COLUMN stage_statuses TEXT DEFAULT '{}';");
 } catch (_) {}
+try {
+  db.exec("ALTER TABLE applications ADD COLUMN hazard_level TEXT DEFAULT 'Low Risk';");
+} catch (_) {}
+try {
+  db.exec("ALTER TABLE documents ADD COLUMN plan_type TEXT;");
+} catch (_) {}
+
+function determinePlanType(docType, explicitType) {
+  if (explicitType && ["environmental_plan", "civil_plan", "factory_safety_plan", "fire_safety_plan"].includes(explicitType)) {
+    return explicitType;
+  }
+  const lower = String(docType || "").toLowerCase();
+  if (lower.includes("environment") || lower.includes("effluent") || lower.includes("etp") || lower.includes("water balance") || lower.includes("air emission")) {
+    return "environmental_plan";
+  }
+  if (lower.includes("civil") || lower.includes("site master") || lower.includes("building") || lower.includes("midc") || lower.includes("layout")) {
+    return "civil_plan";
+  }
+  if (lower.includes("factory") || lower.includes("dish") || lower.includes("safety plan") || lower.includes("worker") || lower.includes("machinery")) {
+    return "factory_safety_plan";
+  }
+  if (lower.includes("fire") || lower.includes("hydrant") || lower.includes("evacuation") || lower.includes("sprinkler")) {
+    return "fire_safety_plan";
+  }
+  return "supporting_doc";
+}
 
 // Seed Default Accounts & Sample Demo Data for Maharashtra State Innovation Society & Departments
 function seedInitialData() {
@@ -1716,11 +1742,16 @@ app.post("/api/applications", auth, (req, res) => {
       waterUse,
       electricity,
       hazardous,
+      hazardLevel: rawHazardLevel,
       location,
       district,
       projectCost,
       employmentPotential,
     } = req.body;
+
+    const hazardLevel =
+      rawHazardLevel ||
+      (hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
 
     const evaluation = evaluateRegulatoryChecklist({
       industryCategory,
@@ -1734,33 +1765,43 @@ app.post("/api/applications", auth, (req, res) => {
     const seq = String(Date.now()).slice(-5);
     const appNo = `MH/MSInS/2026/${seq}`;
 
+    // Phase 1: MPCB Environmental Review first; Phase 2: MIDC, DISH, Fire parallel; Phase 3: MSInS Apex
     const parallelStatus = {
-      midc: {
-        status: "Under Review",
-        remarks: "Plot plan under verification",
-        updated: new Date().toISOString(),
-      },
       mpcb: {
         status:
           evaluation.riskTier === "Red"
             ? "In-depth Scrutiny"
-            : "Fast Track Review",
-        remarks: "CTE documentation pending review",
+            : "Under Scrutiny",
+        phase: 1,
+        remarks:
+          "Phase 1: Environmental Plan & Effluent Scheme pending review by Environment Officer (MPCB)",
         updated: new Date().toISOString(),
       },
-      fire: {
-        status: "Under Review",
-        remarks: "Initial inspection pending",
+      midc: {
+        status: "Waiting for Environmental Clearance",
+        phase: 2,
+        remarks:
+          "Civil infrastructure plan queued for Phase 2 simultaneous scrutiny",
         updated: new Date().toISOString(),
       },
       dish: {
-        status: "In Progress",
-        remarks: "Safety blueprint uploaded",
+        status: "Waiting for Environmental Clearance",
+        phase: 2,
+        remarks: `Factory safety plan (${hazardLevel}) queued for Phase 2 simultaneous scrutiny`,
         updated: new Date().toISOString(),
       },
-      msedcl: {
-        status: "Under Review",
-        remarks: "Technical feasibility assessment",
+      fire: {
+        status: "Waiting for Environmental Clearance",
+        phase: 2,
+        remarks:
+          "Fire protection & life safety plan queued for Phase 2 simultaneous scrutiny",
+        updated: new Date().toISOString(),
+      },
+      msins: {
+        status: "Pending Department Clearances",
+        phase: 3,
+        remarks:
+          "Final single-window consolidated sanction awaiting departmental clearances",
         updated: new Date().toISOString(),
       },
     };
@@ -1770,17 +1811,18 @@ app.post("/api/applications", auth, (req, res) => {
         `
       INSERT INTO applications (
         user_id, application_no, company_name, registration_no, industry_category,
-        land_size, water_use, electricity, hazardous, location, district,
+        land_size, water_use, electricity, hazardous, hazard_level, location, district,
         project_cost, employment_potential, msme_category, risk_tier, status,
         clearances_json, parallel_status_json, current_stage, stage_statuses
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'In Progress', ?, ?, 'mpcb', '{}')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'In Progress', ?, ?, 'mpcb', '{}')
     `,
       )
       .run(
         req.session.user.id,
         appNo,
-        user?.company_name || req.session.user.companyName || "Industrial Unit",
-        user?.registration_no ||
+        req.body.companyName || user?.company_name || req.session.user.companyName || "Industrial Unit",
+        req.body.registrationNo ||
+          user?.registration_no ||
           req.session.user.registrationNo ||
           "GSTIN-PENDING",
         industryCategory || "Light Engineering",
@@ -1788,6 +1830,7 @@ app.post("/api/applications", auth, (req, res) => {
         parseFloat(waterUse) || 10.0,
         parseFloat(electricity) || 100.0,
         hazardous ? 1 : 0,
+        hazardLevel,
         location || "Industrial Estate",
         district || user?.district || "Pune",
         parseFloat(projectCost) || 5.0,
@@ -1804,6 +1847,7 @@ app.post("/api/applications", auth, (req, res) => {
       applicationNo: appNo,
       msmeCategory: evaluation.msme,
       riskTier: evaluation.riskTier,
+      hazardLevel,
       clearances: evaluation.clearances,
       schemes: evaluation.schemes,
     });
@@ -1818,7 +1862,7 @@ app.post("/api/applications", auth, (req, res) => {
 app.get("/api/applications", auth, (req, res) => {
   try {
     if (req.session.user.role === "official") {
-      const { status, risk_tier, district, search } = req.query;
+      const { status, risk_tier, district, search, company } = req.query;
       const deptCode = req.session.user.deptCode;
       const isApex = req.session.user.isApex;
 
@@ -1832,18 +1876,23 @@ app.get("/api/applications", auth, (req, res) => {
 
       // Departmental visibility logic:
       if (!isApex && deptCode && deptCode !== "msins") {
+        const isParallelDept = ["midc", "dish", "fire"].includes(deptCode);
+        const activeStageCondition = isParallelDept
+          ? "a.current_stage = 'parallel_scrutiny'"
+          : "a.current_stage = 'mpcb'";
+
         if (status === "Approved") {
           query += " AND (a.stage_statuses LIKE ? OR a.status = 'Approved')";
           params.push(`%"${deptCode}":{"decision":"Approved"%`);
         } else if (status === "In Progress" || status === "Flagged") {
-          query += " AND a.current_stage = ? AND a.status = ?";
+          query += ` AND (${activeStageCondition} OR a.current_stage = ?) AND a.status = ?`;
           params.push(deptCode, status);
         } else if (status === "Rejected") {
-          query += " AND (a.current_stage = ? OR a.stage_statuses LIKE ?) AND a.status = 'Rejected'";
+          query += ` AND (${activeStageCondition} OR a.current_stage = ? OR a.stage_statuses LIKE ?) AND a.status = 'Rejected'`;
           params.push(deptCode, `%"${deptCode}":{"decision":"Rejected"%`);
         } else {
-          // "all" or default: active at this stage, plus historical dossiers processed by this department
-          query += " AND (a.current_stage = ? OR a.stage_statuses LIKE ?)";
+          // "all" or default: active at this department's phase, plus historical dossiers processed by this department
+          query += ` AND (${activeStageCondition} OR a.current_stage = ? OR a.stage_statuses LIKE ?)`;
           params.push(deptCode, `%"${deptCode}"%`);
         }
       } else if (!isApex && deptCode === "msins") {
@@ -1867,11 +1916,12 @@ app.get("/api/applications", auth, (req, res) => {
         query += " AND a.district = ?";
         params.push(district);
       }
-      if (search) {
+      const searchKey = search || company;
+      if (searchKey) {
         query +=
-          " AND (a.application_no LIKE ? OR a.company_name LIKE ? OR a.location LIKE ?)";
-        const like = `%${search}%`;
-        params.push(like, like, like);
+          " AND (a.application_no LIKE ? OR a.company_name LIKE ? OR a.location LIKE ? OR a.registration_no LIKE ?)";
+        const like = `%${String(searchKey).trim()}%`;
+        params.push(like, like, like, like);
       }
 
       query += " ORDER BY a.created_at DESC";
@@ -1940,13 +1990,21 @@ app.get("/api/applications/:id", auth, (req, res) => {
     const documents = db
       .prepare(
         `
-      SELECT id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, created_at
+      SELECT id, document_type, plan_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, created_at
       FROM documents
       WHERE application_id = ?
       ORDER BY created_at ASC
     `,
       )
       .all(appId);
+
+    // Map plans for instant department scrutiny
+    const plans = {
+      environmental: documents.find((d) => d.plan_type === "environmental_plan") || null,
+      civil: documents.find((d) => d.plan_type === "civil_plan") || null,
+      factorySafety: documents.find((d) => d.plan_type === "factory_safety_plan") || null,
+      fireSafety: documents.find((d) => d.plan_type === "fire_safety_plan") || null,
+    };
 
     // Fetch queries
     const queries = db
@@ -1982,13 +2040,32 @@ app.get("/api/applications/:id", auth, (req, res) => {
       industryCategory: a.industry_category,
     });
 
+    // Department remarks convenience map
+    const departmentRemarks = {
+      mpcb: stageStatuses.mpcb?.remarks || parallelStatus.mpcb?.remarks || "",
+      midc: stageStatuses.midc?.remarks || parallelStatus.midc?.remarks || "",
+      dish: stageStatuses.dish?.remarks || parallelStatus.dish?.remarks || "",
+      fire: stageStatuses.fire?.remarks || parallelStatus.fire?.remarks || "",
+      msins: stageStatuses.msins?.remarks || "",
+    };
+
+    // Enrich plans with file_name alias
+    for (const key of Object.keys(plans)) {
+      if (plans[key]) {
+        plans[key].file_name = plans[key].original_name;
+      }
+    }
+
     res.json({
       ...a,
+      hazardLevel: a.hazard_level || (a.hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General"),
       clearances,
       parallelStatus,
       stageStatuses,
+      departmentRemarks,
       currentStage: a.current_stage || "mpcb",
-      documents,
+      documents: documents.map(d => ({ ...d, file_name: d.original_name })),
+      plans,
       queries,
       inspections,
       eligibleSchemes: schemesInfo.schemes,
@@ -2044,12 +2121,13 @@ app.post(
         }
       }
 
+      const planType = determinePlanType(req.body.documentType, req.body.planType);
       const info = db
         .prepare(
           `
       INSERT INTO documents (
-        application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
+        application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, plan_type
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
     `,
         )
         .run(
@@ -2060,6 +2138,7 @@ app.post(
           req.file.filename,
           req.file.mimetype,
           req.file.size,
+          planType,
         );
 
       res.json({
@@ -2067,6 +2146,7 @@ app.post(
         id: info.lastInsertRowid,
         originalName: req.file.originalname,
         documentType: req.body.documentType,
+        planType,
         size: req.file.size,
         mimeType: req.file.mimetype,
         message: "Document stored securely in the industrial vault.",
@@ -2095,7 +2175,7 @@ app.get("/api/applications/:id/documents", auth, (req, res) => {
     const docs = db
       .prepare(
         `
-      SELECT id, document_type, original_name, mime_type, size, verification_status, officer_remarks, created_at
+      SELECT id, document_type, plan_type, original_name, mime_type, size, verification_status, officer_remarks, created_at
       FROM documents
       WHERE application_id = ?
       ORDER BY created_at ASC
@@ -2116,7 +2196,7 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
     const d = db
       .prepare(
         `
-      SELECT d.*, a.user_id as owner_id
+      SELECT d.*, a.user_id as app_owner
       FROM documents d
       JOIN applications a ON a.id = d.application_id
       WHERE d.id = ?
@@ -2124,36 +2204,35 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
       )
       .get(docId);
 
-    if (!d) {
-      return res.status(404).send("Document not found in storage vault.");
-    }
+    if (!d) return res.status(404).send("Document not found in vault.");
 
     if (
       req.session.user.role !== "official" &&
-      d.owner_id !== req.session.user.id
+      d.app_owner !== req.session.user.id
     ) {
       return res
         .status(403)
-        .send(
-          "Access denied. You do not have permissions to view this document.",
-        );
+        .send("Access Denied: You do not possess clearance for this document.");
     }
 
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
-      return res.status(404).send("File missing on disk.");
+      return res
+        .status(404)
+        .send("Physical file is missing from the server vault.");
     }
 
-    // Send file inline with correct content-type so browser iframe / img renders it!
-    res.setHeader("Content-Type", d.mime_type || "application/pdf");
+    res.setHeader(
+      "Content-Type",
+      d.mime_type || "application/octet-stream",
+    );
     res.setHeader(
       "Content-Disposition",
       `inline; filename="${encodeURIComponent(d.original_name)}"`,
     );
-    res.sendFile(filePath);
-  } catch (err) {
-    console.error("Error viewing document:", err);
-    res.status(500).send("Internal error displaying document.");
+    fs.createReadStream(filePath).pipe(res);
+  } catch (e) {
+    res.status(500).send("Document preview error: " + e.message);
   }
 });
 
@@ -2161,29 +2240,24 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
 app.get("/api/documents/:id", auth, (req, res) => {
   try {
     const d = db
-      .prepare(
-        `
-      SELECT d.*, a.user_id as owner_id
-      FROM documents d
-      JOIN applications a ON a.id = d.application_id
-      WHERE d.id = ?
-    `,
-      )
+      .prepare("SELECT * FROM documents WHERE id=?")
       .get(req.params.id);
-
     if (!d) return res.status(404).json({ error: "Document not found" });
+
+    const a = db
+      .prepare("SELECT user_id FROM applications WHERE id=?")
+      .get(d.application_id);
     if (
       req.session.user.role !== "official" &&
-      d.owner_id !== req.session.user.id
+      a &&
+      a.user_id !== req.session.user.id
     ) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
-      return res
-        .status(404)
-        .json({ error: "File not found on server storage" });
+      return res.status(404).json({ error: "File not found" });
     }
 
     res.download(filePath, d.original_name);
@@ -2214,17 +2288,20 @@ app.patch("/api/documents/:id/verify", auth, official, (req, res) => {
 // WORKFLOW, QUERIES & INSPECTION ROUTES
 // ==========================================
 
-// =============================================
-// SEQUENTIAL PIPELINE STAGE DECISION (PRIMARY)
-// =============================================
-// Pipeline order: mpcb → midc → dish → fire → msins → completed
-const PIPELINE_STAGES = ["mpcb", "midc", "dish", "fire", "msins"];
+// =================================================================
+// 3-PHASE STATUTORY PIPELINE DECISION ENGINE
+// Phase 1: MPCB Environmental Review first
+// Phase 2: Simultaneous Departmental Scrutiny (MIDC, DISH, Fire)
+// Phase 3: Final Consolidated Clearance by MSInS Apex Officer
+// =================================================================
+const PIPELINE_STAGES = ["mpcb", "parallel_scrutiny", "msins"];
 const STAGE_LABELS = {
   mpcb: "MPCB (Environmental Clearance)",
   midc: "MIDC (Civil & Infrastructure)",
   dish: "DISH (Factory Safety)",
   fire: "Maharashtra Fire Services",
-  msins: "MSInS Apex Officer (Final Approval)",
+  parallel_scrutiny: "Simultaneous Departmental Scrutiny (MIDC, DISH, Fire)",
+  msins: "MSInS Apex Officer (Final Single-Window Approval)",
 };
 
 app.post(
@@ -2234,7 +2311,7 @@ app.post(
   (req, res) => {
     try {
       const appId = req.params.id;
-      const { decision, remarks } = req.body;
+      const { decision, remarks, targetDept } = req.body;
 
       if (!decision || !["Approved", "Rejected", "Query"].includes(decision)) {
         return res.status(400).json({
@@ -2259,11 +2336,36 @@ app.post(
       const officerDept = req.session.user.deptCode;
       const isApex = req.session.user.isApex;
 
-      // Authorization: officer can only act on their own stage (or apex sees all)
-      if (!isApex && officerDept !== currentStage) {
-        return res.status(403).json({
-          error: `This application is currently at the ${STAGE_LABELS[currentStage] || currentStage.toUpperCase()} stage. You (${(officerDept || "").toUpperCase()}) are not authorized to act on it yet.`,
-        });
+      // Determine which departmental clearance is being decided
+      let activeDept = officerDept;
+      if (isApex && targetDept) {
+        activeDept = targetDept;
+      }
+
+      // Authorization verification based on current phase:
+      if (currentStage === "mpcb") {
+        if (!isApex && officerDept !== "mpcb") {
+          return res.status(403).json({
+            error: "This application is in Phase 1 (Environmental Review). It must be approved by the Environment Officer (MPCB) before other departments can review.",
+          });
+        }
+        activeDept = "mpcb";
+      } else if (currentStage === "parallel_scrutiny") {
+        if (!isApex && !["midc", "dish", "fire"].includes(officerDept)) {
+          return res.status(403).json({
+            error: `Access Denied: You belong to ${(officerDept || "").toUpperCase()} and are not authorized for Phase 2 simultaneous scrutiny.`,
+          });
+        }
+        if (!activeDept || !["midc", "dish", "fire"].includes(activeDept)) {
+          activeDept = officerDept || "midc";
+        }
+      } else if (currentStage === "msins") {
+        if (!isApex && officerDept !== "msins") {
+          return res.status(403).json({
+            error: "Access Denied: Final Single-Window Clearance is strictly reserved for the Department Officer (MSInS / Industries Apex Authority).",
+          });
+        }
+        activeDept = "msins";
       }
 
       let stageStatuses = {};
@@ -2272,33 +2374,35 @@ app.post(
       } catch (_) {}
 
       // Record this stage's decision
-      stageStatuses[currentStage] = {
+      stageStatuses[activeDept] = {
         decision,
-        remarks: (remarks || "").trim() || `${decision} by ${STAGE_LABELS[currentStage]}.`,
+        remarks:
+          (remarks || "").trim() ||
+          `${decision} by ${STAGE_LABELS[activeDept] || activeDept.toUpperCase()}.`,
         officer: req.session.user.contactPerson || req.session.user.email,
-        officer_dept: STAGE_LABELS[currentStage],
+        officer_dept: STAGE_LABELS[activeDept] || activeDept.toUpperCase(),
         decided_at: new Date().toISOString(),
       };
 
-      // Synchronize parallel_status_json and clearances_json so tracker and verification pages stay in sync
+      // Synchronize parallel_status_json
       let parallelStatus = {};
       try {
         parallelStatus = JSON.parse(appRow.parallel_status_json || "{}");
       } catch (_) {}
 
-      if (!parallelStatus[currentStage]) {
-        parallelStatus[currentStage] = {};
+      if (!parallelStatus[activeDept]) {
+        parallelStatus[activeDept] = {};
       }
-      parallelStatus[currentStage].status =
+      parallelStatus[activeDept].status =
         decision === "Approved"
           ? "Approved"
           : decision === "Rejected"
             ? "Deficient"
             : "Query Raised";
-      if (remarks) parallelStatus[currentStage].remarks = remarks.trim();
-      parallelStatus[currentStage].officer =
+      if (remarks) parallelStatus[activeDept].remarks = remarks.trim();
+      parallelStatus[activeDept].officer =
         req.session.user.contactPerson || req.session.user.email;
-      parallelStatus[currentStage].updated = new Date().toISOString();
+      parallelStatus[activeDept].updated = new Date().toISOString();
 
       let clearances = [];
       try {
@@ -2307,8 +2411,8 @@ app.post(
 
       clearances = clearances.map((c) => {
         if (
-          c.taskDept === currentStage ||
-          (!c.taskDept && (c.dept || "").toLowerCase().includes(currentStage))
+          c.taskDept === activeDept ||
+          (!c.taskDept && (c.dept || "").toLowerCase().includes(activeDept))
         ) {
           return {
             ...c,
@@ -2325,15 +2429,22 @@ app.post(
 
       if (decision === "Rejected") {
         // Rejection freezes the pipeline permanently
-        db.prepare(`
+        db.prepare(
+          `
           UPDATE applications
           SET status = 'Rejected', stage_statuses = ?, parallel_status_json = ?, clearances_json = ?, updated_at = CURRENT_TIMESTAMP
           WHERE id = ?
-        `).run(JSON.stringify(stageStatuses), JSON.stringify(parallelStatus), JSON.stringify(clearances), appId);
+        `,
+        ).run(
+          JSON.stringify(stageStatuses),
+          JSON.stringify(parallelStatus),
+          JSON.stringify(clearances),
+          appId,
+        );
 
         return res.json({
           ok: true,
-          message: `Application rejected at ${STAGE_LABELS[currentStage]} stage. Pipeline halted.`,
+          message: `Application rejected by ${STAGE_LABELS[activeDept] || activeDept}. Pipeline halted.`,
           currentStage,
           nextStage: null,
           status: "Rejected",
@@ -2341,64 +2452,107 @@ app.post(
       }
 
       if (decision === "Query") {
-        // Raise a query (flags application without advancing stage)
         if (!remarks || !remarks.trim()) {
           return res.status(400).json({
             error: "A query message is required when raising a query.",
           });
         }
-        db.prepare(`
+        db.prepare(
+          `
           INSERT INTO queries (application_id, officer_id, message, status)
           VALUES (?, ?, ?, 'Open')
-        `).run(appId, req.session.user.id, remarks.trim());
+        `,
+        ).run(appId, req.session.user.id, remarks.trim());
 
-        db.prepare(`
+        db.prepare(
+          `
           UPDATE applications
           SET status = 'Flagged', parallel_status_json = ?, clearances_json = ?, updated_at = CURRENT_TIMESTAMP
           WHERE id = ?
-        `).run(JSON.stringify(parallelStatus), JSON.stringify(clearances), appId);
+        `,
+        ).run(
+          JSON.stringify(parallelStatus),
+          JSON.stringify(clearances),
+          appId,
+        );
 
         return res.json({
           ok: true,
-          message: "Query raised. Applicant has been notified to respond.",
+          message: `Query raised by ${STAGE_LABELS[activeDept] || activeDept}. Applicant has been notified to respond.`,
           currentStage,
           status: "Flagged",
         });
       }
 
-      // Decision = "Approved" — advance to next stage
-      const currentIdx = PIPELINE_STAGES.indexOf(currentStage);
-      const nextStage = PIPELINE_STAGES[currentIdx + 1] || "completed";
+      // DECISION = "Approved" -> Handle Stage Progression
+      let nextStage = currentStage;
+      let newOverallStatus = "In Progress";
+      let stageMsg = `Clearance approved by ${STAGE_LABELS[activeDept] || activeDept}.`;
 
-      let newStatus = "In Progress";
-      if (nextStage === "completed") {
-        newStatus = "Approved";
+      if (currentStage === "mpcb") {
+        // Phase 1 complete -> Advance to Phase 2: parallel_scrutiny
+        nextStage = "parallel_scrutiny";
+        if (parallelStatus.midc) parallelStatus.midc.status = "Under Scrutiny";
+        if (parallelStatus.dish) parallelStatus.dish.status = "Under Scrutiny";
+        if (parallelStatus.fire) parallelStatus.fire.status = "Under Scrutiny";
+        stageMsg =
+          "Phase 1 Environmental clearance granted by MPCB. Application forwarded simultaneously to MIDC Civil, DISH Factory Safety, and Fire Services.";
+      } else if (currentStage === "parallel_scrutiny") {
+        // Check if all 3 parallel departments have approved
+        const midcApproved = stageStatuses.midc?.decision === "Approved";
+        const dishApproved = stageStatuses.dish?.decision === "Approved";
+        const fireApproved = stageStatuses.fire?.decision === "Approved";
+
+        if (midcApproved && dishApproved && fireApproved) {
+          nextStage = "msins";
+          if (parallelStatus.msins) {
+            parallelStatus.msins.status = "Pending Final Apex Clearance";
+          }
+          stageMsg =
+            "All confirming departmental clearances (MIDC Civil, DISH Factory Safety, Fire Services) secured! Dossier forwarded to Department Officer (MSInS Apex) for final clearance.";
+        } else {
+          nextStage = "parallel_scrutiny";
+          const pending = [];
+          if (!midcApproved) pending.push("MIDC Civil");
+          if (!dishApproved) pending.push("DISH Safety");
+          if (!fireApproved) pending.push("Fire Services");
+          stageMsg = `Approved by ${STAGE_LABELS[activeDept] || activeDept}. Awaiting simultaneous clearance from: ${pending.join(", ")}.`;
+        }
+      } else if (currentStage === "msins") {
+        // Phase 3 complete -> Final approval
+        nextStage = "completed";
+        newOverallStatus = "Approved";
+        if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
+        stageMsg =
+          "Final Single-Window Statutory Clearance granted by MSInS Apex Authority. Application is officially Approved.";
       }
 
-      db.prepare(`
+      db.prepare(
+        `
         UPDATE applications
         SET current_stage = ?, stage_statuses = ?, parallel_status_json = ?, clearances_json = ?, status = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `).run(
-        nextStage === "completed" ? "completed" : nextStage,
+      `,
+      ).run(
+        nextStage,
         JSON.stringify(stageStatuses),
         JSON.stringify(parallelStatus),
         JSON.stringify(clearances),
-        newStatus,
+        newOverallStatus,
         appId,
       );
 
-      console.log(`[Pipeline] App ${appRow.application_no}: ${currentStage} → ${nextStage} (${newStatus})`);
+      console.log(
+        `[Pipeline 3-Phase] App ${appRow.application_no}: ${currentStage} → ${nextStage} (${newOverallStatus}) by ${activeDept}`,
+      );
 
       res.json({
         ok: true,
-        message: nextStage === "completed"
-          ? `Final approval granted by MSInS Apex. Application is now Approved.`
-          : `Approved at ${STAGE_LABELS[currentStage]}. Forwarded to ${STAGE_LABELS[nextStage] || nextStage}.`,
+        message: stageMsg,
         currentStage,
         nextStage,
-        status: newStatus,
-        stageStatuses,
+        activeDept,
+        status: newOverallStatus,
       });
     } catch (err) {
       console.error("Stage decision error:", err);
@@ -2407,31 +2561,98 @@ app.post(
   },
 );
 
-// Also add a GET route so officers can check which stage an application is at
+// Pipeline Status Endpoint
 app.get("/api/applications/:id/pipeline", auth, (req, res) => {
   try {
     const a = db
-      .prepare("SELECT id, application_no, company_name, status, current_stage, stage_statuses FROM applications WHERE id=?")
+      .prepare(
+        "SELECT id, application_no, company_name, status, current_stage, stage_statuses, parallel_status_json FROM applications WHERE id=?",
+      )
       .get(req.params.id);
     if (!a) return res.status(404).json({ error: "Application not found" });
 
     let stageStatuses = {};
-    try { stageStatuses = JSON.parse(a.stage_statuses || "{}"); } catch (_) {}
+    try {
+      stageStatuses = JSON.parse(a.stage_statuses || "{}");
+    } catch (_) {}
 
-    const stages = PIPELINE_STAGES.map((s) => ({
-      code: s,
-      label: STAGE_LABELS[s],
-      status: stageStatuses[s]
-        ? stageStatuses[s].decision
-        : a.current_stage === s
-          ? "Pending"
-          : PIPELINE_STAGES.indexOf(s) < PIPELINE_STAGES.indexOf(a.current_stage || "mpcb")
-            ? "Approved"
-            : "Waiting",
-      remarks: stageStatuses[s]?.remarks || null,
-      officer: stageStatuses[s]?.officer || null,
-      decided_at: stageStatuses[s]?.decided_at || null,
-    }));
+    const curr = a.current_stage || "mpcb";
+
+    const stages = [
+      {
+        code: "mpcb",
+        phase: 1,
+        label: "MPCB (Environmental Clearance)",
+        status: stageStatuses.mpcb
+          ? stageStatuses.mpcb.decision
+          : curr === "mpcb"
+            ? "Pending"
+            : "Approved",
+        remarks: stageStatuses.mpcb?.remarks || null,
+        officer: stageStatuses.mpcb?.officer || null,
+        decided_at: stageStatuses.mpcb?.decided_at || null,
+      },
+      {
+        code: "midc",
+        phase: 2,
+        label: "MIDC (Civil & Infrastructure)",
+        status: stageStatuses.midc
+          ? stageStatuses.midc.decision
+          : curr === "mpcb"
+            ? "Waiting"
+            : curr === "parallel_scrutiny"
+              ? "Under Review"
+              : "Approved",
+        remarks: stageStatuses.midc?.remarks || null,
+        officer: stageStatuses.midc?.officer || null,
+        decided_at: stageStatuses.midc?.decided_at || null,
+      },
+      {
+        code: "dish",
+        phase: 2,
+        label: "DISH (Factory Safety)",
+        status: stageStatuses.dish
+          ? stageStatuses.dish.decision
+          : curr === "mpcb"
+            ? "Waiting"
+            : curr === "parallel_scrutiny"
+              ? "Under Review"
+              : "Approved",
+        remarks: stageStatuses.dish?.remarks || null,
+        officer: stageStatuses.dish?.officer || null,
+        decided_at: stageStatuses.dish?.decided_at || null,
+      },
+      {
+        code: "fire",
+        phase: 2,
+        label: "Maharashtra Fire Services",
+        status: stageStatuses.fire
+          ? stageStatuses.fire.decision
+          : curr === "mpcb"
+            ? "Waiting"
+            : curr === "parallel_scrutiny"
+              ? "Under Review"
+              : "Approved",
+        remarks: stageStatuses.fire?.remarks || null,
+        officer: stageStatuses.fire?.officer || null,
+        decided_at: stageStatuses.fire?.decided_at || null,
+      },
+      {
+        code: "msins",
+        phase: 3,
+        label: "MSInS Apex Officer (Final Approval)",
+        status: stageStatuses.msins
+          ? stageStatuses.msins.decision
+          : curr === "msins"
+            ? "Pending"
+            : a.status === "Approved"
+              ? "Approved"
+              : "Waiting",
+        remarks: stageStatuses.msins?.remarks || null,
+        officer: stageStatuses.msins?.officer || null,
+        decided_at: stageStatuses.msins?.decided_at || null,
+      },
+    ];
 
     res.json({
       applicationNo: a.application_no,
@@ -2444,7 +2665,6 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
     res.status(500).json({ error: "Failed to fetch pipeline status" });
   }
 });
-
 
 app.patch(
   "/api/applications/:id/department-clearance",
@@ -2461,7 +2681,6 @@ app.patch(
         });
       }
 
-      // Authorization check: Only officer of that department or Apex officer can update this department's milestone
       const officerDept = req.session.user.deptCode;
       const isApex = req.session.user.isApex;
 
@@ -2517,15 +2736,25 @@ app.patch(
           decided_at: new Date().toISOString(),
         };
 
-        if (currentStage === deptCode) {
-          const currentIdx = PIPELINE_STAGES.indexOf(currentStage);
-          const nextStage = PIPELINE_STAGES[currentIdx + 1] || "completed";
-          currentStage = nextStage;
-          if (nextStage === "completed") {
-            overallStatus = "Approved";
+        if (currentStage === "mpcb" && deptCode === "mpcb") {
+          currentStage = "parallel_scrutiny";
+          if (parallelStatus.midc) parallelStatus.midc.status = "Under Scrutiny";
+          if (parallelStatus.dish) parallelStatus.dish.status = "Under Scrutiny";
+          if (parallelStatus.fire) parallelStatus.fire.status = "Under Scrutiny";
+        } else if (currentStage === "parallel_scrutiny" && ["midc", "dish", "fire"].includes(deptCode)) {
+          const midcOk = stageStatuses.midc?.decision === "Approved";
+          const dishOk = stageStatuses.dish?.decision === "Approved";
+          const fireOk = stageStatuses.fire?.decision === "Approved";
+          if (midcOk && dishOk && fireOk) {
+            currentStage = "msins";
+            if (parallelStatus.msins) parallelStatus.msins.status = "Pending Final Apex Clearance";
           }
+        } else if (currentStage === "msins" && (deptCode === "msins" || isApex)) {
+          currentStage = "completed";
+          overallStatus = "Approved";
+          if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
         }
-      } else if (status === "Rejected" && currentStage === deptCode) {
+      } else if (status === "Rejected") {
         stageStatuses[deptCode] = {
           decision: "Rejected",
           remarks: remarks || `Rejected by ${STAGE_LABELS[deptCode] || deptCode.toUpperCase()}`,
@@ -2549,31 +2778,29 @@ app.patch(
           if (c.taskDept === deptCode) {
             return { ...c, status };
           }
-          return c;
-        }
-        const cDept = (c.dept || "").toLowerCase();
-        const cName = (c.name || "").toLowerCase();
-        const matches = deptMatches[deptCode] || [deptCode];
-        const isMatch = matches.some(
-          (m) => cDept.includes(m) || cName.includes(m),
-        );
-        if (isMatch) {
-          return { ...c, status };
+        } else {
+          const keywords = deptMatches[deptCode] || [deptCode];
+          const matches = keywords.some((k) =>
+            (c.dept || "").toLowerCase().includes(k),
+          );
+          if (matches) {
+            return { ...c, status };
+          }
         }
         return c;
       });
 
       db.prepare(
         `
-      UPDATE applications
-      SET parallel_status_json = ?, clearances_json = ?, stage_statuses = ?, current_stage = ?, status = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `,
+        UPDATE applications
+        SET current_stage = ?, stage_statuses = ?, parallel_status_json = ?, clearances_json = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `,
       ).run(
+        currentStage,
+        JSON.stringify(stageStatuses),
         JSON.stringify(parallelStatus),
         JSON.stringify(clearances),
-        JSON.stringify(stageStatuses),
-        currentStage,
         overallStatus,
         appId,
       );
