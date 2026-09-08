@@ -187,7 +187,7 @@ async function inspectSafetyDossier(id) {
     // Render Factory Safety Plan PDF
     const safetyPlan =
       data.plans?.factorySafety ||
-      data.documents.find(
+      (data.documents || []).find(
         (d) =>
           d.plan_type === "factory_safety_plan" ||
           d.document_type?.toLowerCase().includes("factory") ||

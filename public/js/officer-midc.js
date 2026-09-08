@@ -180,7 +180,7 @@ async function inspectCivilDossier(id) {
     // Render Civil Plan PDF
     const civilPlan =
       data.plans?.civil ||
-      data.documents.find(
+      (data.documents || []).find(
         (d) =>
           d.plan_type === "civil_plan" ||
           d.document_type?.toLowerCase().includes("site") ||

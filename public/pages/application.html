@@ -125,6 +125,32 @@
             <!-- Unit Details -->
             <div class="formgrid">
               <label
+                >Enterprise / Company Name
+                <input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  placeholder="e.g. Sahyadri Precision Engineering Pvt Ltd"
+                  required
+                />
+                <div class="input-hint">Registered legal corporate entity in Maharashtra.</div>
+              </label>
+
+              <label
+                >Registration / GSTIN Number
+                <input
+                  id="registrationNo"
+                  name="registrationNo"
+                  type="text"
+                  placeholder="e.g. 27AABCS1429B1Z8"
+                  required
+                />
+                <div class="input-hint">15-character GSTIN or Udyam MSME Number.</div>
+              </label>
+            </div>
+
+            <div class="formgrid">
+              <label
                 >Industrial Sector
                 <select id="industryCategory" name="industryCategory">
                   <option value="Light Engineering">
@@ -798,6 +824,16 @@
 
       (async () => {
         const user = await guard("applicant");
+        if (user) {
+          if (user.companyName || user.company_name) {
+            const compEl = document.getElementById("companyName");
+            if (compEl) compEl.value = user.companyName || user.company_name;
+          }
+          if (user.registrationNo || user.registration_no) {
+            const regEl = document.getElementById("registrationNo");
+            if (regEl) regEl.value = user.registrationNo || user.registration_no;
+          }
+        }
         if (user && user.isBanned) {
           const banner = document.getElementById("banBanner");
           if (banner) {

@@ -189,7 +189,7 @@ async function inspectMpcbDossier(id) {
     // Render Environmental Plan PDF preview
     const envPlan =
       data.plans?.environmental ||
-      data.documents.find(
+      (data.documents || []).find(
         (d) =>
           d.plan_type === "environmental_plan" ||
           d.document_type?.toLowerCase().includes("effluent") ||

@@ -196,6 +196,15 @@ try {
   db.exec("ALTER TABLE documents ADD COLUMN plan_type TEXT;");
 } catch (_) {}
 
+// Normalize legacy application stages and document plan_types
+try {
+  db.prepare("UPDATE applications SET current_stage = 'parallel_scrutiny' WHERE current_stage IN ('midc', 'dish', 'fire')").run();
+  db.prepare("UPDATE documents SET plan_type = 'civil_plan' WHERE (document_type LIKE '%Site%' OR document_type LIKE '%Civil%' OR document_type LIKE '%Layout%') AND (plan_type IS NULL OR plan_type = '')").run();
+  db.prepare("UPDATE documents SET plan_type = 'environmental_plan' WHERE (document_type LIKE '%Effluent%' OR document_type LIKE '%Environment%' OR document_type LIKE '%Water%') AND (plan_type IS NULL OR plan_type = '')").run();
+  db.prepare("UPDATE documents SET plan_type = 'factory_safety_plan' WHERE (document_type LIKE '%Safety%' OR document_type LIKE '%Factory%' OR document_type LIKE '%Hazard%') AND (plan_type IS NULL OR plan_type = '')").run();
+  db.prepare("UPDATE documents SET plan_type = 'fire_safety_plan' WHERE (document_type LIKE '%Fire%' OR document_type LIKE '%Hydrant%' OR document_type LIKE '%Evacuation%') AND (plan_type IS NULL OR plan_type = '')").run();
+} catch (_) {}
+
 function determinePlanType(docType, explicitType) {
   if (explicitType && ["environmental_plan", "civil_plan", "factory_safety_plan", "fire_safety_plan"].includes(explicitType)) {
     return explicitType;
@@ -457,7 +466,7 @@ function seedInitialData() {
       ) VALUES (
         ?, 'MH/MSInS/2026/00142', 'Sahyadri Precision Engineering Pvt Ltd', '27AABCS1429B1Z8', 'Light Engineering',
         3.5, 25.0, 450.0, 0, 'Plot B-42, Chakan Industrial Area Phase II, Khed', 'Pune',
-        14.5, 120, 'Small', 'Orange', 'In Progress', ?, ?, 'midc', ?, datetime('now', '-3 days')
+        14.5, 120, 'Small', 'Orange', 'In Progress', ?, ?, 'parallel_scrutiny', ?, datetime('now', '-3 days')
       )
     `,
       )
@@ -465,18 +474,29 @@ function seedInitialData() {
 
     const appId1 = info1.lastInsertRowid;
 
-    // Create sample PDF in uploads
-    const sampleFilename = `sample_site_plan_${Date.now()}.pdf`;
-    const sampleFilePath = path.join(uploadsDir, sampleFilename);
-    const dummyPdfContent = `%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>/Contents 4 0 R>>endobj\n4 0 obj<</Length 186>>stream\nBT\n/F1 18 Tf\n70 700 Td\n(GOVERNMENT OF MAHARASHTRA - UDYOG SAMYOG) Tj\n0 -30 Td\n(APPLICANT: Sahyadri Precision Engineering Pvt Ltd) Tj\n0 -25 Td\n(DOCUMENT: Industrial Site Master Layout Plan - Plot B42 Chakan) Tj\n0 -25 Td\n(STATUS: Digitally Submitted for Single Window Clearance) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000010 00000 n \n0000000060 00000 n \n0000000117 00000 n \n0000000214 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n450\n%%EOF`;
-    fs.writeFileSync(sampleFilePath, dummyPdfContent);
+    // Helper to generate sample PDF files for the statutory blueprints
+    function seedDummyPdf(docTitle, docFilename) {
+      const storedName = `${docFilename.replace(/\.pdf$/, '')}_${Date.now()}_${Math.floor(Math.random()*1000)}.pdf`;
+      const filePath = path.join(uploadsDir, storedName);
+      const content = `%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>/Contents 4 0 R>>endobj\n4 0 obj<</Length 200>>stream\nBT\n/F1 16 Tf\n50 720 Td\n(GOVERNMENT OF MAHARASHTRA - SINGLE WINDOW SYSTEM) Tj\n0 -30 Td\n(ENTERPRISE: Sahyadri Precision Engineering Pvt Ltd) Tj\n0 -25 Td\n(DOCUMENT: ${docTitle}) Tj\n0 -25 Td\n(STATUTORY CLEARANCE: Verified & Digitally Authenticated) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000010 00000 n \n0000000060 00000 n \n0000000117 00000 n \n0000000214 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n460\n%%EOF`;
+      fs.writeFileSync(filePath, content);
+      return { storedName, size: Buffer.byteLength(content) };
+    }
 
-    db.prepare(
-      `
-      INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks)
-      VALUES (?, ?, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', ?, 'application/pdf', ?, 'Verified', 'Meets setback standards and MIDC roadway alignment')
-    `,
-    ).run(appId1, applicantId, sampleFilename, dummyPdfContent.length);
+    const envFile = seedDummyPdf("Environmental Management & ETP Scheme", "Chakan_Environmental_Plan.pdf");
+    const civilFile = seedDummyPdf("Industrial Site Master Layout Plan", "Chakan_Site_Layout_Plan.pdf");
+    const safetyFile = seedDummyPdf("Factory Safety & Machinery Layout Blueprint", "Chakan_Factory_Safety_Plan.pdf");
+    const fireFile = seedDummyPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
+
+    const insertDocStmt = db.prepare(`
+      INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, plan_type)
+      VALUES (?, ?, ?, ?, ?, 'application/pdf', ?, ?, ?, ?)
+    `);
+
+    insertDocStmt.run(appId1, applicantId, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', envFile.storedName, envFile.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan');
+    insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan');
+    insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan');
+    insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan');
 
     // Add query and scheduled inspection
     const officerRow = db
@@ -2000,10 +2020,38 @@ app.get("/api/applications/:id", auth, (req, res) => {
 
     // Map plans for instant department scrutiny
     const plans = {
-      environmental: documents.find((d) => d.plan_type === "environmental_plan") || null,
-      civil: documents.find((d) => d.plan_type === "civil_plan") || null,
-      factorySafety: documents.find((d) => d.plan_type === "factory_safety_plan") || null,
-      fireSafety: documents.find((d) => d.plan_type === "fire_safety_plan") || null,
+      environmental:
+        documents.find(
+          (d) =>
+            d.plan_type === "environmental_plan" ||
+            (d.document_type || "").toLowerCase().includes("effluent") ||
+            (d.document_type || "").toLowerCase().includes("environment") ||
+            (d.document_type || "").toLowerCase().includes("water"),
+        ) || null,
+      civil:
+        documents.find(
+          (d) =>
+            d.plan_type === "civil_plan" ||
+            (d.document_type || "").toLowerCase().includes("site") ||
+            (d.document_type || "").toLowerCase().includes("civil") ||
+            (d.document_type || "").toLowerCase().includes("layout"),
+        ) || null,
+      factorySafety:
+        documents.find(
+          (d) =>
+            d.plan_type === "factory_safety_plan" ||
+            (d.document_type || "").toLowerCase().includes("safety") ||
+            (d.document_type || "").toLowerCase().includes("factory") ||
+            (d.document_type || "").toLowerCase().includes("machinery"),
+        ) || null,
+      fireSafety:
+        documents.find(
+          (d) =>
+            d.plan_type === "fire_safety_plan" ||
+            (d.document_type || "").toLowerCase().includes("fire") ||
+            (d.document_type || "").toLowerCase().includes("hydrant") ||
+            (d.document_type || "").toLowerCase().includes("evacuation"),
+        ) || null,
     };
 
     // Fetch queries
@@ -2344,20 +2392,20 @@ app.post(
 
       // Authorization verification based on current phase:
       if (currentStage === "mpcb") {
-        if (!isApex && officerDept !== "mpcb") {
+        if (officerDept !== "mpcb" && (!isApex || targetDept !== "mpcb")) {
           return res.status(403).json({
             error: "This application is in Phase 1 (Environmental Review). It must be approved by the Environment Officer (MPCB) before other departments can review.",
           });
         }
         activeDept = "mpcb";
-      } else if (currentStage === "parallel_scrutiny") {
-        if (!isApex && !["midc", "dish", "fire"].includes(officerDept)) {
+      } else if (currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage)) {
+        if (!["midc", "dish", "fire"].includes(officerDept) && (!isApex || !["midc", "dish", "fire"].includes(targetDept))) {
           return res.status(403).json({
             error: `Access Denied: You belong to ${(officerDept || "").toUpperCase()} and are not authorized for Phase 2 simultaneous scrutiny.`,
           });
         }
         if (!activeDept || !["midc", "dish", "fire"].includes(activeDept)) {
-          activeDept = officerDept || "midc";
+          activeDept = targetDept || officerDept || "midc";
         }
       } else if (currentStage === "msins") {
         if (!isApex && officerDept !== "msins") {
@@ -2366,6 +2414,10 @@ app.post(
           });
         }
         activeDept = "msins";
+      } else {
+        return res.status(400).json({
+          error: `Application is not in an active scrutiny phase (current stage: "${currentStage}").`,
+        });
       }
 
       let stageStatuses = {};
@@ -2497,7 +2549,7 @@ app.post(
         if (parallelStatus.fire) parallelStatus.fire.status = "Under Scrutiny";
         stageMsg =
           "Phase 1 Environmental clearance granted by MPCB. Application forwarded simultaneously to MIDC Civil, DISH Factory Safety, and Fire Services.";
-      } else if (currentStage === "parallel_scrutiny") {
+      } else if (currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage)) {
         // Check if all 3 parallel departments have approved
         const midcApproved = stageStatuses.midc?.decision === "Approved";
         const dishApproved = stageStatuses.dish?.decision === "Approved";
@@ -2699,6 +2751,29 @@ app.patch(
           .json({ error: "Application dossier not found." });
       }
 
+      if (appRow.status === "Approved" || appRow.status === "Rejected") {
+        return res.status(400).json({
+          error: `Application is already ${appRow.status}. No further clearance updates can be made.`,
+        });
+      }
+
+      const activePhaseStage = appRow.current_stage || "mpcb";
+      if (["midc", "dish", "fire"].includes(deptCode) && activePhaseStage === "mpcb") {
+        return res.status(403).json({
+          error: "This application is in Phase 1 (Environmental Review). It must be approved by MPCB before Phase 2 departments can issue clearances.",
+        });
+      }
+      if (deptCode === "mpcb" && activePhaseStage !== "mpcb") {
+        return res.status(400).json({
+          error: "Phase 1 Environmental Review has already concluded for this application.",
+        });
+      }
+      if (deptCode === "msins" && activePhaseStage !== "msins") {
+        return res.status(403).json({
+          error: "MSInS Final Clearance can only be issued after Phase 1 and Phase 2 departmental reviews are complete.",
+        });
+      }
+
       let parallelStatus = {};
       try {
         parallelStatus = JSON.parse(appRow.parallel_status_json || "{}");
@@ -2741,13 +2816,15 @@ app.patch(
           if (parallelStatus.midc) parallelStatus.midc.status = "Under Scrutiny";
           if (parallelStatus.dish) parallelStatus.dish.status = "Under Scrutiny";
           if (parallelStatus.fire) parallelStatus.fire.status = "Under Scrutiny";
-        } else if (currentStage === "parallel_scrutiny" && ["midc", "dish", "fire"].includes(deptCode)) {
+        } else if ((currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage)) && ["midc", "dish", "fire"].includes(deptCode)) {
           const midcOk = stageStatuses.midc?.decision === "Approved";
           const dishOk = stageStatuses.dish?.decision === "Approved";
           const fireOk = stageStatuses.fire?.decision === "Approved";
           if (midcOk && dishOk && fireOk) {
             currentStage = "msins";
             if (parallelStatus.msins) parallelStatus.msins.status = "Pending Final Apex Clearance";
+          } else {
+            currentStage = "parallel_scrutiny";
           }
         } else if (currentStage === "msins" && (deptCode === "msins" || isApex)) {
           currentStage = "completed";
@@ -2839,22 +2916,62 @@ app.patch("/api/applications/:id/status", auth, official, (req, res) => {
       });
     }
 
-    if (parallelStatus) {
-      db.prepare(
-        `
-        UPDATE applications
-        SET status = ?, parallel_status_json = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `,
-      ).run(status, JSON.stringify(parallelStatus), appId);
+    if (status === "Approved") {
+      const appRow = db
+        .prepare("SELECT stage_statuses FROM applications WHERE id=?")
+        .get(appId);
+      let stageStatuses = {};
+      try {
+        stageStatuses = JSON.parse(appRow?.stage_statuses || "{}");
+      } catch (_) {}
+
+      if (!stageStatuses.msins) {
+        stageStatuses.msins = {
+          decision: "Approved",
+          remarks:
+            remarks ||
+            "Consolidated Single-Window Statutory Clearance & NOC issued by Directorate of Industries & MSInS (Apex Authority).",
+          officer: req.session.user.contactPerson || req.session.user.email,
+          officer_dept: "Directorate of Industries & MSInS",
+          decided_at: new Date().toISOString(),
+        };
+      }
+
+      if (parallelStatus) {
+        db.prepare(
+          `
+          UPDATE applications
+          SET status = 'Approved', current_stage = 'completed', stage_statuses = ?, parallel_status_json = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `,
+        ).run(JSON.stringify(stageStatuses), JSON.stringify(parallelStatus), appId);
+      } else {
+        db.prepare(
+          `
+          UPDATE applications
+          SET status = 'Approved', current_stage = 'completed', stage_statuses = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `,
+        ).run(JSON.stringify(stageStatuses), appId);
+      }
     } else {
-      db.prepare(
-        `
-        UPDATE applications
-        SET status = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `,
-      ).run(status, appId);
+      if (parallelStatus) {
+        db.prepare(
+          `
+          UPDATE applications
+          SET status = ?, parallel_status_json = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `,
+        ).run(status, JSON.stringify(parallelStatus), appId);
+      } else {
+        db.prepare(
+          `
+          UPDATE applications
+          SET status = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `,
+        ).run(status, appId);
+      }
     }
 
     res.json({ ok: true, message: `Application status updated to ${status}` });

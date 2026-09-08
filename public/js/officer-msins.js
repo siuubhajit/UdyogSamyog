@@ -287,7 +287,7 @@ async function inspectApexDossier(id) {
           title: "🌿 Environmental & ETP Plan (MPCB)",
           doc:
             data.plans?.environmental ||
-            data.documents.find(
+            (data.documents || []).find(
               (d) =>
                 d.plan_type === "environmental_plan" ||
                 d.document_type?.toLowerCase().includes("effluent"),
@@ -298,7 +298,7 @@ async function inspectApexDossier(id) {
           title: "📐 Civil & Infrastructure Layout (MIDC)",
           doc:
             data.plans?.civil ||
-            data.documents.find(
+            (data.documents || []).find(
               (d) =>
                 d.plan_type === "civil_plan" ||
                 d.document_type?.toLowerCase().includes("civil") ||
@@ -310,7 +310,7 @@ async function inspectApexDossier(id) {
           title: `🛡️ Factory Safety Blueprint (DISH) - ${data.hazardLevel || "Standard"}`,
           doc:
             data.plans?.factorySafety ||
-            data.documents.find(
+            (data.documents || []).find(
               (d) =>
                 d.plan_type === "factory_safety_plan" ||
                 d.document_type?.toLowerCase().includes("safety"),
@@ -321,7 +321,7 @@ async function inspectApexDossier(id) {
           title: "🚒 Fire Hydrant & Evacuation Layout (Fire Services)",
           doc:
             data.plans?.fireSafety ||
-            data.documents.find(
+            (data.documents || []).find(
               (d) =>
                 d.plan_type === "fire_safety_plan" ||
                 d.document_type?.toLowerCase().includes("fire"),

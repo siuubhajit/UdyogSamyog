@@ -980,19 +980,29 @@
 
           function buildPipelineTracker(currentStage, stageStatuses, overallStatus) {
             stageStatuses = stageStatuses || {};
+            const isParallel = currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage);
+            const isApex = currentStage === "msins";
+            const isCompleted = currentStage === "completed" || overallStatus === "Approved";
             const stageIdx = PIPELINE_STAGES.indexOf(currentStage);
+
             return '<div class="pipeline-tracker">' +
               PIPELINE_STAGES.map((s, i) => {
                 const ss = stageStatuses[s];
                 let dotCls = "pt-dot", stepCls = "pt-step", statusText = "Waiting", statusCls = "";
 
-                if (overallStatus === "Rejected" && stageIdx === i && ss && ss.decision === "Rejected") {
+                if (overallStatus === "Rejected" && ss && ss.decision === "Rejected") {
                   dotCls += " rejected"; statusText = "Rejected"; statusCls = "rejected";
-                } else if (overallStatus === "Approved" || (ss && ss.decision === "Approved")) {
+                } else if (isCompleted || (ss && ss.decision === "Approved")) {
                   dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
                 } else if (s === currentStage) {
                   dotCls += " active"; statusText = overallStatus === "Flagged" ? "Query Raised" : "Under Review"; statusCls = "active";
-                } else if (i < stageIdx) {
+                } else if (isParallel && ["midc", "dish", "fire"].includes(s)) {
+                  dotCls += " active"; statusText = overallStatus === "Flagged" ? "Query Raised" : "Under Review"; statusCls = "active";
+                } else if (isParallel && s === "mpcb") {
+                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
+                } else if (isApex && s !== "msins") {
+                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
+                } else if (stageIdx !== -1 && i < stageIdx) {
                   dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
                 }
 

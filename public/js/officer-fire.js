@@ -163,7 +163,7 @@ async function inspectFireDossier(id) {
     // Render Fire Safety Plan PDF
     const firePlan =
       data.plans?.fireSafety ||
-      data.documents.find(
+      (data.documents || []).find(
         (d) =>
           d.plan_type === "fire_safety_plan" ||
           d.document_type?.toLowerCase().includes("fire") ||
