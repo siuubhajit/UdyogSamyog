@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MIDC Civil &amp; Infrastructure | Udyog Samyog - Govt. of Maharashtra</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      :root {
+        --dept-color: #1e40af;
+        --dept-light: #dbeafe;
+        --dept-accent: #2563eb;
+      }
+      .dept-stripe { height: 4px; background: #1e40af; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+      .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: var(--dept-light); color: var(--dept-color); border: 1.5px solid var(--dept-color); }
+      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; }
+      .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
+      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: #e2e8f0; }
+      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #94a3b8; z-index: 1; flex-shrink: 0; }
+      .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
+      .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
+      .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
+      .pipe-label { font-size: .6rem; color: #64748b; text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
+      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .btn-approve { background: #16a34a; color: #fff; border: none; }
+      .btn-approve:hover { background: #15803d; }
+      .btn-reject { background: #dc2626; color: #fff; border: none; }
+      .btn-reject:hover { background: #b91c1c; }
+      .btn-query { background: #d97706; color: #fff; border: none; }
+      .btn-query:hover { background: #b45309; }
+      .checklist { list-style: none; padding: 0; margin: 8px 0 0; }
+      .checklist li { font-size: .83rem; color: #334155; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
+      .checklist li::before { content: "\2610"; color: #94a3b8; font-size: 1rem; line-height: 1; flex-shrink: 0; }
+      .stage-info-box { background: linear-gradient(135deg, var(--dept-light), #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
+      .midc-tool-card { background: #fff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 18px; margin-top: 20px; }
+      .cluster-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+      .cluster-btn { padding: 4px 10px; border-radius: 14px; font-size: .75rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; }
+      .cluster-btn.active { background: var(--dept-color); color: #fff; border-color: var(--dept-color); }
+    </style>
+  </head>
+  <body>
+    <div class="dept-stripe"></div>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">&#127959;</div>
+          <div class="brand-text">
+            <div class="brand-title">&#2313;&#2342;&#2381;&#2351;&#2379;&#2327; &#2360;&#2306;&#2351;&#2379;&#2327; | UDYOG SAMYOG</div>
+            <div class="brand-tag">MIDC Civil &amp; Infrastructure Engineering Wing &middot; Govt. of Maharashtra</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>M</div>
+            <div>
+              <div style="font-weight:700;line-height:1.2" data-user-name>MIDC Executive Engineer</div>
+              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>MIDC Civil &amp; Planning</div>
+            </div>
+          </div>
+          <span class="dept-badge">MIDC CIVIL</span>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">MIDC Operations</div>
+          <a href="javascript:void(0)" class="active" onclick="switchTab('queue')">
+            <span class="sidebar-icon">&#128203;</span> Civil Scrutiny Queue
+          </a>
+          <a href="javascript:void(0)" onclick="switchTab('calculator')">
+            <span class="sidebar-icon">&#128208;</span> Spatial &amp; FSI Calculator
+          </a>
+          <a href="verification.html">
+            <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
+          </a>
+          <a href="analytics.html">
+            <span class="sidebar-icon">&#128202;</span> SLA Intelligence
+          </a>
+          <div class="sidebar-footer">
+            <b style="color:#ffffff">MRTP Act 1966</b><br/>
+            Stage 2 Scrutiny: Land allotment, building setbacks, FSI compliance, and infrastructure feasibility.
+          </div>
+        </aside>
+
+        <main class="main">
+          <!-- QUEUE SECTION -->
+          <div id="sectionQueue">
+            <div class="page-header">
+              <div class="page-pretitle">Maharashtra Industrial Development Corporation &middot; Stage 2 Clearance</div>
+              <h1 class="page-title">Building Plan &amp; Infrastructure Clearance Queue</h1>
+              <p class="page-subtitle">Examine site layout drawings, setback distances, and civil infrastructure access for industrial units post-MPCB environmental clearance.</p>
+            </div>
+
+            <div class="stage-info-box">
+              <b style="color:var(--dept-color);font-size:.95rem">&#127959; MIDC Civil Engineer Role &middot; Sequential Pipeline Stage 2</b>
+              <div style="margin-top:4px;color:var(--ink-light)">Applications reach your queue immediately upon MPCB environmental sign-off. Approving an application automatically advances it to <b>DISH Factory Safety</b>.</div>
+              <div class="cluster-pills">
+                <span style="font-size:.75rem;font-weight:700;color:var(--navy);align-self:center">Major Clusters:</span>
+                <button class="cluster-btn active" onclick="filterCluster('all')">All Maharashtra</button>
+                <button class="cluster-btn" onclick="filterCluster('Chakan')">Chakan (Pune)</button>
+                <button class="cluster-btn" onclick="filterCluster('Ranjangaon')">Ranjangaon (Pune)</button>
+                <button class="cluster-btn" onclick="filterCluster('Butibori')">Butibori (Nagpur)</button>
+                <button class="cluster-btn" onclick="filterCluster('Taloja')">Taloja (Raigad)</button>
+                <button class="cluster-btn" onclick="filterCluster('Waluj')">Waluj (Sambhajinagar)</button>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="card card-kpi"><span class="card-label">Assigned to MIDC</span><span class="card-value" id="kpiTotal">0</span><span class="card-sub">Active Stage Dossiers</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Building Plans Pending</span><span class="card-value" id="kpiPending">0</span><span class="card-sub">Under Technical Scrutiny</span></div>
+              <div class="card card-kpi ruby"><span class="card-label">Setback Queries Raised</span><span class="card-value" id="kpiFlagged">0</span><span class="card-sub">Architect Clarifications</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Civil &amp; Infra Approved</span><span class="card-value" id="kpiApproved">0</span><span class="card-sub">Forwarded to DISH</span></div>
+            </div>
+
+            <div class="filter-bar" style="margin-top:24px">
+              <input type="text" id="filterSearch" class="search-input" placeholder="Search by App No., Enterprise, Plot..." />
+              <select id="filterStatus">
+                <option value="all">Status: All</option>
+                <option value="In Progress">In Progress (Awaiting Review)</option>
+                <option value="Flagged">Flagged / Query Raised</option>
+                <option value="Approved">Approved</option>
+              </select>
+              <select id="filterRisk">
+                <option value="all">Risk Tier: All</option>
+                <option value="Green">Green (Standard Plot)</option>
+                <option value="Orange">Orange (Medium Built-up)</option>
+                <option value="Red">Red (Large Industrial Plot)</option>
+              </select>
+              <button class="btn saffron sm" onclick="loadApplications()">Filter Queue</button>
+              <button class="btn outline sm" onclick="resetFilters()">Reset</button>
+            </div>
+
+            <div class="panel" style="padding:0;overflow:hidden;margin-top:16px">
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Application No.</th>
+                      <th>Enterprise / Industrial Unit</th>
+                      <th>Land / Water Size</th>
+                      <th>District &amp; Location</th>
+                      <th>Risk Tier</th>
+                      <th>SLA Tracker</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows">
+                    <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink-light)">Loading MIDC scrutiny queue&hellip;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPATIAL & FSI CALCULATOR SECTION -->
+          <div id="sectionCalc" style="display:none">
+            <div class="page-header">
+              <div class="page-pretitle">Civil Engineering Scrutiny Tool</div>
+              <h1 class="page-title">MIDC Spatial FAR/FSI &amp; Setback Calculator</h1>
+              <p class="page-subtitle">Verify architectural floor space index (FSI), ground coverage, and required marginal setbacks under MIDC Development Control Rules.</p>
+            </div>
+
+            <div class="midc-tool-card">
+              <h3 style="color:var(--navy);margin:0 0 14px">&#128208; Architectural Parameters &amp; Setback Verification</h3>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px">
+                <label>Plot Area (Square Metres)
+                  <input type="number" id="calcPlotArea" value="5000" min="100" oninput="runMidcCalc()" />
+                </label>
+                <label>Proposed Total Built-up Area (sqm)
+                  <input type="number" id="calcBuiltUp" value="4500" min="50" oninput="runMidcCalc()" />
+                </label>
+                <label>Ground Footprint / Coverage (sqm)
+                  <input type="number" id="calcFootprint" value="2200" min="50" oninput="runMidcCalc()" />
+                </label>
+                <label>Proposed Front Setback (Metres)
+                  <input type="number" id="calcFrontSetback" value="9.0" step="0.5" oninput="runMidcCalc()" />
+                </label>
+                <label>Access Road Width (Metres)
+                  <input type="number" id="calcRoadWidth" value="18" step="1" oninput="runMidcCalc()" />
+                </label>
+              </div>
+
+              <div id="midcCalcResult" style="margin-top:18px;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:6px;padding:16px">
+                <!-- Dynamically calculated -->
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- DECISION MODAL -->
+    <div id="decisionModal" class="modal-overlay" style="display:none">
+      <div class="modal-card" style="max-width:600px">
+        <h2 style="color:var(--dept-color)">&#127959; MIDC Civil Clearance Decision</h2>
+        <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Sign off on building blueprint and forward dossier to DISH Factory Safety.</p>
+        
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:.85rem">
+          <div>Dossier: <b id="decAppNo" style="color:var(--navy)">---</b> &middot; Enterprise: <b id="decCompany">---</b></div>
+          <div style="font-size:.78rem;color:var(--ink-muted);margin-top:2px">Location: <span id="decDistrict">---</span></div>
+        </div>
+
+        <div id="miniPipeline" class="pipeline-mini"></div>
+
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:10px 14px;margin-top:12px">
+          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">MIDC Civil &amp; Planning Verification Checklist:</div>
+          <ul class="checklist">
+            <li>MIDC plot allotment letter and possession title deed verified</li>
+            <li>Building plan conforms to permissible FSI (1.0 to 1.5 standard)</li>
+            <li>Marginal open spaces (setbacks) adequate for heavy vehicle and fire tender turning</li>
+            <li>Industrial stormwater drainage connection and ETP drain layout approved</li>
+            <li>Water pipeline tap quota (KLD) validated against industrial demand</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:14px">
+          <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
+            Official Technical Remarks <span style="color:#dc2626">*</span>
+          </label>
+          <textarea id="decisionRemarks" rows="3"
+            placeholder="Record civil inspection findings, building plan approval order number, or setback rectification notes..."
+            style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+        </div>
+
+        <div class="decision-btn-row">
+          <button class="btn btn-approve" onclick="submitDecision('Approved')">&#10003; Approve Civil Clearance &amp; Forward &rarr;</button>
+          <button class="btn btn-reject" onclick="submitDecision('Rejected')">&#10005; Reject Plan</button>
+          <button class="btn btn-query" onclick="submitDecision('Query')">&#10067; Raise Query (Setbacks/Drawings)</button>
+          <button class="btn outline sm" onclick="closeDecisionModal()">Cancel</button>
+        </div>
+        <div style="margin-top:8px;font-size:.8rem">
+          <a id="decDossierLink" href="#" target="_blank" style="color:var(--navy)">&#128269; Open Technical Vault &amp; Architectural Blueprints &rarr;</a>
+        </div>
+        <div id="decisionMsg" class="msg" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+      const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
+      const STAGE_LABELS = { mpcb:"MPCB Env.", midc:"MIDC Civil", dish:"DISH Safety", fire:"Fire NOC", msins:"Apex Final" };
+
+      let allApplications = [], activeDecisionAppId = null;
+
+      function switchTab(tab) {
+        document.getElementById("sectionQueue").style.display = tab === "queue" ? "block" : "none";
+        document.getElementById("sectionCalc").style.display = tab === "calculator" ? "block" : "none";
+        if (tab === "calculator") runMidcCalc();
+        else loadApplications();
+      }
+
+      function filterCluster(cluster) {
+        document.querySelectorAll(".cluster-btn").forEach(b => b.classList.remove("active"));
+        event.target.classList.add("active");
+        if (cluster === "all") {
+          document.getElementById("filterSearch").value = "";
+        } else {
+          document.getElementById("filterSearch").value = cluster;
+        }
+        loadApplications();
+      }
+
+      async function loadApplications() {
+        try {
+          const params = new URLSearchParams();
+          const st = document.getElementById("filterStatus").value;
+          const ri = document.getElementById("filterRisk").value;
+          const se = document.getElementById("filterSearch").value.trim();
+          if (st !== "all") params.append("status", st);
+          if (ri !== "all") params.append("risk_tier", ri);
+          if (se) params.append("search", se);
+          const apps = await api("/api/applications?" + params.toString());
+          allApplications = apps;
+          document.getElementById("kpiTotal").textContent = apps.length;
+          document.getElementById("kpiPending").textContent = apps.filter(x => x.status === "In Progress" && x.current_stage === "midc").length;
+          document.getElementById("kpiFlagged").textContent = apps.filter(x => x.status === "Flagged").length;
+          
+          const approvedCount = apps.filter(x => {
+            if (x.status === "Approved") return true;
+            try {
+              const ss = JSON.parse(x.stage_statuses || "{}");
+              return ss.midc && ss.midc.decision === "Approved";
+            } catch (_) { return false; }
+          }).length;
+          document.getElementById("kpiApproved").textContent = approvedCount;
+
+          renderTable(apps);
+        } catch (err) {
+          document.getElementById("rows").innerHTML = "<tr><td colspan='8' style='color:red;text-align:center;padding:20px'>Failed to load: " + err.message + "</td></tr>";
+        }
+      }
+
+      function resetFilters() {
+        document.getElementById("filterSearch").value = "";
+        document.getElementById("filterStatus").value = "all";
+        document.getElementById("filterRisk").value = "all";
+        loadApplications();
+      }
+
+      function renderTable(apps) {
+        const tbody = document.getElementById("rows");
+        if (!apps.length) {
+          tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;padding:40px;color:var(--ink-light)'>No applications currently pending at MIDC Civil stage. All caught up! &#10003;</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = apps.map(app => {
+          const elapsed = Math.floor((Date.now() - new Date(app.created_at)) / 86400000);
+          const sla = 14;
+          const left = sla - elapsed;
+          let slaBadge = "<span style='font-size:.76rem;font-weight:600;color:var(--emerald)'>Day " + elapsed + "/14 (" + left + "d left)</span>";
+          if (left <= 2 && left >= 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--saffron)'>&#9888; Due in " + left + "d</span>";
+          else if (left < 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--ruby)'>&#128680; SLA Breached (" + Math.abs(left) + "d overdue)</span>";
+
+          const riskClass = app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green";
+          const badgeClass = app.status === "Approved" ? "green" : (app.status === "Flagged" || app.status === "Rejected") ? "red" : "orange";
+          const canAct = (app.current_stage === "midc" && app.status !== "Approved" && app.status !== "Rejected");
+
+          return "<tr>" +
+            "<td><b style='color:var(--navy);font-size:.85rem'>" + app.application_no + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + new Date(app.created_at).toLocaleDateString() + "</div></td>" +
+            "<td><b style='color:var(--navy)'>" + escapeHtml(app.company_name) + "</b><div style='font-size:.74rem;color:var(--ink-light)'>" + (app.industry_category || "Manufacturing") + "</div></td>" +
+            "<td><div>" + (app.land_size || "1.0") + " Acres</div><div style='font-size:.72rem;color:var(--ink-light)'>" + (app.water_use || "10") + " KLD Water</div></td>" +
+            "<td><b>" + (app.district || "Pune") + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + (app.location || "MIDC Phase 1") + "</div></td>" +
+            "<td><span class='risk-tag " + riskClass + "'>" + (app.risk_tier || "Standard") + "</span></td>" +
+            "<td>" + slaBadge + "</td>" +
+            "<td><span class='badge " + badgeClass + "'>" + app.status + "</span></td>" +
+            "<td style='white-space:nowrap'>" +
+            (canAct ? "<button class='btn sm' style='background:var(--dept-color);color:#fff;margin-right:4px' onclick='openDecisionModal(" + app.id + ")'>&#9998; Review</button>" : "") +
+            "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>&#128269; Dossier</a>" +
+            "</td></tr>";
+        }).join("");
+      }
+
+      function buildMiniPipeline(currentStage, stageStatuses) {
+        stageStatuses = stageStatuses || {};
+        return PIPELINE_STAGES.map((s, i) => {
+          const ss = stageStatuses[s];
+          let cls = "pipe-dot", icon = String(i + 1);
+          if (ss && ss.decision === "Approved") { cls += " done"; icon = "✓"; }
+          else if (ss && ss.decision === "Rejected") { cls += " rejected"; icon = "✕"; }
+          else if (s === currentStage) { cls += " active"; icon = "→"; }
+          return "<div class='pipe-step'><div class='" + cls + "'>" + icon + "</div><div class='pipe-label'>" + STAGE_LABELS[s] + "</div></div>";
+        }).join("");
+      }
+
+      async function openDecisionModal(appId) {
+        activeDecisionAppId = appId;
+        document.getElementById("decisionMsg").textContent = "";
+        document.getElementById("decisionRemarks").value = "";
+        try {
+          const app = await api("/api/applications/" + appId);
+          document.getElementById("decAppNo").textContent = app.application_no;
+          document.getElementById("decCompany").textContent = app.company_name;
+          document.getElementById("decDistrict").textContent = (app.district || "Pune") + " (" + (app.location || "MIDC Zone") + ")";
+          document.getElementById("decDossierLink").href = "verification.html?id=" + appId;
+          document.getElementById("miniPipeline").innerHTML = buildMiniPipeline(app.current_stage || "midc", app.stageStatuses);
+          document.getElementById("decisionModal").style.display = "grid";
+        } catch (err) {
+          alert("Failed to load application: " + err.message);
+        }
+      }
+
+      function closeDecisionModal() {
+        document.getElementById("decisionModal").style.display = "none";
+        activeDecisionAppId = null;
+      }
+
+      async function submitDecision(decision) {
+        if (!activeDecisionAppId) return;
+        const remarks = document.getElementById("decisionRemarks").value.trim();
+        const msgEl = document.getElementById("decisionMsg");
+        if (!remarks) { msgEl.style.color = "#dc2626"; msgEl.textContent = "Please enter official remarks before submitting."; return; }
+        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Submitting MIDC decision…";
+        try {
+          const res = await api("/api/applications/" + activeDecisionAppId + "/stage-decision", {
+            method: "POST", body: JSON.stringify({ decision, remarks })
+          });
+          msgEl.style.color = "#16a34a"; msgEl.textContent = res.message;
+          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
+        } catch (err) {
+          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
+        }
+      }
+
+      function runMidcCalc() {
+        const plot = parseFloat(document.getElementById("calcPlotArea").value) || 5000;
+        const built = parseFloat(document.getElementById("calcBuiltUp").value) || 4500;
+        const foot = parseFloat(document.getElementById("calcFootprint").value) || 2200;
+        const front = parseFloat(document.getElementById("calcFrontSetback").value) || 9.0;
+        const road = parseFloat(document.getElementById("calcRoadWidth").value) || 18.0;
+
+        const fsiAchieved = (built / plot).toFixed(2);
+        const coveragePct = ((foot / plot) * 100).toFixed(1);
+
+        const fsiValid = fsiAchieved <= 1.5;
+        const coverageValid = coveragePct <= 60.0;
+        const setbackValid = front >= 6.0 && road >= 12.0;
+
+        document.getElementById("midcCalcResult").innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px">
+            <div>
+              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">FSI / FAR Achieved</div>
+              <div style="font-size:1.4rem;font-weight:800;color:${fsiValid ? '#15803d' : '#dc2626'}">${fsiAchieved} <span style="font-size:.78rem;font-weight:400">/ 1.50 Max</span></div>
+              <div style="font-size:.72rem;color:${fsiValid ? '#15803d' : '#dc2626'}">${fsiValid ? '✓ Within Permissible Limits' : '✕ Exceeds Standard FSI'}</div>
+            </div>
+            <div>
+              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Ground Coverage</div>
+              <div style="font-size:1.4rem;font-weight:800;color:${coverageValid ? '#15803d' : '#dc2626'}">${coveragePct}% <span style="font-size:.78rem;font-weight:400">/ 60% Max</span></div>
+              <div style="font-size:.72rem;color:${coverageValid ? '#15803d' : '#dc2626'}">${coverageValid ? '✓ Open Space Adequate' : '✕ Over-covered Plot'}</div>
+            </div>
+            <div>
+              <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Heavy Vehicle Road Access</div>
+              <div style="font-size:1.4rem;font-weight:800;color:${setbackValid ? '#15803d' : '#dc2626'}">${road}m <span style="font-size:.78rem;font-weight:400">(Front Setback: ${front}m)</span></div>
+              <div style="font-size:.72rem;color:${setbackValid ? '#15803d' : '#dc2626'}">${setbackValid ? '✓ 12m+ Heavy Truck Turning Feasible' : '✕ Sub-standard Frontage'}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+
+      document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
+
+      guard("official").then(user => {
+        loadApplications();
+        runMidcCalc();
+      });
+    </script>
+  </body>
+</html>
+

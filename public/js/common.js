@@ -19,6 +19,19 @@ async function logout() {
   location = "/";
 }
 
+function getOfficerDashboardUrl(user) {
+  if (!user) return "/pages/officer-dashboard.html";
+  const dept = (user.deptCode || "").toLowerCase();
+  if (user.isApex || dept === "msins" || dept === "industries") {
+    return "/pages/officer-dashboard-msins.html";
+  }
+  if (dept === "midc") return "/pages/officer-dashboard-midc.html";
+  if (dept === "mpcb") return "/pages/officer-dashboard-mpcb.html";
+  if (dept === "fire") return "/pages/officer-dashboard-fire.html";
+  if (dept === "dish") return "/pages/officer-dashboard-dish.html";
+  return "/pages/officer-dashboard-msins.html";
+}
+
 async function guard(role) {
   try {
     const { user } = await api("/api/me");
@@ -29,9 +42,17 @@ async function guard(role) {
     if (role && user.role !== role) {
       location =
         user.role === "official"
-          ? "/pages/officer-dashboard.html"
+          ? getOfficerDashboardUrl(user)
           : "/pages/applicant-dashboard.html";
       return null;
+    }
+
+    // Update any dashboard links in topbar or sidebar to point to this officer's dedicated dashboard
+    if (user.role === "official") {
+      const dashUrl = getOfficerDashboardUrl(user);
+      document.querySelectorAll("a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]").forEach((a) => {
+        a.setAttribute("href", dashUrl);
+      });
     }
 
     // Populate user indicators

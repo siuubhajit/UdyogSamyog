@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MSInS Apex Directorate | Udyog Samyog - Govt. of Maharashtra</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      :root {
+        --dept-color: #1e3a5f;
+        --dept-light: #fff7ed;
+        --dept-accent: #d97706;
+      }
+      .dept-stripe { height: 4px; background: linear-gradient(90deg, #1e3a5f, #d97706, #16a34a); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+      .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: #fff7ed; color: #d97706; border: 1.5px solid #d97706; }
+      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; }
+      .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
+      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: #e2e8f0; }
+      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #94a3b8; z-index: 1; flex-shrink: 0; }
+      .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
+      .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
+      .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
+      .pipe-label { font-size: .6rem; color: #64748b; text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
+      .matrix-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; font-size: .68rem; font-weight: 600; margin: 1px 2px; }
+      .matrix-pill.ok { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+      .matrix-pill.pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+      .matrix-pill.flagged { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+      .decision-panel { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin-top: 16px; }
+      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .btn-approve { background: #16a34a; color: #fff; border: none; }
+      .btn-approve:hover { background: #15803d; }
+      .btn-reject { background: #dc2626; color: #fff; border: none; }
+      .btn-reject:hover { background: #b91c1c; }
+      .btn-query { background: #d97706; color: #fff; border: none; }
+      .btn-query:hover { background: #b45309; }
+      .stage-info-box { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
+      .psi-calc-box { background: #fff; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 18px; margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="dept-stripe"></div>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">&#127963;</div>
+          <div class="brand-text">
+            <div class="brand-title">&#2313;&#2342;&#2381;&#2351;&#2379;&#2327; &#2360;&#2306;&#2351;&#2379;&#2327; | UDYOG SAMYOG</div>
+            <div class="brand-tag">Directorate of Industries &amp; MSInS &middot; Apex Authority Console</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>A</div>
+            <div>
+              <div style="font-weight:700;line-height:1.2" data-user-name>Apex Authority</div>
+              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>MSInS / Industries GoM</div>
+            </div>
+          </div>
+          <span class="dept-badge">&#9733; APEX APPROVER</span>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">Apex Authority Console</div>
+          <a href="javascript:void(0)" id="navQueue" class="active" onclick="switchView('queue')">
+            <span class="sidebar-icon">&#128203;</span> Consolidated Queue
+          </a>
+          <a href="javascript:void(0)" id="navEnterprises" onclick="switchView('enterprises')">
+            <span class="sidebar-icon">&#127970;</span> Enterprise Registry &amp; Ban
+          </a>
+          <a href="javascript:void(0)" id="navPsi" onclick="switchView('psi')">
+            <span class="sidebar-icon">&#128176;</span> PSI Incentives Sanction
+          </a>
+          <a href="verification.html">
+            <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
+          </a>
+          <a href="analytics.html">
+            <span class="sidebar-icon">&#128202;</span> SLA Intelligence
+          </a>
+          <div class="sidebar-footer">
+            <b style="color:#ffffff">Maharashtra Single Window Act</b><br/>
+            Apex statutory power to issue consolidated approvals, deem clearances, and enforce blacklists.
+          </div>
+        </aside>
+
+        <main class="main">
+          <!-- CONSOLIDATED QUEUE VIEW -->
+          <div id="queueSection">
+            <div class="page-header">
+              <div class="page-pretitle">Government of Maharashtra &middot; Directorate of Industries</div>
+              <h1 class="page-title">Consolidated Single-Window Approval Queue</h1>
+              <p class="page-subtitle">Master state console monitoring all departmental stages (MPCB &rarr; MIDC &rarr; DISH &rarr; Fire) and granting final statutory clearance.</p>
+            </div>
+
+            <div class="stage-info-box">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+                <div>
+                  <b style="color:var(--dept-color);font-size:.95rem">&#127963; MSInS Apex Approver Authority</b>
+                  <div style="margin-top:4px;color:var(--ink-light)">You have full state oversight. You can grant <b>Final Single-Window Clearance Certificates</b> once departmental clearances are satisfied, or intervene when statutory SLAs are breached.</div>
+                </div>
+                <span class="badge green" style="padding:6px 12px;font-size:.8rem">&#10003; Full Statutory Jurisdiction</span>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="card card-kpi"><span class="card-label">State Dossiers Total</span><span class="card-value" id="kpiTotal">0</span><span class="card-sub">All Districts</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">In-Progress Pipeline</span><span class="card-value" id="kpiPending">0</span><span class="card-sub">Departmental Review</span></div>
+              <div class="card card-kpi ruby"><span class="card-label">Flagged / Queries</span><span class="card-value" id="kpiFlagged">0</span><span class="card-sub">Statutory Queries</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Consolidated Approved</span><span class="card-value" id="kpiApproved">0</span><span class="card-sub">Final NOC Granted</span></div>
+            </div>
+
+            <div class="filter-bar" style="margin-top:24px">
+              <input type="text" id="filterSearch" class="search-input" placeholder="Search by App No., Company Name, Location..." />
+              <select id="filterStatus">
+                <option value="all">Status: All</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Flagged">Flagged / Queries</option>
+                <option value="Approved">Approved (Final NOC)</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <select id="filterRisk">
+                <option value="all">Risk Tier: All</option>
+                <option value="Green">Green (Fast-Track Deemed)</option>
+                <option value="Orange">Orange (Standard)</option>
+                <option value="Red">Red (High-Impact EIA)</option>
+              </select>
+              <select id="filterDistrict">
+                <option value="all">District: All Maharashtra</option>
+                <option value="Pune">Pune</option>
+                <option value="Thane">Thane</option>
+                <option value="Mumbai Suburban">Mumbai Suburban</option>
+                <option value="Nagpur">Nagpur</option>
+                <option value="Nashik">Nashik</option>
+                <option value="Aurangabad">Chhatrapati Sambhajinagar</option>
+              </select>
+              <button class="btn saffron sm" onclick="loadApplications()">Apply Filters</button>
+              <button class="btn outline sm" onclick="resetFilters()">Reset</button>
+            </div>
+
+            <div class="panel" style="padding:0;overflow:hidden;margin-top:16px">
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Application No.</th>
+                      <th>Enterprise / Unit</th>
+                      <th>Current Stage</th>
+                      <th>Department Milestones</th>
+                      <th>Risk / MSME</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows">
+                    <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--ink-light)">Loading consolidated queue&hellip;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENTERPRISE REGISTRY & BAN SECTION -->
+          <div id="enterpriseSection" style="display:none">
+            <div class="page-header">
+              <div class="page-pretitle">Statutory Governance</div>
+              <h1 class="page-title">Maharashtra Enterprise Registry &amp; Blacklist</h1>
+              <p class="page-subtitle">Statutory power of the MSInS Apex Authority to blacklist non-compliant enterprises and enforce statutory suspensions.</p>
+            </div>
+
+            <div class="panel" style="margin-bottom:20px;background:#fff;border-left:5px solid var(--navy)">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div>
+                  <h3 style="color:var(--navy);font-size:1.15rem;margin:0">Statutory Blacklist Enforcement &middot; Section 14 EoDB Act</h3>
+                  <p style="color:var(--ink-light);font-size:.82rem;margin:4px 0 0">Blacklisted enterprises are barred from filing new clearance dossiers, uploading documents, or receiving subsidies.</p>
+                </div>
+                <button class="btn outline sm" onclick="loadEnterprises()">Refresh Enterprise Registry</button>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:0;overflow:hidden">
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Enterprise Name</th><th>GSTIN / Reg No.</th><th>Authorized Person</th>
+                      <th>District</th><th>Dossiers</th><th>Compliance Status</th><th>Statutory Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="enterpriseRows">
+                    <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--ink-light)">Loading registry&hellip;</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- PSI INCENTIVES SANCTION MODULE -->
+          <div id="psiSection" style="display:none">
+            <div class="page-header">
+              <div class="page-pretitle">Financial Subsidies &middot; Directorate of Industries</div>
+              <h1 class="page-title">Package Scheme of Incentives (PSI 2019/2024) Sanction Tool</h1>
+              <p class="page-subtitle">Compute and sanction capital investment subsidies, stamp duty exemptions, and electricity duty waivers for approved units.</p>
+            </div>
+
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+              <div class="card card-kpi emerald"><span class="card-label">Eligible Subsidy Band</span><span class="card-value">40% &ndash; 80%</span><span class="card-sub">On Fixed Capital Investment</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Stamp Duty Exemption</span><span class="card-value">100%</span><span class="card-sub">In Zones B, C, D, D+</span></div>
+              <div class="card card-kpi"><span class="card-label">Electricity Duty Waiver</span><span class="card-value">7 &ndash; 10 Yrs</span><span class="card-sub">Industrial Feeder Lines</span></div>
+              <div class="card card-kpi gold"><span class="card-label">MSInS Innovation Grant</span><span class="card-value">&#8377;15 Lakhs</span><span class="card-sub">Seed Voucher Scheme</span></div>
+            </div>
+
+            <div class="psi-calc-box">
+              <h3 style="color:var(--navy);margin:0 0 12px">&#9881; Incentive Calculator &amp; Sanction Simulator</h3>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px">
+                <label>Fixed Capital Investment (&#8377; Crores)
+                  <input type="number" id="psiInvestment" value="15" min="1" step="0.5" oninput="calculatePsi()" />
+                </label>
+                <label>Taluka / Area Categorization
+                  <select id="psiTaluka" onchange="calculatePsi()">
+                    <option value="A">Category A (Mumbai, Pune Urban - Standard)</option>
+                    <option value="B">Category B (Semi-Urban Developing)</option>
+                    <option value="C" selected>Category C (Developing Industrial - 50% Subsidy)</option>
+                    <option value="D">Category D (Less Developed - 60% Subsidy)</option>
+                    <option value="D_PLUS">Category D+ (Backward Areas - 80% Subsidy)</option>
+                    <option value="VIDARBHA">Vidarbha / Marathwada Special Zone (80% + Extra)</option>
+                  </select>
+                </label>
+                <label>MSME Enterprise Classification
+                  <select id="psiMsme" onchange="calculatePsi()">
+                    <option value="Micro">Micro Enterprise (&lt; &#8377;1 Cr)</option>
+                    <option value="Small" selected>Small Enterprise (&#8377;1 - 10 Cr)</option>
+                    <option value="Medium">Medium Enterprise (&#8377;10 - 50 Cr)</option>
+                    <option value="Large">Large / Mega Project (&gt; &#8377;50 Cr)</option>
+                  </select>
+                </label>
+              </div>
+
+              <div id="psiResultBox" style="margin-top:16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:6px;padding:16px">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- APEX DECISION MODAL -->
+    <div id="decisionModal" class="modal-overlay" style="display:none">
+      <div class="modal-card" style="max-width:640px">
+        <h2 id="decisionModalTitle" style="color:var(--navy)">&#127963; MSInS Apex Decision &middot; Final Statutory Clearance</h2>
+        <p id="decisionModalSubtitle" style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Issue Consolidated Single-Window NOC or forward instructions.</p>
+        
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 14px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem">
+            <span>App No: <b id="decAppNo" style="color:var(--navy)">---</b></span>
+            <span>Enterprise: <b id="decCompany">---</b></span>
+            <span>District: <b id="decDistrict">---</b></span>
+          </div>
+        </div>
+
+        <div id="miniPipeline" class="pipeline-mini"></div>
+
+        <div style="margin-top:14px">
+          <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
+            Official Decision Remarks / Order Reference <span style="color:#dc2626">*</span>
+          </label>
+          <textarea id="decisionRemarks" rows="3"
+            placeholder="Record consolidated clearance determination, deemed statutory sanction order, or compliance grounds..."
+            style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+        </div>
+
+        <div class="decision-btn-row">
+          <button class="btn btn-approve" onclick="submitApexFinal('Approved')">&#10003; Grant Consolidated Final Approval &amp; Issue NOC</button>
+          <button class="btn btn-reject" onclick="submitApexDecision('Rejected')">&#10005; Reject Dossier</button>
+          <button class="btn btn-query" onclick="submitApexDecision('Query')">&#10067; Raise Apex Query</button>
+          <button class="btn outline sm" onclick="closeDecisionModal()">Cancel</button>
+        </div>
+        <div style="margin-top:8px;font-size:.8rem">
+          <a id="decDossierLink" href="#" target="_blank" style="color:var(--navy)">&#128269; Open Complete Multi-Agency Dossier &rarr;</a>
+        </div>
+        <div id="decisionMsg" class="msg" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <!-- BLACKLIST MODAL -->
+    <div id="banModal" class="modal-overlay" style="display:none">
+      <div class="modal-card">
+        <h2 style="color:var(--ruby)">&#128683; Blacklist / Ban Enterprise</h2>
+        <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Banning an enterprise prohibits future applications, freezes pending clearances, and revokes permit rights.</p>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-bottom:14px">
+          <span style="font-size:.78rem;color:#991b1b;font-weight:700">Target Enterprise:</span>
+          <div id="banTargetName" style="font-weight:800;color:#7f1d1d;font-size:1rem;margin-top:2px">---</div>
+        </div>
+        <label>Statutory Ground / Reason for Blacklist
+          <textarea id="banReasonInput" rows="3" placeholder="Specify violations..." style="width:100%;margin-top:6px"></textarea>
+        </label>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          <span style="font-size:.72rem;color:var(--ink-muted)">Quick grounds:</span>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Hazardous effluent discharge in violation of MPCB Schedule II')">Effluent Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Unauthorized construction without MIDC building permit')">Civil Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Non-compliance with DISH factory machinery safety standards')">Safety Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Fraudulent misrepresentation of statutory documents')">Document Fraud</button>
+        </div>
+        <div class="modal-actions" style="margin-top:16px">
+          <button type="button" class="btn outline sm" onclick="closeBanModal()">Cancel</button>
+          <button type="button" class="btn danger sm" onclick="submitBanEnterprise()">Enforce Blacklist &#128683;</button>
+        </div>
+        <div id="banModalMsg" class="msg" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+      const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
+      const STAGE_LABELS = { mpcb:"MPCB Env.", midc:"MIDC Civil", dish:"DISH Safety", fire:"Fire NOC", msins:"Apex Final" };
+
+      let allApplications = [], allEnterprises = [], currentOfficer = null;
+      let activeDecisionAppId = null, activeBanEnterpriseId = null;
+
+      function switchView(view) {
+        document.getElementById("queueSection").style.display = view === "queue" ? "block" : "none";
+        document.getElementById("enterpriseSection").style.display = view === "enterprises" ? "block" : "none";
+        document.getElementById("psiSection").style.display = view === "psi" ? "block" : "none";
+        document.getElementById("navQueue").classList.toggle("active", view === "queue");
+        document.getElementById("navEnterprises").classList.toggle("active", view === "enterprises");
+        document.getElementById("navPsi").classList.toggle("active", view === "psi");
+        if (view === "enterprises") loadEnterprises();
+        else if (view === "psi") calculatePsi();
+        else loadApplications();
+      }
+
+      async function loadApplications() {
+        try {
+          const params = new URLSearchParams();
+          const st = document.getElementById("filterStatus").value;
+          const ri = document.getElementById("filterRisk").value;
+          const di = document.getElementById("filterDistrict").value;
+          const se = document.getElementById("filterSearch").value.trim();
+          if (st !== "all") params.append("status", st);
+          if (ri !== "all") params.append("risk_tier", ri);
+          if (di !== "all") params.append("district", di);
+          if (se) params.append("search", se);
+          const apps = await api("/api/applications?" + params.toString());
+          allApplications = apps;
+          document.getElementById("kpiTotal").textContent = apps.length;
+          document.getElementById("kpiPending").textContent = apps.filter(x => x.status === "In Progress").length;
+          document.getElementById("kpiFlagged").textContent = apps.filter(x => x.status === "Flagged").length;
+          document.getElementById("kpiApproved").textContent = apps.filter(x => x.status === "Approved").length;
+          renderTable(apps);
+        } catch (err) {
+          document.getElementById("rows").innerHTML = "<tr><td colspan='7' style='color:red;text-align:center;padding:20px'>Failed to load: " + err.message + "</td></tr>";
+        }
+      }
+
+      function resetFilters() {
+        document.getElementById("filterSearch").value = "";
+        document.getElementById("filterStatus").value = "all";
+        document.getElementById("filterRisk").value = "all";
+        document.getElementById("filterDistrict").value = "all";
+        loadApplications();
+      }
+
+      function renderTable(apps) {
+        const tbody = document.getElementById("rows");
+        if (!apps.length) {
+          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:40px;color:var(--ink-light)'>No applications match your filter criteria.</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = apps.map(app => {
+          let parallel = {};
+          try { parallel = JSON.parse(app.parallel_status_json || "{}"); } catch(_) {}
+          let stages = {};
+          try { stages = JSON.parse(app.stage_statuses || "{}"); } catch(_) {}
+
+          const depts = ["mpcb", "midc", "dish", "fire"];
+          const milestonePills = depts.map(d => {
+            const isApproved = stages[d]?.decision === "Approved" || parallel[d]?.status === "Approved";
+            const isFlagged = parallel[d]?.status === "Query Raised" || stages[d]?.decision === "Query";
+            const cls = isApproved ? "ok" : isFlagged ? "flagged" : "pending";
+            const icon = isApproved ? "✓" : isFlagged ? "!" : "○";
+            return "<span class='matrix-pill " + cls + "'>" + d.toUpperCase() + " " + icon + "</span>";
+          }).join("");
+
+          const badgeClass = app.status === "Approved" ? "green" : (app.status === "Flagged" || app.status === "Rejected") ? "red" : "orange";
+          const riskClass = app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green";
+          const canFinalApprove = app.status !== "Approved" && app.status !== "Rejected";
+
+          return "<tr>" +
+            "<td><b style='color:var(--navy);font-size:.85rem'>" + app.application_no + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>" + new Date(app.created_at).toLocaleDateString() + "</div></td>" +
+            "<td><b style='color:var(--navy)'>" + escapeHtml(app.company_name) + "</b><div style='font-size:.74rem;color:var(--ink-light)'>" + (app.district || "Pune") + " &middot; " + (app.industry_category || "Industry") + "</div></td>" +
+            "<td><span class='badge' style='background:#f1f5f9;color:#334155'>" + (STAGE_LABELS[app.current_stage] || app.current_stage || "Apex") + "</span></td>" +
+            "<td>" + milestonePills + "</td>" +
+            "<td><span class='risk-tag " + riskClass + "'>" + (app.risk_tier || "Standard") + "</span> <span class='badge gray' style='font-size:.65rem'>" + (app.msme_category || "MSME") + "</span></td>" +
+            "<td><span class='badge " + badgeClass + "'>" + app.status + "</span></td>" +
+            "<td style='white-space:nowrap'>" +
+            (canFinalApprove ? "<button class='btn sm' style='background:var(--navy);color:#fff;margin-right:4px' onclick='openApexDecision(" + app.id + ")'>&#9878; Act</button>" : "") +
+            "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>&#128269; Dossier</a>" +
+            "</td></tr>";
+        }).join("");
+      }
+
+      function buildMiniPipeline(currentStage, stageStatuses) {
+        stageStatuses = stageStatuses || {};
+        return PIPELINE_STAGES.map((s, i) => {
+          const ss = stageStatuses[s];
+          let cls = "pipe-dot", icon = String(i + 1);
+          if (ss && ss.decision === "Approved") { cls += " done"; icon = "✓"; }
+          else if (ss && ss.decision === "Rejected") { cls += " rejected"; icon = "✕"; }
+          else if (s === currentStage) { cls += " active"; icon = "→"; }
+          return "<div class='pipe-step'><div class='" + cls + "'>" + icon + "</div><div class='pipe-label'>" + STAGE_LABELS[s] + "</div></div>";
+        }).join("");
+      }
+
+      async function openApexDecision(appId) {
+        activeDecisionAppId = appId;
+        document.getElementById("decisionMsg").textContent = "";
+        document.getElementById("decisionRemarks").value = "";
+        try {
+          const app = await api("/api/applications/" + appId);
+          document.getElementById("decAppNo").textContent = app.application_no;
+          document.getElementById("decCompany").textContent = app.company_name;
+          document.getElementById("decDistrict").textContent = app.district || "Maharashtra";
+          document.getElementById("decDossierLink").href = "verification.html?id=" + appId;
+          document.getElementById("miniPipeline").innerHTML = buildMiniPipeline(app.current_stage, app.stageStatuses);
+          document.getElementById("decisionModal").style.display = "grid";
+        } catch (err) {
+          alert("Failed to load application: " + err.message);
+        }
+      }
+
+      function closeDecisionModal() {
+        document.getElementById("decisionModal").style.display = "none";
+        activeDecisionAppId = null;
+      }
+
+      async function submitApexFinal(status) {
+        if (!activeDecisionAppId) return;
+        const remarks = document.getElementById("decisionRemarks").value.trim() || "Consolidated statutory single-window clearance approved by MSInS Apex Directorate.";
+        const msgEl = document.getElementById("decisionMsg");
+        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Granting Consolidated Approval & NOC…";
+        try {
+          const res = await api("/api/applications/" + activeDecisionAppId + "/status", {
+            method: "PATCH",
+            body: JSON.stringify({ status: "Approved", remarks, department: "msins" })
+          });
+          msgEl.style.color = "#16a34a"; msgEl.textContent = "✓ Final Single-Window Clearance Granted! Digital NOC generated.";
+          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
+        } catch (err) {
+          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
+        }
+      }
+
+      async function submitApexDecision(decision) {
+        if (!activeDecisionAppId) return;
+        const remarks = document.getElementById("decisionRemarks").value.trim();
+        const msgEl = document.getElementById("decisionMsg");
+        if (!remarks) { msgEl.style.color = "#dc2626"; msgEl.textContent = "Please enter official remarks before submitting."; return; }
+        msgEl.style.color = "#1e3a5f"; msgEl.textContent = "Recording decision…";
+        try {
+          const res = await api("/api/applications/" + activeDecisionAppId + "/stage-decision", {
+            method: "POST", body: JSON.stringify({ decision, remarks })
+          });
+          msgEl.style.color = "#16a34a"; msgEl.textContent = res.message;
+          setTimeout(() => { closeDecisionModal(); loadApplications(); }, 1800);
+        } catch (err) {
+          msgEl.style.color = "#dc2626"; msgEl.textContent = "Error: " + err.message;
+        }
+      }
+
+      async function loadEnterprises() {
+        const tbody = document.getElementById("enterpriseRows");
+        try {
+          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:30px;color:var(--ink-light)'>Fetching enterprise records…</td></tr>";
+          const ents = await api("/api/admin/enterprises");
+          allEnterprises = ents;
+          if (!ents.length) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;padding:40px;color:var(--ink-light)'>No registered enterprises.</td></tr>"; return; }
+          tbody.innerHTML = ents.map(ent => {
+            const banned = ent.is_banned === 1;
+            const statusBadge = banned
+              ? "<span class='badge red'>🚫 Blacklisted</span><div style='font-size:.7rem;color:#991b1b;max-width:160px'>" + escapeHtml(ent.ban_reason || "Statutory Breach") + "</div>"
+              : "<span class='badge green'>✓ Active &amp; Eligible</span>";
+            const actionBtn = banned
+              ? "<button class='btn emerald sm' onclick='unbanEnterprise(" + ent.id + ")'>✓ Reinstate</button>"
+              : "<button class='btn danger sm' onclick='openBanModal(" + ent.id + ")'>🚫 Ban</button>";
+            return "<tr>" +
+              "<td><b style='color:var(--navy)'>" + escapeHtml(ent.company_name) + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>Registered: " + new Date(ent.created_at).toLocaleDateString() + "</div></td>" +
+              "<td><span style='font-family:monospace;font-size:.8rem;font-weight:600'>" + escapeHtml(ent.registration_no || "GSTIN-PENDING") + "</span></td>" +
+              "<td><b>" + escapeHtml(ent.contact_person || "Contact Head") + "</b><div style='font-size:.72rem;color:var(--ink-light)'>" + escapeHtml(ent.email) + " · " + escapeHtml(ent.phone || "") + "</div></td>" +
+              "<td><b>" + escapeHtml(ent.district || "Maharashtra") + "</b></td>" +
+              "<td><span class='badge gray'>" + (ent.applications_count || 0) + " Dossiers</span></td>" +
+              "<td>" + statusBadge + "</td><td>" + actionBtn + "</td></tr>";
+          }).join("");
+        } catch (err) {
+          tbody.innerHTML = "<tr><td colspan='7' style='color:red;text-align:center;padding:20px'>Failed: " + err.message + "</td></tr>";
+        }
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+
+      function openBanModal(id) {
+        activeBanEnterpriseId = id;
+        const ent = allEnterprises.find(e => e.id === id);
+        document.getElementById("banTargetName").textContent = ent ? ent.company_name : ("Enterprise #" + id);
+        document.getElementById("banReasonInput").value = "";
+        document.getElementById("banModalMsg").textContent = "";
+        document.getElementById("banModal").style.display = "grid";
+      }
+
+      function closeBanModal() {
+        activeBanEnterpriseId = null;
+        document.getElementById("banModal").style.display = "none";
+      }
+
+      function setBanChip(r) {
+        document.getElementById("banReasonInput").value = r;
+      }
+
+      async function submitBanEnterprise() {
+        if (!activeBanEnterpriseId) return;
+        const reason = document.getElementById("banReasonInput").value.trim();
+        if (!reason) { show("banModalMsg", "Specify statutory grounds."); return; }
+        try {
+          show("banModalMsg", "Enforcing blacklist…");
+          const res = await api("/api/admin/enterprises/" + activeBanEnterpriseId + "/ban", { method: "POST", body: JSON.stringify({ reason }) });
+          closeBanModal(); loadEnterprises(); alert(res.message);
+        } catch (err) { show("banModalMsg", err.message); }
+      }
+
+      async function unbanEnterprise(id) {
+        const ent = allEnterprises.find(e => e.id === id);
+        const name = ent ? ent.company_name : ("Enterprise #" + id);
+        if (!confirm("Reinstate '" + name + "' and restore permit rights?")) return;
+        try {
+          const res = await api("/api/admin/enterprises/" + id + "/unban", { method: "POST", body: JSON.stringify({}) });
+          loadEnterprises(); alert(res.message);
+        } catch (err) { alert("Failed: " + err.message); }
+      }
+
+      function calculatePsi() {
+        const inv = parseFloat(document.getElementById("psiInvestment")?.value) || 10;
+        const taluka = document.getElementById("psiTaluka")?.value || "C";
+        const msme = document.getElementById("psiMsme")?.value || "Small";
+
+        let subsidyPct = 40;
+        let stampDuty = "100% Exemption";
+        let elecYears = 7;
+        if (taluka === "B") { subsidyPct = 40; elecYears = 7; }
+        else if (taluka === "C") { subsidyPct = 50; elecYears = 8; }
+        else if (taluka === "D") { subsidyPct = 60; elecYears = 9; }
+        else if (taluka === "D_PLUS") { subsidyPct = 80; elecYears = 10; }
+        else if (taluka === "VIDARBHA") { subsidyPct = 85; elecYears = 10; }
+        else { subsidyPct = 25; stampDuty = "50% Exemption"; elecYears = 5; }
+
+        const maxSubsidyCap = msme === "Micro" ? 0.5 : msme === "Small" ? 2.5 : msme === "Medium" ? 7.5 : 25.0;
+        const estimatedSubsidy = Math.min(inv * (subsidyPct / 100), maxSubsidyCap);
+
+        document.getElementById("psiResultBox").innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-size:.78rem;color:var(--ink-light);text-transform:uppercase;font-weight:700">Estimated Capital Subsidy</div>
+              <div style="font-size:1.5rem;font-weight:800;color:#15803d">&#8377; ${estimatedSubsidy.toFixed(2)} Crores (${subsidyPct}% of FCI)</div>
+            </div>
+            <div style="text-align:right">
+              <span class="badge green">Eligible for PSI 2024</span>
+              <div style="font-size:.75rem;color:var(--ink-muted);margin-top:2px">Cap: &#8377; ${maxSubsidyCap} Cr for ${msme}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:10px;margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:12px;font-size:.82rem">
+            <div><b>Stamp Duty:</b> <span style="color:#1e40af">${stampDuty}</span></div>
+            <div><b>Electricity Duty Waiver:</b> <span style="color:#15803d">${elecYears} Years (100% waiver)</span></div>
+            <div><b>MSInS Innovation Voucher:</b> <span style="color:#d97706">&#8377; 15 Lakhs Seed Grant</span></div>
+          </div>
+        `;
+      }
+
+      document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
+
+      guard("official").then(user => {
+        currentOfficer = user;
+        loadApplications();
+        calculatePsi();
+      });
+    </script>
+  </body>
+</html>
+

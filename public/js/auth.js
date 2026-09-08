@@ -458,7 +458,7 @@ if (loginForm) {
 
       location =
         currentRole === "official"
-          ? "/pages/officer-dashboard.html"
+          ? getOfficerDashboardUrl(d.user)
           : "/pages/applicant-dashboard.html";
     } catch (x) {
       show("msg", x.message);

@@ -478,6 +478,13 @@
       document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
 
       guard("official").then(user => {
+        if (user) {
+          const target = getOfficerDashboardUrl(user);
+          if (target && !target.endsWith("officer-dashboard.html")) {
+            location.replace(target);
+            return;
+          }
+        }
         currentOfficer = user;
         setupDeptUI(user);
         loadApplications();
