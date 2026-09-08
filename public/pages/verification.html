@@ -48,7 +48,7 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
           <div class="sidebar-header">Core Operations</div>
-          <a href="officer-dashboard.html">
+          <a href="officer-dashboard.html" id="sidebarQueueLink">
             <span class="sidebar-icon">📋</span> Priority Queue
           </a>
           <a href="verification.html" class="active">
@@ -237,6 +237,26 @@
           <div class="dossier-layout">
             <!-- LEFT COLUMN: Embedded Document Vault & Inline Inspector -->
             <div>
+              <!-- Departmental Vault Scrutiny Badge & Jurisdiction Banner -->
+              <div id="vaultScopeBanner" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span id="vaultScopeIcon" style="font-size: 1.4rem;">🔒</span>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 800; font-size: 0.95rem; color: var(--navy);" id="vaultScopeTitle">Department Scrutiny Vault</span>
+                      <span id="vaultScopeBadge" class="badge blue">Department Vault</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); margin-top: 2px;" id="vaultScopeSubtitle">
+                      Access restricted to documents and blueprints under your departmental jurisdiction.
+                    </div>
+                  </div>
+                </div>
+                <!-- Filter Pills for Apex Officer (MSInS) -->
+                <div id="apexDeptFilters" style="display: none; gap: 6px; flex-wrap: wrap;">
+                  <!-- Injected via JavaScript for Apex Officer -->
+                </div>
+              </div>
+
               <div class="doc-viewer-container">
                 <div class="doc-viewer-header">
                   <div class="doc-viewer-title">
@@ -587,8 +607,77 @@
       let activeDocId = null;
       let currentUser = null;
 
+      function updateVaultScopeBanner() {
+        const title = document.getElementById("vaultScopeTitle");
+        const badge = document.getElementById("vaultScopeBadge");
+        const subtitle = document.getElementById("vaultScopeSubtitle");
+        const icon = document.getElementById("vaultScopeIcon");
+        const apexFilters = document.getElementById("apexDeptFilters");
+
+        if (!currentUser) return;
+
+        const queueLink = document.getElementById("sidebarQueueLink");
+        if (queueLink) {
+          if (currentUser.deptCode === "mpcb") queueLink.href = "officer-dashboard-mpcb.html";
+          else if (currentUser.deptCode === "midc") queueLink.href = "officer-dashboard-midc.html";
+          else if (currentUser.deptCode === "dish") queueLink.href = "officer-dashboard-dish.html";
+          else if (currentUser.deptCode === "fire") queueLink.href = "officer-dashboard-fire.html";
+          else if (currentUser.isApex) queueLink.href = "officer-dashboard-msins.html";
+        }
+
+        if (currentUser.isApex) {
+          icon.textContent = "🏛️";
+          title.textContent = "Apex Multi-Department Scrutiny Vault";
+          badge.textContent = "Apex Authority (All Vaults)";
+          badge.className = "badge blue";
+          subtitle.textContent = "Statutory oversight over all departmental plans (MPCB, MIDC, DISH, Fire).";
+          if (apexFilters) apexFilters.style.display = "flex";
+        } else {
+          const dept = currentUser.deptCode || "midc";
+          const info = {
+            mpcb: {
+              icon: "🌿",
+              title: "MPCB Environmental Scrutiny Vault",
+              badge: "MPCB Vault Only",
+              subtitle: "Restricted strictly to Environmental Management & ETP Blueprints under MPCB jurisdiction.",
+            },
+            midc: {
+              icon: "🏗️",
+              title: "MIDC Civil & Infrastructure Vault",
+              badge: "MIDC Vault Only",
+              subtitle: "Restricted strictly to Site Master Layouts & Civil Infrastructure Drawings under MIDC jurisdiction.",
+            },
+            dish: {
+              icon: "⚙️",
+              title: "DISH Factory Safety Vault",
+              badge: "DISH Vault Only",
+              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under DISH jurisdiction.",
+            },
+            fire: {
+              icon: "🚒",
+              title: "Maharashtra Fire Services Vault",
+              badge: "Fire Services Vault Only",
+              subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Fire Services jurisdiction.",
+            },
+          }[dept] || {
+            icon: "🔒",
+            title: "Department Scrutiny Vault",
+            badge: "Department Vault",
+            subtitle: "Restricted strictly to documents under your departmental jurisdiction.",
+          };
+
+          icon.textContent = info.icon;
+          title.textContent = info.title;
+          badge.textContent = info.badge;
+          badge.className = "badge orange";
+          subtitle.textContent = info.subtitle;
+          if (apexFilters) apexFilters.style.display = "none";
+        }
+      }
+
       async function init() {
         currentUser = await guard("official");
+        updateVaultScopeBanner();
 
         // Load all applications to populate quick switcher
         try {
@@ -696,17 +785,89 @@
         }
       }
 
-      function renderDocuments(docs) {
+      let currentDeptFilter = "all";
+
+      function setDocFilter(dept) {
+        currentDeptFilter = dept;
+        if (currentDossier) {
+          renderDocuments(currentDossier.documents || []);
+        }
+      }
+
+      function getDocDepartment(d) {
+        if (!d) return "other";
+        if (d.department) return d.department;
+        const plan = d.plan_type || "";
+        if (plan === "environmental_plan") return "mpcb";
+        if (plan === "civil_plan") return "midc";
+        if (plan === "factory_safety_plan") return "dish";
+        if (plan === "fire_safety_plan") return "fire";
+        const text = `${d.document_type || ""} ${d.original_name || ""}`.toLowerCase();
+        if (text.includes("environment") || text.includes("effluent") || text.includes("etp") || text.includes("water") || text.includes("air") || text.includes("mpcb")) return "mpcb";
+        if (text.includes("civil") || text.includes("site") || text.includes("layout") || text.includes("building") || text.includes("midc")) return "midc";
+        if (text.includes("safety") || text.includes("factory") || text.includes("machinery") || text.includes("hazard") || text.includes("dish")) return "dish";
+        if (text.includes("fire") || text.includes("hydrant") || text.includes("evacuation") || text.includes("sprinkler")) return "fire";
+        return "other";
+      }
+
+      const DEPT_BADGES = {
+        mpcb: { name: "MPCB (Env)", icon: "🌿", color: "#166534", bg: "#dcfce7" },
+        midc: { name: "MIDC (Civil)", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
+        dish: { name: "DISH (Safety)", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
+        fire: { name: "Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
+        other: { name: "General Vault", icon: "📄", color: "#475569", bg: "#f1f5f9" },
+      };
+
+      function renderDocuments(allDocs) {
         const tabsContainer = document.getElementById("docTabsList");
         const docFrame = document.getElementById("docFrame");
         const docEmpty = document.getElementById("docEmptyNotice");
+        const apexFilters = document.getElementById("apexDeptFilters");
 
-        if (docs.length === 0) {
+        // Populate filter pills for MSInS Apex Officer
+        if (currentUser && currentUser.isApex && apexFilters) {
+          const counts = { all: allDocs.length, mpcb: 0, midc: 0, dish: 0, fire: 0 };
+          allDocs.forEach((d) => {
+            const dept = getDocDepartment(d);
+            if (counts[dept] !== undefined) counts[dept]++;
+          });
+
+          apexFilters.innerHTML = `
+            <button class="btn sm ${currentDeptFilter === "all" ? "navy" : "outline"}" onclick="setDocFilter('all')" style="font-size: 0.72rem; padding: 3px 8px;">All Dossiers (${counts.all})</button>
+            <button class="btn sm ${currentDeptFilter === "mpcb" ? "emerald" : "outline"}" onclick="setDocFilter('mpcb')" style="font-size: 0.72rem; padding: 3px 8px;">🌿 MPCB (${counts.mpcb})</button>
+            <button class="btn sm ${currentDeptFilter === "midc" ? "blue" : "outline"}" onclick="setDocFilter('midc')" style="font-size: 0.72rem; padding: 3px 8px;">🏗️ MIDC (${counts.midc})</button>
+            <button class="btn sm ${currentDeptFilter === "dish" ? "saffron" : "outline"}" onclick="setDocFilter('dish')" style="font-size: 0.72rem; padding: 3px 8px;">⚙️ DISH (${counts.dish})</button>
+            <button class="btn sm ${currentDeptFilter === "fire" ? "rust" : "outline"}" onclick="setDocFilter('fire')" style="font-size: 0.72rem; padding: 3px 8px;">🚒 Fire (${counts.fire})</button>
+          `;
+        }
+
+        // Apply departmental isolation
+        let filteredDocs = allDocs;
+        if (!currentUser || !currentUser.isApex) {
+          const dept = currentUser ? currentUser.deptCode : null;
+          if (dept) {
+            filteredDocs = allDocs.filter((d) => getDocDepartment(d) === dept);
+          }
+        } else if (currentDeptFilter !== "all") {
+          filteredDocs = allDocs.filter((d) => getDocDepartment(d) === currentDeptFilter);
+        }
+
+        if (filteredDocs.length === 0) {
           docFrame.style.display = "none";
           docEmpty.style.display = "block";
-          tabsContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.78rem; padding: 6px;">No documents uploaded.</span>`;
-          document.getElementById("activeDocTitle").textContent =
-            "No document available";
+          const deptLabel = !currentUser.isApex
+            ? DEPT_BADGES[currentUser.deptCode]?.name || "Your Department"
+            : currentDeptFilter.toUpperCase();
+          docEmpty.innerHTML = `
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📁</div>
+            <h3 style="margin-bottom: 6px;">No Documents in Active Vault Scope</h3>
+            <p style="color: var(--ink-light); font-size: 0.82rem;">
+              No plans or blueprints uploaded for <b>${deptLabel}</b> in this application dossier.
+            </p>
+          `;
+          tabsContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.78rem; padding: 6px;">No documents available in this vault.</span>`;
+          document.getElementById("activeDocTitle").textContent = "No document available";
+          activeDocId = null;
           return;
         }
 
@@ -714,27 +875,36 @@
         docEmpty.style.display = "none";
 
         // Generate tabs
-        tabsContainer.innerHTML = docs
-          .map(
-            (doc, idx) => `
-          <button class="doc-selector-tab ${idx === 0 ? "active" : ""}" id="docTab_${doc.id}" onclick="selectDocument(${doc.id})">
-            <span>📄</span>
-            <span>${doc.original_name}</span>
-            <span class="badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}" style="padding: 2px 6px; font-size: 0.65rem;">
-              ${doc.verification_status || "Pending"}
-            </span>
-          </button>
-        `,
-          )
+        tabsContainer.innerHTML = filteredDocs
+          .map((doc, idx) => {
+            const dept = getDocDepartment(doc);
+            const badge = DEPT_BADGES[dept] || DEPT_BADGES.other;
+            return `
+            <button class="doc-selector-tab ${idx === 0 ? "active" : ""}" id="docTab_${doc.id}" onclick="selectDocument(${doc.id})">
+              <span style="font-size: 1.15rem;">${badge.icon}</span>
+              <div style="flex: 1; text-align: left; overflow: hidden; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${doc.original_name}</div>
+                <div style="font-size: 0.68rem; color: #64748b; margin-top: 1px;">
+                  <span style="background: ${badge.bg}; color: ${badge.color}; font-weight: 700; padding: 1px 4px; border-radius: 3px; font-size: 0.62rem;">${badge.name}</span>
+                  <span>${doc.document_type || "Plan"}</span>
+                </div>
+              </div>
+              <span class="badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}" style="padding: 2px 6px; font-size: 0.65rem;">
+                ${doc.verification_status || "Pending"}
+              </span>
+            </button>
+          `;
+          })
           .join("");
 
-        // Select first document by default
-        selectDocument(docs[0].id);
+        // Select first document by default if activeDocId is not in filteredDocs
+        const hasCurrent = filteredDocs.some((d) => d.id === activeDocId);
+        selectDocument(hasCurrent ? activeDocId : filteredDocs[0].id);
       }
 
       function selectDocument(docId) {
         activeDocId = docId;
-        const docs = currentDossier.documents || [];
+        const docs = currentDossier ? (currentDossier.documents || []) : [];
         const doc = docs.find((d) => d.id === docId);
         if (!doc) return;
 
@@ -745,20 +915,23 @@
         const activeTab = document.getElementById(`docTab_${docId}`);
         if (activeTab) activeTab.classList.add("active");
 
-        // Update viewer header
-        document.getElementById("activeDocTitle").textContent =
-          `${doc.document_type || "Document"}: ${doc.original_name} (${formatBytes(doc.size)})`;
+        const dept = getDocDepartment(doc);
+        const badge = DEPT_BADGES[dept] || DEPT_BADGES.other;
 
-        const badge = document.getElementById("activeDocBadge");
-        badge.textContent = doc.verification_status || "Pending";
-        badge.className = `badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}`;
+        // Update viewer header
+        document.getElementById("activeDocTitle").innerHTML =
+          `<span style="background:${badge.bg}; color:${badge.color}; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700; margin-right:6px;">${badge.icon} ${badge.name}</span> <span>${doc.document_type || "Document"}: <b>${doc.original_name}</b> (${formatBytes(doc.size)})</span>`;
+
+        const statusBadge = document.getElementById("activeDocBadge");
+        statusBadge.textContent = doc.verification_status || "Pending";
+        statusBadge.className = `badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}`;
 
         document.getElementById("btnDocExternal").href =
           `/api/documents/${doc.id}/view`;
         document.getElementById("btnDocDownload").href =
           `/api/documents/${doc.id}`;
 
-        // CRITICAL: Point the iframe directly to the inline view endpoint
+        // Point iframe to inline view endpoint
         const frame = document.getElementById("docFrame");
         frame.src = `/api/documents/${doc.id}/view`;
 
@@ -782,7 +955,7 @@
           show("docMsg", `Document marked as ${status}.`, true);
           loadDossier(currentAppId);
         } catch (err) {
-          show("docMsg", err.message);
+          show("docMsg", err.message || "Failed to update document status");
         }
       }
 

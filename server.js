@@ -205,6 +205,17 @@ try {
   db.prepare("UPDATE documents SET plan_type = 'fire_safety_plan' WHERE (document_type LIKE '%Fire%' OR document_type LIKE '%Hydrant%' OR document_type LIKE '%Evacuation%') AND (plan_type IS NULL OR plan_type = '')").run();
 } catch (_) {}
 
+try {
+  db.exec("ALTER TABLE documents ADD COLUMN department TEXT;");
+} catch (_) {}
+
+try {
+  db.prepare("UPDATE documents SET department = 'mpcb' WHERE plan_type = 'environmental_plan' OR document_type LIKE '%Effluent%' OR document_type LIKE '%Environment%' OR document_type LIKE '%Water%'").run();
+  db.prepare("UPDATE documents SET department = 'midc' WHERE plan_type = 'civil_plan' OR document_type LIKE '%Site%' OR document_type LIKE '%Civil%' OR document_type LIKE '%Layout%'").run();
+  db.prepare("UPDATE documents SET department = 'dish' WHERE plan_type = 'factory_safety_plan' OR document_type LIKE '%Safety%' OR document_type LIKE '%Factory%' OR document_type LIKE '%Hazard%'").run();
+  db.prepare("UPDATE documents SET department = 'fire' WHERE plan_type = 'fire_safety_plan' OR document_type LIKE '%Fire%' OR document_type LIKE '%Hydrant%' OR document_type LIKE '%Evacuation%'").run();
+} catch (_) {}
+
 function determinePlanType(docType, explicitType) {
   if (explicitType && ["environmental_plan", "civil_plan", "factory_safety_plan", "fire_safety_plan"].includes(explicitType)) {
     return explicitType;
@@ -223,6 +234,66 @@ function determinePlanType(docType, explicitType) {
     return "fire_safety_plan";
   }
   return "supporting_doc";
+}
+
+function getDocumentDepartment(doc) {
+  if (!doc) return null;
+  const planType = doc.plan_type || "";
+  if (planType === "environmental_plan") return "mpcb";
+  if (planType === "civil_plan") return "midc";
+  if (planType === "factory_safety_plan") return "dish";
+  if (planType === "fire_safety_plan") return "fire";
+
+  const lowerType = String(doc.document_type || "").toLowerCase();
+  const lowerName = String(doc.original_name || "").toLowerCase();
+  const text = `${lowerType} ${lowerName}`;
+
+  if (
+    text.includes("environment") ||
+    text.includes("effluent") ||
+    text.includes("etp") ||
+    text.includes("water balance") ||
+    text.includes("air emission") ||
+    text.includes("pollution") ||
+    text.includes("mpcb") ||
+    text.includes("cte")
+  ) {
+    return "mpcb";
+  }
+  if (
+    text.includes("civil") ||
+    text.includes("site") ||
+    text.includes("layout") ||
+    text.includes("building") ||
+    text.includes("midc") ||
+    text.includes("fsi") ||
+    text.includes("far") ||
+    text.includes("setback") ||
+    text.includes("land")
+  ) {
+    return "midc";
+  }
+  if (
+    text.includes("factory") ||
+    text.includes("dish") ||
+    text.includes("safety") ||
+    text.includes("hazard") ||
+    text.includes("machinery") ||
+    text.includes("worker") ||
+    text.includes("containment")
+  ) {
+    return "dish";
+  }
+  if (
+    text.includes("fire") ||
+    text.includes("hydrant") ||
+    text.includes("evacuation") ||
+    text.includes("sprinkler") ||
+    text.includes("pump")
+  ) {
+    return "fire";
+  }
+  return null;
 }
 
 // Seed Default Accounts & Sample Demo Data for Maharashtra State Innovation Society & Departments
@@ -489,14 +560,14 @@ function seedInitialData() {
     const fireFile = seedDummyPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
 
     const insertDocStmt = db.prepare(`
-      INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, plan_type)
-      VALUES (?, ?, ?, ?, ?, 'application/pdf', ?, ?, ?, ?)
+      INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, plan_type, department)
+      VALUES (?, ?, ?, ?, ?, 'application/pdf', ?, ?, ?, ?, ?)
     `);
 
-    insertDocStmt.run(appId1, applicantId, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', envFile.storedName, envFile.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan');
-    insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan');
-    insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan');
-    insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan');
+    insertDocStmt.run(appId1, applicantId, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', envFile.storedName, envFile.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan', 'mpcb');
+    insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan', 'midc');
+    insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan', 'dish');
+    insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan', 'fire');
 
     // Add query and scheduled inspection
     const officerRow = db
@@ -516,6 +587,46 @@ function seedInitialData() {
         VALUES (?, ?, 'Directorate of Industrial Safety & Health (DISH)', date('now', '+3 days'), 'Er. V. A. Shinde (Joint Director of Safety)', 'Scheduled', 'Combined joint inspection with Fire Services for machine guarding and egress clearance.')
       `,
       ).run(appId1, officerRow.id);
+    }
+  }
+
+  // Ensure application 1 has all 4 departmental documents seeded
+  const app1 = db.prepare("SELECT id, user_id FROM applications WHERE id=1").get();
+  if (app1) {
+    const existingDocs = db.prepare("SELECT plan_type, department FROM documents WHERE application_id=1").all();
+    const hasEnv = existingDocs.some(d => d.plan_type === 'environmental_plan' || d.department === 'mpcb');
+    const hasCivil = existingDocs.some(d => d.plan_type === 'civil_plan' || d.department === 'midc');
+    const hasSafety = existingDocs.some(d => d.plan_type === 'factory_safety_plan' || d.department === 'dish');
+    const hasFire = existingDocs.some(d => d.plan_type === 'fire_safety_plan' || d.department === 'fire');
+
+    function seedPdf(docTitle, docFilename) {
+      const storedName = `${docFilename.replace(/\.pdf$/, '')}_${Date.now()}_${Math.floor(Math.random()*1000)}.pdf`;
+      const filePath = path.join(uploadsDir, storedName);
+      const content = `%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>/Contents 4 0 R>>endobj\n4 0 obj<</Length 200>>stream\nBT\n/F1 16 Tf\n50 720 Td\n(GOVERNMENT OF MAHARASHTRA - SINGLE WINDOW SYSTEM)\nTj\n0 -30 Td\n(ENTERPRISE: Sahyadri Precision Engineering Pvt Ltd)\nTj\n0 -25 Td\n(DOCUMENT: ${docTitle})\nTj\n0 -25 Td\n(STATUTORY CLEARANCE: Verified & Digitally Authenticated)\nTj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000010 00000 n \n0000000060 00000 n \n0000000117 00000 n \n0000000214 00000 n \ntrailer<</Size 5/Root 1 0 R>>\nstartxref\n460\n%%EOF`;
+      fs.writeFileSync(filePath, content);
+      return { storedName, size: Buffer.byteLength(content) };
+    }
+
+    const insertDocStmt = db.prepare(`
+      INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, plan_type, department)
+      VALUES (?, ?, ?, ?, ?, 'application/pdf', ?, ?, ?, ?, ?)
+    `);
+
+    if (!hasEnv) {
+      const f = seedPdf("Environmental Management & ETP Scheme", "Chakan_Environmental_Plan.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', f.storedName, f.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan', 'mpcb');
+    }
+    if (!hasCivil) {
+      const f = seedPdf("Industrial Site Master Layout Plan", "Chakan_Site_Layout_Plan.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', f.storedName, f.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan', 'midc');
+    }
+    if (!hasSafety) {
+      const f = seedPdf("Factory Safety & Machinery Layout Blueprint", "Chakan_Factory_Safety_Plan.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', f.storedName, f.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan', 'dish');
+    }
+    if (!hasFire) {
+      const f = seedPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', f.storedName, f.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan', 'fire');
     }
   }
 }
@@ -2007,10 +2118,10 @@ app.get("/api/applications/:id", auth, (req, res) => {
     } catch (_) {}
 
     // Fetch documents
-    const documents = db
+    let documents = db
       .prepare(
         `
-      SELECT id, document_type, plan_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, created_at
+      SELECT id, document_type, plan_type, department, original_name, stored_name, mime_type, size, verification_status, officer_remarks, created_at
       FROM documents
       WHERE application_id = ?
       ORDER BY created_at ASC
@@ -2018,12 +2129,19 @@ app.get("/api/applications/:id", auth, (req, res) => {
       )
       .all(appId);
 
-    // Map plans for instant department scrutiny
-    const plans = {
+    // Ensure department is populated for each document
+    documents = documents.map((d) => ({
+      ...d,
+      department: d.department || getDocumentDepartment(d),
+    }));
+
+    // Map all statutory plans
+    const allPlans = {
       environmental:
         documents.find(
           (d) =>
             d.plan_type === "environmental_plan" ||
+            d.department === "mpcb" ||
             (d.document_type || "").toLowerCase().includes("effluent") ||
             (d.document_type || "").toLowerCase().includes("environment") ||
             (d.document_type || "").toLowerCase().includes("water"),
@@ -2032,6 +2150,7 @@ app.get("/api/applications/:id", auth, (req, res) => {
         documents.find(
           (d) =>
             d.plan_type === "civil_plan" ||
+            d.department === "midc" ||
             (d.document_type || "").toLowerCase().includes("site") ||
             (d.document_type || "").toLowerCase().includes("civil") ||
             (d.document_type || "").toLowerCase().includes("layout"),
@@ -2040,6 +2159,7 @@ app.get("/api/applications/:id", auth, (req, res) => {
         documents.find(
           (d) =>
             d.plan_type === "factory_safety_plan" ||
+            d.department === "dish" ||
             (d.document_type || "").toLowerCase().includes("safety") ||
             (d.document_type || "").toLowerCase().includes("factory") ||
             (d.document_type || "").toLowerCase().includes("machinery"),
@@ -2048,11 +2168,34 @@ app.get("/api/applications/:id", auth, (req, res) => {
         documents.find(
           (d) =>
             d.plan_type === "fire_safety_plan" ||
+            d.department === "fire" ||
             (d.document_type || "").toLowerCase().includes("fire") ||
             (d.document_type || "").toLowerCase().includes("hydrant") ||
             (d.document_type || "").toLowerCase().includes("evacuation"),
         ) || null,
     };
+
+    let plans = { ...allPlans };
+
+    // Enforce departmental scoping: Non-Apex officers only receive their department's documents and plan
+    if (req.session.user.role === "official") {
+      const isApex =
+        req.session.user.isApex ||
+        req.session.user.deptCode === "msins" ||
+        req.session.user.email === "officer@udyog.gov.in";
+      if (!isApex) {
+        const officerDept = req.session.user.deptCode;
+        documents = documents.filter(
+          (d) => (d.department || getDocumentDepartment(d)) === officerDept,
+        );
+        plans = {
+          environmental: officerDept === "mpcb" ? allPlans.environmental : null,
+          civil: officerDept === "midc" ? allPlans.civil : null,
+          factorySafety: officerDept === "dish" ? allPlans.factorySafety : null,
+          fireSafety: officerDept === "fire" ? allPlans.fireSafety : null,
+        };
+      }
+    }
 
     // Fetch queries
     const queries = db
@@ -2170,12 +2313,18 @@ app.post(
       }
 
       const planType = determinePlanType(req.body.documentType, req.body.planType);
+      const department = getDocumentDepartment({
+        plan_type: planType,
+        document_type: req.body.documentType,
+        original_name: req.file.originalname,
+      });
+
       const info = db
         .prepare(
           `
       INSERT INTO documents (
-        application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, plan_type
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
+        application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, plan_type, department
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?)
     `,
         )
         .run(
@@ -2187,6 +2336,7 @@ app.post(
           req.file.mimetype,
           req.file.size,
           planType,
+          department,
         );
 
       res.json({
@@ -2195,6 +2345,7 @@ app.post(
         originalName: req.file.originalname,
         documentType: req.body.documentType,
         planType,
+        department,
         size: req.file.size,
         mimeType: req.file.mimetype,
         message: "Document stored securely in the industrial vault.",
@@ -2220,10 +2371,10 @@ app.get("/api/applications/:id/documents", auth, (req, res) => {
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    const docs = db
+    let docs = db
       .prepare(
         `
-      SELECT id, document_type, plan_type, original_name, mime_type, size, verification_status, officer_remarks, created_at
+      SELECT id, document_type, plan_type, department, original_name, mime_type, size, verification_status, officer_remarks, created_at
       FROM documents
       WHERE application_id = ?
       ORDER BY created_at ASC
@@ -2231,13 +2382,27 @@ app.get("/api/applications/:id/documents", auth, (req, res) => {
       )
       .all(req.params.id);
 
+    // If official and not Apex, restrict to their department only
+    if (req.session.user.role === "official") {
+      const isApex =
+        req.session.user.isApex ||
+        req.session.user.deptCode === "msins" ||
+        req.session.user.email === "officer@udyog.gov.in";
+      if (!isApex) {
+        const officerDept = req.session.user.deptCode;
+        docs = docs.filter(
+          (d) => (d.department || getDocumentDepartment(d)) === officerDept,
+        );
+      }
+    }
+
     res.json(docs);
   } catch (err) {
     res.status(500).json({ error: "Failed to list documents" });
   }
 });
 
-// CRITICAL FIX: Inline document preview for Government Officials & Applicants
+// CRITICAL FIX: Inline document preview for Government Officials & Applicants with Departmental Vault Scrutiny
 app.get("/api/documents/:id/view", auth, (req, res) => {
   try {
     const docId = req.params.id;
@@ -2263,6 +2428,25 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
         .send("Access Denied: You do not possess clearance for this document.");
     }
 
+    // Official access check: non-Apex officials can only view their own department's documents
+    if (req.session.user.role === "official") {
+      const isApex =
+        req.session.user.isApex ||
+        req.session.user.deptCode === "msins" ||
+        req.session.user.email === "officer@udyog.gov.in";
+      if (!isApex) {
+        const officerDept = req.session.user.deptCode;
+        const docDept = d.department || getDocumentDepartment(d);
+        if (docDept && docDept !== officerDept) {
+          return res
+            .status(403)
+            .send(
+              "Access Denied: Departmental restriction. You can only inspect documents assigned to your department vault.",
+            );
+        }
+      }
+    }
+
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
       return res
@@ -2284,7 +2468,7 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
   }
 });
 
-// Download attachment
+// Download attachment with Departmental Vault Scrutiny
 app.get("/api/documents/:id", auth, (req, res) => {
   try {
     const d = db
@@ -2303,6 +2487,24 @@ app.get("/api/documents/:id", auth, (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
+    // Official access check: non-Apex officials can only download their own department's documents
+    if (req.session.user.role === "official") {
+      const isApex =
+        req.session.user.isApex ||
+        req.session.user.deptCode === "msins" ||
+        req.session.user.email === "officer@udyog.gov.in";
+      if (!isApex) {
+        const officerDept = req.session.user.deptCode;
+        const docDept = d.department || getDocumentDepartment(d);
+        if (docDept && docDept !== officerDept) {
+          return res.status(403).json({
+            error:
+              "Access Denied: Departmental restriction. You cannot download documents outside your department vault.",
+          });
+        }
+      }
+    }
+
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "File not found" });
@@ -2314,10 +2516,28 @@ app.get("/api/documents/:id", auth, (req, res) => {
   }
 });
 
-// Officer document verification
+// Officer document verification with Departmental Vault Scrutiny
 app.patch("/api/documents/:id/verify", auth, official, (req, res) => {
   try {
     const { status, remarks } = req.body;
+    const d = db.prepare("SELECT * FROM documents WHERE id=?").get(req.params.id);
+    if (!d) return res.status(404).json({ error: "Document not found" });
+
+    const isApex =
+      req.session.user.isApex ||
+      req.session.user.deptCode === "msins" ||
+      req.session.user.email === "officer@udyog.gov.in";
+    if (!isApex) {
+      const officerDept = req.session.user.deptCode;
+      const docDept = d.department || getDocumentDepartment(d);
+      if (docDept && docDept !== officerDept) {
+        return res.status(403).json({
+          error:
+            "Access Denied: You cannot verify or modify scrutiny on documents outside your department.",
+        });
+      }
+    }
+
     db.prepare(
       `
       UPDATE documents
