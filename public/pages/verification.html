@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Dossier Scrutiny & Vault | Udyog Samyog - Govt. of Maharashtra
+    </title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">🏛️</div>
+          <div class="brand-text">
+            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
+            <div class="brand-tag">
+              Dossier Scrutiny & Document Verification · Govt. of Maharashtra
+            </div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <a class="btn outline sm" href="officer-dashboard.html"
+            >← Back to Application Queue</a
+          >
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>O</div>
+            <div>
+              <div style="font-weight: 700; line-height: 1.2" data-user-name>
+                Scrutiny Officer
+              </div>
+              <div
+                style="font-size: 0.7rem; color: var(--ink-light)"
+                data-user-dept
+              >
+                Industries & MSInS
+              </div>
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+          <div class="sidebar-header">Core Operations</div>
+          <a href="officer-dashboard.html">
+            <span class="sidebar-icon">📋</span> Priority Queue
+          </a>
+          <a href="verification.html" class="active">
+            <span class="sidebar-icon">🔍</span> Dossier Scrutiny & Vault
+          </a>
+          <a href="analytics.html">
+            <span class="sidebar-icon">📊</span> SLA Intelligence
+          </a>
+          <div class="sidebar-footer">
+            <b style="color: #ffffff">Statutory Scrutiny Checklist</b><br />
+            Inspect layout plans, water balance, power load approvals, and fire
+            safety access prior to issuing clearance.
+          </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main">
+          <!-- Application Header Card -->
+          <div class="panel" style="margin-bottom: 24px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 16px;
+              "
+            >
+              <div>
+                <div class="page-pretitle">
+                  Single Window Application Dossier
+                </div>
+                <h1
+                  style="
+                    font-size: 1.7rem;
+                    color: var(--navy);
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                  "
+                >
+                  <span id="headerAppNo">Loading...</span>
+                  <span id="headerStatusBadge" class="badge orange"
+                    >In Progress</span
+                  >
+                  <span id="headerRiskBadge" class="risk-tag risk-orange"
+                    >Orange Risk</span
+                  >
+                </h1>
+                <p
+                  style="
+                    color: var(--ink-light);
+                    font-size: 0.95rem;
+                    margin-top: 4px;
+                  "
+                >
+                  <b id="headerCompanyName" style="color: var(--navy)">---</b> ·
+                  <span id="headerRegNo">---</span> ·
+                  <span id="headerSector">---</span> ·
+                  <span id="headerDistrict">---</span>
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 10px; align-items: center">
+                <select
+                  id="quickAppSelect"
+                  onchange="switchApplication(this.value)"
+                  style="
+                    min-width: 220px;
+                    margin-top: 0;
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
+                  "
+                >
+                  <option value="">Switch to Another Dossier...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Essential Industrial Metrics Bar -->
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 12px;
+                margin-top: 20px;
+                padding-top: 18px;
+                border-top: 1px solid var(--line);
+              "
+            >
+              <div>
+                <span class="input-hint">Capital Investment</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramCost"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">Employment</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramEmp"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">Land Area</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramLand"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">Water Requirement</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramWater"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">Connected Power</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramPower"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">Hazardous Material</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramHazard"
+                >
+                  ---
+                </div>
+              </div>
+              <div>
+                <span class="input-hint">MSME Tier</span>
+                <div
+                  style="
+                    font-weight: 800;
+                    color: var(--navy);
+                    font-size: 1.15rem;
+                  "
+                  id="paramMsme"
+                >
+                  ---
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dossier Split Workspace: Left Document Vault vs Right Scrutiny Actions -->
+          <div class="dossier-layout">
+            <!-- LEFT COLUMN: Embedded Document Vault & Inline Inspector -->
+            <div>
+              <div class="doc-viewer-container">
+                <div class="doc-viewer-header">
+                  <div class="doc-viewer-title">
+                    <span>📄</span>
+                    <span id="activeDocTitle"
+                      >Select a submitted document to inspect</span
+                    >
+                  </div>
+                  <div class="doc-viewer-actions">
+                    <span id="activeDocBadge" class="badge gray">Pending</span>
+                    <a
+                      id="btnDocExternal"
+                      class="btn outline sm"
+                      style="color: #ffffff; border-color: #475569"
+                      href="#"
+                      target="_blank"
+                      title="Open Full Screen"
+                      >↗ Open</a
+                    >
+                    <a
+                      id="btnDocDownload"
+                      class="btn outline sm"
+                      style="color: #ffffff; border-color: #475569"
+                      href="#"
+                      download
+                      title="Download Attachment"
+                      >⬇ Save</a
+                    >
+                  </div>
+                </div>
+
+                <!-- Document Frame Previewer -->
+                <div class="doc-frame-wrapper" id="docFrameWrapper">
+                  <iframe
+                    id="docFrame"
+                    class="doc-frame"
+                    src="about:blank"
+                  ></iframe>
+                  <div
+                    id="docEmptyNotice"
+                    class="doc-empty-state"
+                    style="display: none"
+                  >
+                    <h3>No Documents Uploaded Yet</h3>
+                    <p>
+                      The applicant has not yet uploaded files to this dossier.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Document Tabs List -->
+                <div class="doc-selector-list" id="docTabsList">
+                  <!-- Injected via JavaScript -->
+                </div>
+              </div>
+
+              <!-- Document Verification Scrutiny Box -->
+              <div class="panel" style="margin-top: 18px">
+                <h3 style="margin-bottom: 8px">Document Scrutiny Decision</h3>
+                <p
+                  style="
+                    font-size: 0.82rem;
+                    color: var(--ink-light);
+                    margin-bottom: 12px;
+                  "
+                >
+                  Verify that the active document complies with Maharashtra
+                  statutory standards.
+                </p>
+                <label
+                  >Officer Scrutiny Remark
+                  <input
+                    type="text"
+                    id="docScrutinyRemark"
+                    placeholder="e.g. Setbacks and road access verified per MIDC norms"
+                  />
+                </label>
+                <div style="display: flex; gap: 10px; margin-top: 12px">
+                  <button
+                    class="btn emerald"
+                    onclick="verifyActiveDocument('Verified')"
+                  >
+                    ✓ Mark Document Verified
+                  </button>
+                  <button
+                    class="btn rust"
+                    onclick="verifyActiveDocument('Deficient')"
+                  >
+                    ⚠️ Flag as Deficient
+                  </button>
+                </div>
+                <div id="docMsg" class="msg"></div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Statutory Clearances, Queries & Joint Inspection -->
+            <div>
+              <!-- 0. Department-Specific Scrutiny & Clearance Action -->
+              <div
+                class="scrutiny-card"
+                id="deptScrutinyCard"
+                style="border: 2px solid var(--navy)"
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                    "
+                  >
+                    <span id="deptIcon">🏢</span>
+                    <span id="deptScrutinyTitle"
+                      >Departmental Scrutiny Action</span
+                    >
+                  </h3>
+                  <span id="deptRoleBadge" class="badge blue"
+                    >Department Review</span
+                  >
+                </div>
+                <p
+                  id="deptScrutinyDesc"
+                  style="
+                    font-size: 0.8rem;
+                    color: var(--ink-light);
+                    margin-bottom: 12px;
+                  "
+                >
+                  Review domain-specific submissions and update statutory
+                  milestone clearance.
+                </p>
+
+                <div id="deptActionContainer">
+                  <!-- Dynamically rendered -->
+                </div>
+                <div
+                  id="deptClearanceMsg"
+                  class="msg"
+                  style="margin-top: 10px"
+                ></div>
+              </div>
+
+              <!-- 1. Parallel Departmental Approvals Checklist -->
+              <div class="scrutiny-card">
+                <h3>
+                  <span>Parallel Departmental Clearances</span>
+                  <span class="badge gray" id="clearancesCount"
+                    >5 Required</span
+                  >
+                </h3>
+                <div id="clearanceItemsList">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- 2. Interactive Clarification Query Console -->
+              <div class="scrutiny-card">
+                <h3>
+                  <span>Clarification Queries & Grievances</span>
+                  <span id="queryCountBadge" class="badge gray">0 Queries</span>
+                </h3>
+                <p
+                  style="
+                    font-size: 0.8rem;
+                    color: var(--ink-light);
+                    margin-bottom: 10px;
+                  "
+                >
+                  Raise formal queries to the applicant. The dossier will be
+                  marked as "Flagged" until the applicant provides
+                  clarifications.
+                </p>
+
+                <!-- Query History List -->
+                <div class="query-thread" id="queriesThread">
+                  <div
+                    style="
+                      text-align: center;
+                      color: var(--ink-muted);
+                      font-size: 0.8rem;
+                      padding: 20px;
+                    "
+                  >
+                    No queries raised yet.
+                  </div>
+                </div>
+
+                <!-- Raise Query Form -->
+                <div
+                  style="
+                    margin-top: 16px;
+                    padding-top: 16px;
+                    border-top: 1px solid var(--line);
+                  "
+                >
+                  <label
+                    >Raise New Query / Document Request
+                    <textarea
+                      id="queryMessage"
+                      placeholder="Specify clearly the missing information, layout discrepancy, or required statutory document..."
+                    ></textarea>
+                  </label>
+                  <button class="btn rust sm" onclick="raiseOfficerQuery()">
+                    ✉ Send Formal Query to Applicant
+                  </button>
+                  <div id="queryMsg" class="msg"></div>
+                </div>
+              </div>
+
+              <!-- 3. Joint On-Site Inspection Scheduler -->
+              <div class="scrutiny-card">
+                <h3>
+                  <span>Joint Multi-Departmental Inspection</span>
+                </h3>
+                <p
+                  style="
+                    font-size: 0.8rem;
+                    color: var(--ink-light);
+                    margin-bottom: 10px;
+                  "
+                >
+                  Coordinate simultaneous inspection with MPCB, DISH, and Fire
+                  Services to avoid repetitive site visits.
+                </p>
+
+                <div id="inspectionsList" style="margin-bottom: 12px">
+                  <!-- Dynamically loaded -->
+                </div>
+
+                <div class="formgrid">
+                  <label
+                    >Department / Agency
+                    <select id="inspDept">
+                      <option
+                        value="Combined Joint Committee (MPCB + DISH + Fire)"
+                      >
+                        Joint Committee (MPCB + DISH + Fire)
+                      </option>
+                      <option
+                        value="Directorate of Industrial Safety & Health (DISH)"
+                      >
+                        DISH (Factory Safety)
+                      </option>
+                      <option
+                        value="Maharashtra Pollution Control Board (MPCB)"
+                      >
+                        MPCB (Environmental)
+                      </option>
+                      <option value="Maharashtra Fire Services">
+                        Maharashtra Fire Services
+                      </option>
+                      <option value="MIDC Civil Engineering Wing">
+                        MIDC Civil & Infrastructure
+                      </option>
+                    </select>
+                  </label>
+                  <label
+                    >Scheduled Inspection Date
+                    <input type="date" id="inspDate" />
+                  </label>
+                </div>
+                <div class="formgrid">
+                  <label
+                    >Lead Inspector Name
+                    <input
+                      type="text"
+                      id="inspName"
+                      placeholder="e.g. Er. V. A. Shinde, Dy Director"
+                    />
+                  </label>
+                  <label
+                    >Inspection Notes
+                    <input
+                      type="text"
+                      id="inspNotes"
+                      placeholder="Machinery layout & egress validation"
+                    />
+                  </label>
+                </div>
+                <button
+                  class="btn outline sm"
+                  style="margin-top: 8px"
+                  onclick="scheduleInspection()"
+                >
+                  📅 Schedule Joint Inspection
+                </button>
+                <div id="inspMsg" class="msg"></div>
+              </div>
+
+              <!-- 4. Final Statutory Decision Panel -->
+              <div
+                class="panel"
+                style="
+                  background: #f8fafc;
+                  border: 2px solid var(--line-strong);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <h3 style="color: var(--navy); margin: 0">
+                    Final Clearance Decision
+                  </h3>
+                  <span id="finalDecisionBadge" class="badge blue"
+                    >Apex Authority</span
+                  >
+                </div>
+                <p
+                  style="
+                    font-size: 0.82rem;
+                    color: var(--ink-light);
+                    margin-bottom: 14px;
+                  "
+                >
+                  Consolidated single-window statutory approval. All
+                  departmental reports streamline here for final single-window
+                  sign-off.
+                </p>
+
+                <div id="finalDecisionContainer">
+                  <!-- Populated dynamically based on Apex authority -->
+                </div>
+                <div id="decisionMsg" class="msg"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+      let currentAppId = new URLSearchParams(location.search).get("id");
+      let currentDossier = null;
+      let activeDocId = null;
+      let currentUser = null;
+
+      async function init() {
+        currentUser = await guard("official");
+
+        // Load all applications to populate quick switcher
+        try {
+          const allApps = await api("/api/applications");
+          const switcher = document.getElementById("quickAppSelect");
+          switcher.innerHTML =
+            '<option value="">Switch to Another Dossier...</option>' +
+            allApps
+              .map(
+                (a) =>
+                  `<option value="${a.id}" ${a.id == currentAppId ? "selected" : ""}>${a.application_no} - ${a.company_name}</option>`,
+              )
+              .join("");
+
+          if (!currentAppId && allApps.length > 0) {
+            currentAppId = allApps[0].id;
+            history.replaceState(
+              null,
+              "",
+              `verification.html?id=${currentAppId}`,
+            );
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        if (currentAppId) {
+          loadDossier(currentAppId);
+        } else {
+          show(
+            "decisionMsg",
+            "No application found. Please select an application from the queue.",
+          );
+        }
+      }
+
+      function switchApplication(id) {
+        if (!id) return;
+        location = `verification.html?id=${id}`;
+      }
+
+      async function loadDossier(id) {
+        try {
+          const d = await api(`/api/applications/${id}`);
+          currentDossier = d;
+
+          // Header Info
+          document.getElementById("headerAppNo").textContent = d.application_no;
+          document.getElementById("headerCompanyName").textContent =
+            d.company_name;
+          document.getElementById("headerRegNo").textContent =
+            d.registration_no || "GSTIN-PENDING";
+          document.getElementById("headerSector").textContent =
+            d.industry_category || "General Manufacturing";
+          document.getElementById("headerDistrict").textContent =
+            `${d.district || "Pune"} (${d.location || ""})`;
+
+          // Status & Risk Badges
+          const statusBadge = document.getElementById("headerStatusBadge");
+          statusBadge.textContent = d.status;
+          statusBadge.className = `badge ${d.status === "Approved" ? "green" : d.status === "Flagged" || d.status === "Rejected" ? "red" : "orange"}`;
+
+          const riskBadge = document.getElementById("headerRiskBadge");
+          riskBadge.textContent = `${d.risk_tier} Risk Tier`;
+          riskBadge.className = `risk-tag ${d.risk_tier === "Red" ? "risk-red" : d.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
+
+          // Industrial Metrics
+          document.getElementById("paramCost").textContent = d.project_cost
+            ? `₹${d.project_cost} Cr`
+            : "---";
+          document.getElementById("paramEmp").textContent =
+            d.employment_potential ? `${d.employment_potential} Pers.` : "---";
+          document.getElementById("paramLand").textContent =
+            `${d.land_size} Acres`;
+          document.getElementById("paramWater").textContent =
+            `${d.water_use} KL/day`;
+          document.getElementById("paramPower").textContent =
+            `${d.electricity} kVA`;
+          document.getElementById("paramHazard").textContent = d.hazardous
+            ? "Yes (MPCB HWA)"
+            : "Non-Hazardous";
+          document.getElementById("paramMsme").textContent =
+            d.msme_category || "Small";
+
+          // Documents Rendering
+          renderDocuments(d.documents || []);
+
+          // Clearances Rendering
+          renderClearances(d.clearances || []);
+
+          // Department Scrutiny Milestone Rendering
+          renderDepartmentScrutiny(d);
+
+          // Final Decision Panel Rendering
+          renderFinalDecision(d);
+
+          // Queries Thread Rendering
+          renderQueries(d.queries || []);
+
+          // Inspections Rendering
+          renderInspections(d.inspections || []);
+        } catch (err) {
+          console.error(err);
+          show("decisionMsg", "Failed to load dossier: " + err.message);
+        }
+      }
+
+      function renderDocuments(docs) {
+        const tabsContainer = document.getElementById("docTabsList");
+        const docFrame = document.getElementById("docFrame");
+        const docEmpty = document.getElementById("docEmptyNotice");
+
+        if (docs.length === 0) {
+          docFrame.style.display = "none";
+          docEmpty.style.display = "block";
+          tabsContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.78rem; padding: 6px;">No documents uploaded.</span>`;
+          document.getElementById("activeDocTitle").textContent =
+            "No document available";
+          return;
+        }
+
+        docFrame.style.display = "block";
+        docEmpty.style.display = "none";
+
+        // Generate tabs
+        tabsContainer.innerHTML = docs
+          .map(
+            (doc, idx) => `
+          <button class="doc-selector-tab ${idx === 0 ? "active" : ""}" id="docTab_${doc.id}" onclick="selectDocument(${doc.id})">
+            <span>📄</span>
+            <span>${doc.original_name}</span>
+            <span class="badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}" style="padding: 2px 6px; font-size: 0.65rem;">
+              ${doc.verification_status || "Pending"}
+            </span>
+          </button>
+        `,
+          )
+          .join("");
+
+        // Select first document by default
+        selectDocument(docs[0].id);
+      }
+
+      function selectDocument(docId) {
+        activeDocId = docId;
+        const docs = currentDossier.documents || [];
+        const doc = docs.find((d) => d.id === docId);
+        if (!doc) return;
+
+        // Update active tab styles
+        document
+          .querySelectorAll(".doc-selector-tab")
+          .forEach((t) => t.classList.remove("active"));
+        const activeTab = document.getElementById(`docTab_${docId}`);
+        if (activeTab) activeTab.classList.add("active");
+
+        // Update viewer header
+        document.getElementById("activeDocTitle").textContent =
+          `${doc.document_type || "Document"}: ${doc.original_name} (${formatBytes(doc.size)})`;
+
+        const badge = document.getElementById("activeDocBadge");
+        badge.textContent = doc.verification_status || "Pending";
+        badge.className = `badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}`;
+
+        document.getElementById("btnDocExternal").href =
+          `/api/documents/${doc.id}/view`;
+        document.getElementById("btnDocDownload").href =
+          `/api/documents/${doc.id}`;
+
+        // CRITICAL: Point the iframe directly to the inline view endpoint
+        const frame = document.getElementById("docFrame");
+        frame.src = `/api/documents/${doc.id}/view`;
+
+        // Scrutiny input remark
+        document.getElementById("docScrutinyRemark").value =
+          doc.officer_remarks || "";
+      }
+
+      async function verifyActiveDocument(status) {
+        if (!activeDocId) return show("docMsg", "Select a document first.");
+        const remarks = document
+          .getElementById("docScrutinyRemark")
+          .value.trim();
+
+        try {
+          await api(`/api/documents/${activeDocId}/verify`, {
+            method: "PATCH",
+            body: JSON.stringify({ status, remarks }),
+          });
+
+          show("docMsg", `Document marked as ${status}.`, true);
+          loadDossier(currentAppId);
+        } catch (err) {
+          show("docMsg", err.message);
+        }
+      }
+
+      function renderClearances(clearances) {
+        const list = document.getElementById("clearanceItemsList");
+        document.getElementById("clearancesCount").textContent =
+          `${clearances.length} Statutory Acts`;
+
+        if (clearances.length === 0) {
+          list.innerHTML = `<p style="font-size: 0.8rem; color: var(--ink-light);">No statutory clearances configured.</p>`;
+          return;
+        }
+
+        list.innerHTML = clearances
+          .map(
+            (c) => `
+          <div class="checklist-item">
+            <input type="checkbox" ${c.status === "Approved" ? "checked" : ""} />
+            <div class="checklist-content">
+              <div class="checklist-title">${c.name}</div>
+              <div class="checklist-dept"><b>Dept:</b> ${c.dept} · <i>${c.statutoryAct || "Maharashtra EoDB Regulations"}</i></div>
+            </div>
+            <span class="badge ${c.status === "Approved" ? "green" : "orange"}" style="font-size: 0.7rem;">
+              ${c.status || "Under Review"}
+            </span>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function renderQueries(queries) {
+        const thread = document.getElementById("queriesThread");
+        document.getElementById("queryCountBadge").textContent =
+          `${queries.length} Queries`;
+
+        if (queries.length === 0) {
+          thread.innerHTML = `<div style="text-align: center; color: var(--ink-muted); font-size: 0.82rem; padding: 20px;">No queries currently active for this application.</div>`;
+          return;
+        }
+
+        thread.innerHTML = queries
+          .map(
+            (q) => `
+          <div class="query-bubble officer">
+            <div class="query-author">
+              <span>🏛️ ${q.officer_dept || "Department Officer"} (${q.officer_name || "Scrutiny Officer"})</span>
+              <span style="font-size: 0.7rem; color: var(--ink-muted);">${new Date(q.created_at).toLocaleString()}</span>
+            </div>
+            <div class="query-text">${q.message}</div>
+            
+            ${
+              q.applicant_reply
+                ? `
+              <div class="query-bubble applicant" style="margin-top: 10px;">
+                <div class="query-author">
+                  <span>🏢 Applicant Clarification Response</span>
+                  <span style="font-size: 0.7rem; color: var(--ink-muted);">${q.resolved_at ? new Date(q.resolved_at).toLocaleString() : "Submitted"}</span>
+                </div>
+                <div class="query-text">${q.applicant_reply}</div>
+                ${
+                  q.reply_file_name
+                    ? `
+                  <div class="query-attachment">
+                    <span>📎 Uploaded:</span> <b>${q.reply_file_name}</b>
+                  </div>
+                `
+                    : ""
+                }
+              </div>
+            `
+                : `<div style="margin-top: 6px; font-size: 0.75rem; color: var(--saffron); font-weight: 600;">⏳ Awaiting applicant response...</div>`
+            }
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      async function raiseOfficerQuery() {
+        const msg = document.getElementById("queryMessage").value.trim();
+        if (!msg)
+          return show("queryMsg", "Please enter clarification details.");
+
+        try {
+          await api(`/api/applications/${currentAppId}/query`, {
+            method: "POST",
+            body: JSON.stringify({ message: msg }),
+          });
+
+          document.getElementById("queryMessage").value = "";
+          show(
+            "queryMsg",
+            "Query transmitted to applicant. Dossier marked as Flagged.",
+            true,
+          );
+          loadDossier(currentAppId);
+        } catch (err) {
+          show("queryMsg", err.message);
+        }
+      }
+
+      function renderInspections(inspections) {
+        const list = document.getElementById("inspectionsList");
+        if (inspections.length === 0) {
+          list.innerHTML = `<p style="font-size: 0.8rem; color: var(--ink-muted);">No joint on-site inspections scheduled yet.</p>`;
+          return;
+        }
+
+        list.innerHTML = inspections
+          .map(
+            (i) => `
+          <div style="background: #f1f5f9; border-left: 3px solid var(--navy); padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.84rem; color: var(--navy);">
+              <span>📅 ${new Date(i.scheduled_date).toLocaleDateString()}</span>
+              <span class="badge blue">${i.status}</span>
+            </div>
+            <div style="font-size: 0.78rem; color: var(--ink); margin-top: 2px;"><b>Agency:</b> ${i.department}</div>
+            <div style="font-size: 0.74rem; color: var(--ink-light);"><b>Inspector:</b> ${i.inspector_name} · ${i.notes || ""}</div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      async function scheduleInspection() {
+        const department = document.getElementById("inspDept").value;
+        const scheduledDate = document.getElementById("inspDate").value;
+        const inspectorName = document.getElementById("inspName").value.trim();
+        const notes = document.getElementById("inspNotes").value.trim();
+
+        if (!scheduledDate)
+          return show("inspMsg", "Please pick an inspection date.");
+
+        try {
+          await api(`/api/applications/${currentAppId}/inspections`, {
+            method: "POST",
+            body: JSON.stringify({
+              department,
+              scheduledDate,
+              inspectorName,
+              notes,
+            }),
+          });
+
+          show(
+            "inspMsg",
+            "Joint on-site inspection scheduled successfully.",
+            true,
+          );
+          document.getElementById("inspDate").value = "";
+          document.getElementById("inspNotes").value = "";
+          loadDossier(currentAppId);
+        } catch (err) {
+          show("inspMsg", err.message);
+        }
+      }
+
+      const DEPT_INFO = {
+        midc: {
+          title: "MIDC Civil & Infrastructure Scrutiny",
+          icon: "🏗️",
+          badge: "MIDC Civil",
+          desc: "Evaluate site master plan, building setbacks, FSI/FAR compliance, and drainage/road connection per MRTP Act.",
+          subtext: "Civil Engineering Wing · MIDC",
+        },
+        mpcb: {
+          title: "MPCB Environmental Scrutiny",
+          icon: "🌱",
+          badge: "MPCB Pollution Control",
+          desc: "Evaluate CTE/CTO conditions, water balance, effluent treatment (ETP/STP), and stack emissions per Water/Air Acts.",
+          subtext: "Maharashtra Pollution Control Board",
+        },
+        fire: {
+          title: "Maharashtra Fire Services Scrutiny",
+          icon: "🚒",
+          badge: "Fire Safety NOC",
+          desc: "Evaluate fire hydrant networks, underground static water reservoirs, and life safety evacuation routes.",
+          subtext: "Directorate of Maharashtra Fire Services",
+        },
+        dish: {
+          title: "DISH Factory Safety Scrutiny",
+          icon: "⚙️",
+          badge: "DISH Factory Safety",
+          desc: "Evaluate factory blueprint, hazardous machinery guarding, ventilation, and worker safety safeguards under Factories Act 1948.",
+          subtext: "Directorate of Industrial Safety & Health",
+        },
+      };
+
+      function renderDepartmentScrutiny(d) {
+        const container = document.getElementById("deptActionContainer");
+        const cardTitle = document.getElementById("deptScrutinyTitle");
+        const cardIcon = document.getElementById("deptIcon");
+        const roleBadge = document.getElementById("deptRoleBadge");
+        const cardDesc = document.getElementById("deptScrutinyDesc");
+
+        if (!container || !currentUser) return;
+
+        const pStatus = d.parallelStatus || {};
+
+        if (currentUser.isApex) {
+          cardIcon.textContent = "🏛️";
+          cardTitle.textContent = "Consolidated Departmental Scrutiny Matrix";
+          roleBadge.textContent = "Apex Authority · MSInS";
+          roleBadge.className = "badge blue";
+          cardDesc.textContent =
+            "All departmental clearances (MIDC Civil, MPCB Environment, Fire Services, DISH Safety) streamline into this apex dashboard. Review each department's status below before issuing the final statutory NOC.";
+
+          const depts = ["midc", "mpcb", "fire", "dish"];
+          container.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${depts
+                .map((key) => {
+                  const info = DEPT_INFO[key];
+                  const item = pStatus[key] || {
+                    status: "Under Review",
+                    remarks: "",
+                  };
+                  const isApproved = item.status === "Approved";
+                  const badgeClass = isApproved
+                    ? "green"
+                    : item.status === "Deficient"
+                      ? "red"
+                      : "orange";
+                  return `
+                    <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                      <div style="flex: 1; min-width: 200px;">
+                        <div style="font-weight: 700; color: var(--navy); font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                          <span>${info.icon}</span>
+                          <span>${info.title}</span>
+                          <span class="badge ${badgeClass}" style="font-size: 0.68rem; padding: 2px 6px;">${item.status || "Under Review"}</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 3px;">
+                          ${item.remarks ? `<b>Remarks:</b> ${item.remarks}` : "No specific remarks recorded."}
+                          ${item.officer ? ` · <span style="color: var(--ink-muted);">Inspected by ${item.officer}</span>` : ""}
+                        </div>
+                      </div>
+                      <div style="display: flex; gap: 6px;">
+                        ${
+                          !isApproved
+                            ? `<button class="btn emerald sm" onclick="submitDeptMilestone('${key}', 'Approved', 'Cleared by Apex MSInS Officer')">✓ Clear Milestone</button>`
+                            : `<button class="btn rust sm" onclick="submitDeptMilestone('${key}', 'Deficient', 'Flagged by Apex MSInS Officer')">⚠️ Flag Deficient</button>`
+                        }
+                      </div>
+                    </div>
+                  `;
+                })
+                .join("")}
+            </div>
+            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 10px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px;">
+              💡 <i>Apex Authority Tip:</i> You have statutory oversight to override or validate any department's milestone before issuing the final Single-Window NOC.
+            </div>
+          `;
+        } else {
+          // Department Officer
+          const deptKey = currentUser.deptCode || "midc";
+          const info = DEPT_INFO[deptKey] || DEPT_INFO.midc;
+
+          cardIcon.textContent = info.icon;
+          cardTitle.textContent = info.title;
+          roleBadge.textContent = info.badge;
+          roleBadge.className = "badge blue";
+          cardDesc.textContent = info.desc;
+
+          const item = pStatus[deptKey] || {
+            status: "Under Review",
+            remarks: "",
+          };
+          const cStat = item.status || "Under Review";
+          const cRemarks = item.remarks || "";
+          const badgeClass =
+            cStat === "Approved"
+              ? "green"
+              : cStat === "Deficient"
+                ? "red"
+                : "orange";
+
+          container.innerHTML = `
+            <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy);">Milestone Status:</span>
+                <span class="badge ${badgeClass}">${cStat}</span>
+              </div>
+              ${cRemarks ? `<div style="font-size: 0.8rem; color: var(--ink); margin-bottom: 4px;"><b>Current Findings:</b> ${cRemarks}</div>` : ""}
+              ${item.officer ? `<div style="font-size: 0.72rem; color: var(--ink-light);"><b>Last Updated by:</b> ${item.officer} ${item.updated ? `(${new Date(item.updated).toLocaleString()})` : ""}</div>` : ""}
+            </div>
+
+            <label style="font-size: 0.82rem; font-weight: 600; color: var(--navy); display: block; margin-bottom: 6px;">
+              ${info.badge} Scrutiny Remarks & Statutory Conditions:
+              <textarea id="deptScrutinyRemark" rows="3" style="width: 100%; margin-top: 4px;" placeholder="Enter domain observations, requirements, or approval conditions...">${cRemarks}</textarea>
+            </label>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+              <button class="btn emerald sm" onclick="submitDeptMilestone('${deptKey}', 'Approved')">
+                ✓ Grant ${info.badge} Clearance
+              </button>
+              <button class="btn rust sm" onclick="submitDeptMilestone('${deptKey}', 'Deficient')">
+                ⚠️ Flag Deficiencies
+              </button>
+              <button class="btn outline sm" onclick="submitDeptMilestone('${deptKey}', 'Under Review')">
+                ⏳ Mark Under Review
+              </button>
+            </div>
+
+            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 12px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--navy);">
+              🚀 <b>Streamlined Approval Workflow:</b> Your scrutiny clearance is directly updated in the state dossier and streamlined to the <b>Department Officer (MSInS / Industries)</b> at <code>officer@udyog.gov.in</code> for final consolidated single-window approval.
+            </div>
+          `;
+        }
+      }
+
+      async function submitDeptMilestone(deptCode, status, overrideRemark) {
+        if (!currentAppId) return;
+        const remarkInput = document.getElementById("deptScrutinyRemark");
+        const remarks =
+          overrideRemark || (remarkInput ? remarkInput.value.trim() : "");
+
+        try {
+          const res = await api(
+            `/api/applications/${currentAppId}/department-clearance`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({ deptCode, status, remarks }),
+            },
+          );
+
+          show(
+            "deptClearanceMsg",
+            res.message ||
+              `${deptCode.toUpperCase()} milestone updated to ${status}.`,
+            true,
+          );
+          loadDossier(currentAppId);
+        } catch (err) {
+          show("deptClearanceMsg", err.message);
+        }
+      }
+
+      function renderFinalDecision(d) {
+        const container = document.getElementById("finalDecisionContainer");
+        const badge = document.getElementById("finalDecisionBadge");
+        if (!container || !currentUser) return;
+
+        if (currentUser.isApex) {
+          badge.textContent = "Apex Director · MSInS";
+          badge.className = "badge blue";
+
+          const depts = ["midc", "mpcb", "fire", "dish"];
+          const pStatus = d.parallelStatus || {};
+          const approvedCount = depts.filter(
+            (k) => pStatus[k] && pStatus[k].status === "Approved",
+          ).length;
+
+          container.innerHTML = `
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy);">Consolidated Department Readiness:</span>
+                <span class="badge ${approvedCount === 4 ? "green" : "orange"}">${approvedCount} / 4 Milestones Cleared</span>
+              </div>
+              ${
+                approvedCount === 4
+                  ? `<div style="background: #ecfdf5; border: 1px solid #10b981; color: #065f46; font-size: 0.8rem; padding: 8px 12px; border-radius: 6px; font-weight: 600;">
+                      ✓ All 4 Department Clearances (MIDC Civil, MPCB Environment, Fire Safety, DISH Safety) have been granted. Ready for Statutory Single-Window Approval NOC.
+                     </div>`
+                  : `<div style="background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; font-size: 0.78rem; padding: 8px 12px; border-radius: 6px;">
+                      ⏳ ${4 - approvedCount} departmental clearance(s) are still pending. As Apex Authority, you may grant final clearance or await departmental signoffs.
+                     </div>`
+              }
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button
+                class="btn emerald"
+                onclick="setApplicationStatus('Approved')"
+              >
+                ✓ Grant Consolidated Clearance (Issue NOC)
+              </button>
+              <button
+                class="btn danger"
+                onclick="setApplicationStatus('Rejected')"
+              >
+                ✕ Reject Application
+              </button>
+              <button
+                class="btn outline"
+                onclick="setApplicationStatus('In Progress')"
+              >
+                Set In Progress
+              </button>
+            </div>
+          `;
+        } else {
+          badge.textContent = "Locked for Non-Apex";
+          badge.className = "badge gray";
+
+          container.innerHTML = `
+            <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 18px 14px; text-align: center;">
+              <div style="font-size: 1.8rem; margin-bottom: 6px;">🔒</div>
+              <div style="font-weight: 700; color: var(--navy); font-size: 0.95rem;">Consolidated Final Approval Reserved</div>
+              <p style="font-size: 0.8rem; color: var(--ink-light); margin: 6px 0 12px 0;">
+                Final Single-Window Statutory Clearance and NOC issuance is strictly authorized for the <b>Department Officer (MSInS / Industries) - Apex Authority</b> (<a href="mailto:officer@udyog.gov.in" style="color:var(--navy); font-weight:600;">officer@udyog.gov.in</a>).
+              </p>
+              <div style="display: inline-block; background: #e2e8f0; color: var(--ink); font-size: 0.76rem; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+                Active Session: ${currentUser.contactPerson || currentUser.email} (${currentUser.department || "Department Officer"})
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      async function setApplicationStatus(status) {
+        if (!currentAppId) return;
+        try {
+          await api(`/api/applications/${currentAppId}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({ status }),
+          });
+
+          show(
+            "decisionMsg",
+            `Application status updated to "${status}".`,
+            true,
+          );
+          loadDossier(currentAppId);
+        } catch (err) {
+          show("decisionMsg", err.message);
+        }
+      }
+
+      // Initialize on load
+      init();
+    </script>
+  </body>
+</html>

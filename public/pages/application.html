@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Smart Clearance Application | Udyog Samyog - Govt. of Maharashtra
+    </title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">🏛️</div>
+          <div class="brand-text">
+            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
+            <div class="brand-tag">
+              Single Window Clearances & Incentives Gateway · Govt. of
+              Maharashtra
+            </div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>E</div>
+            <div>
+              <div style="font-weight: 700; line-height: 1.2" data-user-name>
+                Enterprise Applicant
+              </div>
+              <div
+                style="font-size: 0.7rem; color: var(--ink-light)"
+                data-company
+              >
+                Sahyadri Engineering
+              </div>
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+          <div class="sidebar-header">Applicant Workspace</div>
+          <a href="applicant-dashboard.html">
+            <span class="sidebar-icon">📊</span> Enterprise Dashboard
+          </a>
+          <a href="application.html" class="active">
+            <span class="sidebar-icon">📝</span> Apply for Permits
+          </a>
+          <a href="tracker.html">
+            <span class="sidebar-icon">⏱️</span> Approval & License Tracker
+          </a>
+          <div class="sidebar-footer">
+            <b style="color: #ffffff"
+              >Maharashtra Right to Public Services Act</b
+            ><br />
+            All submissions are time-bound under statutory Service Level
+            Agreements (SLA).
+          </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main">
+          <div class="page-header">
+            <div class="page-pretitle">Smart Single-Window System</div>
+            <h1 class="page-title">New Industrial Clearance Application</h1>
+            <p class="page-subtitle">
+              Dynamic regulatory assessment, automated document checklist, and
+              access to Maharashtra State incentive schemes.
+            </p>
+          </div>
+
+          <!-- Blacklist Banner if banned -->
+          <div
+            id="banBanner"
+            class="blacklist-banner"
+            style="display: none; margin-bottom: 24px"
+          >
+            <div
+              style="font-weight: 800; font-size: 1.05rem; margin-bottom: 4px"
+            >
+              🚫 ENTERPRISE BLACKLISTED & STATUTORILY BANNED
+            </div>
+            <div id="banReasonText" style="font-size: 0.88rem">
+              By order of Directorate of Industries & MSInS (Apex Authority),
+              your enterprise account has been barred from receiving future
+              licenses, statutory clearances, and submitting new applications.
+            </div>
+          </div>
+
+          <!-- Stepper Indicator -->
+          <div class="steps">
+            <div class="step active" id="stepIndicator1">1. Unit & Project</div>
+            <div class="step" id="stepIndicator2">
+              2. Utilities & Environment
+            </div>
+            <div class="step" id="stepIndicator3">3. Regulatory Checklist</div>
+            <div class="step" id="stepIndicator4">4. Document Vault</div>
+            <div class="step" id="stepIndicator5">5. Incentives & Finalize</div>
+          </div>
+
+          <!-- FORM: Application Parameters -->
+          <form id="appForm" class="panel">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 18px;
+                border-bottom: 1px solid var(--line);
+                padding-bottom: 12px;
+              "
+            >
+              <h2 style="font-size: 1.3rem">Project & Statutory Parameters</h2>
+              <span id="computedRiskBadge" class="risk-tag risk-green"
+                >Green Risk (Fast-Track)</span
+              >
+            </div>
+
+            <!-- Unit Details -->
+            <div class="formgrid">
+              <label
+                >Industrial Sector
+                <select id="industryCategory" name="industryCategory">
+                  <option value="Light Engineering">
+                    Light Engineering & Auto Components
+                  </option>
+                  <option value="Chemicals">Chemicals & Petrochemicals</option>
+                  <option value="Pharmaceuticals">
+                    Pharmaceuticals & Formulations
+                  </option>
+                  <option value="Food Processing">
+                    Food & Agro Processing
+                  </option>
+                  <option value="Textile">Textiles & Garmenting</option>
+                  <option value="IT & Electronics">
+                    IT / Electronics Hardware (ESDM)
+                  </option>
+                  <option value="Warehousing">
+                    Warehousing & Logistics Park
+                  </option>
+                </select>
+                <div class="input-hint">
+                  Governs MPCB categorization and fire risk standard.
+                </div>
+              </label>
+
+              <label
+                >Project Capital Investment (₹ in Crores)
+                <input
+                  id="projectCost"
+                  name="projectCost"
+                  type="number"
+                  step="0.1"
+                  value="8.5"
+                  required
+                />
+                <div class="input-hint">
+                  Determines MSME category and Package Scheme of Incentives
+                  (PSI).
+                </div>
+              </label>
+            </div>
+
+            <div class="formgrid">
+              <label
+                >District in Maharashtra
+                <select id="district" name="district">
+                  <option value="Pune">
+                    Pune (MIDC Chakan / Talegaon / Ranjangaon / Hinjawadi)
+                  </option>
+                  <option value="Thane">
+                    Thane / Navi Mumbai (TTC / Rabale)
+                  </option>
+                  <option value="Chhatrapati Sambhajinagar">
+                    Chhatrapati Sambhajinagar (Shendra / Bidkin DMIC)
+                  </option>
+                  <option value="Nagpur">Nagpur (MIHAN / Butibori MIDC)</option>
+                  <option value="Nashik">
+                    Nashik (Ambad / Satpur / Sinnar)
+                  </option>
+                  <option value="Raigad">
+                    Raigad (Taloja / Roha / Patalganga)
+                  </option>
+                  <option value="Kolhapur">
+                    Kolhapur (Shiroli / Kagal MIDC)
+                  </option>
+                  <option value="Solapur">Solapur (Chincholi MIDC)</option>
+                  <option value="Mumbai Suburban">Mumbai Suburban</option>
+                </select>
+              </label>
+
+              <label
+                >Direct Employment Potential (Persons)
+                <input
+                  id="employmentPotential"
+                  name="employmentPotential"
+                  type="number"
+                  value="75"
+                  required
+                />
+                <div class="input-hint">
+                  Direct skilled/unskilled employment generation.
+                </div>
+              </label>
+            </div>
+
+            <div class="formgrid">
+              <label
+                >Precise Factory / Site Location
+                <input
+                  id="location"
+                  name="location"
+                  placeholder="Plot No., MIDC Phase, Village / Taluka"
+                  value="Plot B-18, Phase II Industrial Zone, Chakan"
+                  required
+                />
+              </label>
+
+              <label
+                >Land Footprint (Acres)
+                <input
+                  id="landSize"
+                  name="landSize"
+                  type="number"
+                  step="0.1"
+                  value="2.5"
+                  required
+                />
+                <div class="input-hint">
+                  &gt;5 acres requires specialized town planning conversion.
+                </div>
+              </label>
+            </div>
+
+            <div class="formgrid">
+              <label
+                >Industrial Water Consumption (KL / Day)
+                <input
+                  id="waterUse"
+                  name="waterUse"
+                  type="number"
+                  step="1"
+                  value="20"
+                  required
+                />
+                <div class="input-hint">
+                  &gt;50 KL/day requires Groundwater Authority & ETP NOC.
+                </div>
+              </label>
+
+              <label
+                >Electricity Connected Load Demand (kVA)
+                <input
+                  id="electricity"
+                  name="electricity"
+                  type="number"
+                  step="1"
+                  value="350"
+                  required
+                />
+                <div class="input-hint">
+                  &gt;500 kVA requires High Tension (HT) substation sanction.
+                </div>
+              </label>
+            </div>
+
+            <div
+              style="
+                margin: 16px 0;
+                padding: 14px;
+                background: #fff7ed;
+                border-radius: var(--radius-sm);
+                border: 1px solid #fed7aa;
+              "
+            >
+              <label
+                style="
+                  margin-bottom: 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  cursor: pointer;
+                  text-transform: none;
+                  font-size: 0.88rem;
+                "
+              >
+                <input
+                  id="hazardous"
+                  name="hazardous"
+                  type="checkbox"
+                  style="
+                    width: 20px;
+                    height: 20px;
+                    margin-top: 0;
+                    accent-color: var(--ruby);
+                  "
+                />
+                <span
+                  ><b>Hazardous Chemicals or Waste:</b> Check if unit stores,
+                  processes, or generates hazardous raw materials or industrial
+                  toxic waste.</span
+                >
+              </label>
+            </div>
+
+            <!-- Real-time Regulatory Clearance Checklist -->
+            <div
+              style="
+                margin-top: 24px;
+                padding-top: 20px;
+                border-top: 1px solid var(--line);
+              "
+            >
+              <h3
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <span
+                  >Customized Statutory Clearances Required
+                  (Auto-calculated)</span
+                >
+                <span id="clearancesCount" class="badge gray"
+                  >5 Clearances</span
+                >
+              </h3>
+              <p
+                style="
+                  font-size: 0.82rem;
+                  color: var(--ink-light);
+                  margin-bottom: 12px;
+                "
+              >
+                Calculated live based on Maharashtra Industrial Regulations,
+                MPCB Environment classification, and DISH Factory rules:
+              </p>
+              <div id="clearancesList" class="parallel-grid">
+                <!-- Populated via JavaScript -->
+              </div>
+            </div>
+
+            <!-- Real-time Recommended Government Incentives -->
+            <div
+              style="
+                margin-top: 24px;
+                padding-top: 20px;
+                border-top: 1px solid var(--line);
+              "
+            >
+              <h3 style="color: var(--emerald); margin-bottom: 6px">
+                Applicable Maharashtra Government Incentive Schemes
+              </h3>
+              <p
+                style="
+                  font-size: 0.82rem;
+                  color: var(--ink-light);
+                  margin-bottom: 12px;
+                "
+              >
+                Your unit matches the eligibility criteria for the following
+                state subsidies:
+              </p>
+              <div id="schemesList">
+                <!-- Populated via JavaScript -->
+              </div>
+            </div>
+
+            <div
+              style="
+                margin-top: 28px;
+                display: flex;
+                gap: 14px;
+                align-items: center;
+              "
+            >
+              <button class="btn saffron" type="submit" id="btnSubmitApp">
+                Generate Dossier & Proceed to Document Vault →
+              </button>
+            </div>
+            <div id="msg" class="msg"></div>
+          </form>
+
+          <!-- SECTION 2: Document Vault Upload Panel -->
+          <section
+            id="uploadPanel"
+            class="panel"
+            style="margin-top: 24px; display: none"
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 14px;
+                border-bottom: 1px solid var(--line);
+                padding-bottom: 10px;
+              "
+            >
+              <div>
+                <h2>Digital Document Vault</h2>
+                <p style="font-size: 0.85rem; color: var(--ink-light)">
+                  Upload mandatory statutory layout blueprints, certificates,
+                  and reports for Application
+                  <b id="vaultAppNo" style="color: var(--navy)">---</b>.
+                </p>
+              </div>
+              <span class="badge blue">Direct Vault Encryption</span>
+            </div>
+
+            <form id="uploadForm">
+              <div class="formgrid">
+                <label
+                  >Document Category
+                  <select name="documentType" id="docTypeSelect">
+                    <option value="Site Master Plan & Layout Drawing">
+                      Site Master Plan & Layout Blueprint
+                    </option>
+                    <option value="Land Title Deed / MIDC Allotment">
+                      Land Title Deed / MIDC Allotment Letter
+                    </option>
+                    <option value="Water Balance & Effluent Scheme">
+                      Water Balance & Effluent Treatment Scheme (ETP)
+                    </option>
+                    <option value="Fire Hydrant & Evacuation Layout">
+                      Fire Hydrant & Emergency Evacuation Layout
+                    </option>
+                    <option value="Plant & Machinery List">
+                      Plant & Machinery Power Rating List
+                    </option>
+                    <option value="Project Detailed Report (DPR)">
+                      Detailed Project Feasibility Report (DPR)
+                    </option>
+                    <option value="Incorporation & PAN / GSTIN">
+                      Company PAN, GSTIN & Identity Proof
+                    </option>
+                  </select>
+                </label>
+
+                <label
+                  >Select PDF / JPG / PNG File (Max 15MB)
+                  <input
+                    name="document"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div style="margin-top: 14px; display: flex; gap: 12px">
+                <button class="btn emerald" type="submit">
+                  ⬆ Upload & Attach to Dossier
+                </button>
+                <a class="btn outline" id="btnGoToTracker" href="tracker.html">
+                  Go to Live Approval Tracker →
+                </a>
+              </div>
+            </form>
+            <div id="upmsg" class="msg"></div>
+
+            <!-- Uploaded Documents Preview Table -->
+            <div style="margin-top: 20px">
+              <h4 style="margin-bottom: 10px">Uploaded Dossier Documents</h4>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Document Type</th>
+                      <th>Filename</th>
+                      <th>File Size</th>
+                      <th>Scrutiny Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="uploadedDocsRows">
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="
+                          text-align: center;
+                          color: var(--ink-muted);
+                          padding: 20px;
+                        "
+                      >
+                        No documents uploaded yet. Choose a file above and click
+                        Upload.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+      let createdAppId = null;
+
+      // Real-time Regulatory Knowledge Engine calculation
+      function runKnowledgeEngine() {
+        const land = parseFloat(document.getElementById("landSize").value) || 0;
+        const water =
+          parseFloat(document.getElementById("waterUse").value) || 0;
+        const power =
+          parseFloat(document.getElementById("electricity").value) || 0;
+        const cost =
+          parseFloat(document.getElementById("projectCost").value) || 0;
+        const isHazard = document.getElementById("hazardous").checked;
+        const sector = document.getElementById("industryCategory").value;
+
+        // Risk Tier calculation
+        let risk = "Green";
+        if (
+          isHazard ||
+          sector === "Chemicals" ||
+          sector === "Pharmaceuticals" ||
+          land > 20 ||
+          water > 100
+        ) {
+          risk = "Red";
+        } else if (
+          land > 5 ||
+          water > 30 ||
+          power > 350 ||
+          sector === "Food Processing" ||
+          sector === "Textile"
+        ) {
+          risk = "Orange";
+        }
+
+        const riskBadge = document.getElementById("computedRiskBadge");
+        riskBadge.textContent = `${risk} Risk Category`;
+        riskBadge.className = `risk-tag ${risk === "Red" ? "risk-red" : risk === "Orange" ? "risk-orange" : "risk-green"}`;
+
+        // Clearances calculation
+        const clearances = [
+          {
+            name: "MIDC / Town Planning Building Layout Approval",
+            dept: "MIDC",
+            desc: "Building bylaws & road setback compliance",
+          },
+          {
+            name: `MPCB Consent to Establish (CTE - ${risk} Category)`,
+            dept: "MPCB",
+            desc: "Effluent, emission & solid waste consent",
+          },
+          {
+            name: "Provisional Fire Safety NOC",
+            dept: "Fire Services",
+            desc: "Fire fighting systems & emergency egress",
+          },
+          {
+            name: "Factory License & Machine Guarding Approval",
+            dept: "DISH",
+            desc: "Worker safety & machinery clearances",
+          },
+          {
+            name:
+              power > 500
+                ? "High Tension (HT) Power Sanction"
+                : "Low Tension (LT) Power Sanction",
+            dept: "MSEDCL",
+            desc: "Load sanction and transformer space",
+          },
+        ];
+
+        if (isHazard) {
+          clearances.push({
+            name: "Hazardous Waste Authorization (HWA)",
+            dept: "MPCB",
+            desc: "Hazardous chemicals storage & TSDF disposal",
+          });
+        }
+        if (water > 50) {
+          clearances.push({
+            name: "Groundwater Authority (MGWA) Extraction NOC",
+            dept: "Water Resources",
+            desc: "Water balance & recharge verification",
+          });
+        }
+
+        document.getElementById("clearancesCount").textContent =
+          `${clearances.length} Statutory Acts`;
+        document.getElementById("clearancesList").innerHTML = clearances
+          .map(
+            (c) => `
+          <div class="parallel-card">
+            <div class="parallel-card-header">${c.dept}</div>
+            <div style="font-weight: 700; font-size: 0.85rem; color: var(--navy); margin-bottom: 4px;">${c.name}</div>
+            <div style="font-size: 0.74rem; color: var(--ink-light);">${c.desc}</div>
+          </div>
+        `,
+          )
+          .join("");
+
+        // Incentive Schemes
+        const schemes = [
+          {
+            title: "Maharashtra Package Scheme of Incentives (PSI 2019/2024)",
+            benefit:
+              "Up to 50% Capital Subsidy + 100% Stamp Duty Exemption on Land purchase.",
+          },
+          {
+            title: "MSInS Innovation & Prototype Seed Fund",
+            benefit:
+              "Up to ₹15 Lakhs grant for registered innovative enterprises in Maharashtra.",
+          },
+          {
+            title: "Electricity Duty Exemption (7 Years)",
+            benefit:
+              "100% exemption on industrial power tariffs under MSEDCL industrial grid.",
+          },
+        ];
+
+        document.getElementById("schemesList").innerHTML = schemes
+          .map(
+            (s) => `
+          <div class="scheme-card recommended">
+            <div class="scheme-info">
+              <h4>🎯 ${s.title}</h4>
+              <p>${s.benefit}</p>
+            </div>
+            <span class="badge green">Eligible</span>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      // Attach input event listeners for live recalculation
+      [
+        "industryCategory",
+        "projectCost",
+        "landSize",
+        "waterUse",
+        "electricity",
+        "hazardous",
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", runKnowledgeEngine);
+      });
+
+      runKnowledgeEngine();
+
+      // Application Form Submission
+      const appForm = document.getElementById("appForm");
+      appForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = Object.fromEntries(new FormData(appForm));
+        payload.hazardous = document.getElementById("hazardous").checked;
+
+        try {
+          show(
+            "msg",
+            "Generating unified application dossier and submitting to Maharashtra Single Window...",
+          );
+          const res = await api("/api/applications", {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+
+          createdAppId = res.id;
+          document.getElementById("vaultAppNo").textContent = res.applicationNo;
+          document.getElementById("btnGoToTracker").href =
+            `tracker.html?id=${createdAppId}`;
+
+          show(
+            "msg",
+            `Application ${res.applicationNo} created successfully! Please upload mandatory documents below.`,
+            true,
+          );
+
+          // Update steppers
+          document.getElementById("stepIndicator1").className = "step done";
+          document.getElementById("stepIndicator2").className = "step done";
+          document.getElementById("stepIndicator3").className = "step done";
+          document.getElementById("stepIndicator4").className = "step active";
+
+          document.getElementById("uploadPanel").style.display = "block";
+          document
+            .getElementById("uploadPanel")
+            .scrollIntoView({ behavior: "smooth" });
+          refreshUploadedDocs();
+        } catch (err) {
+          show("msg", err.message);
+        }
+      };
+
+      // Document Upload Form Submission
+      const uploadForm = document.getElementById("uploadForm");
+      uploadForm.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!createdAppId)
+          return show("upmsg", "Please submit the application details first.");
+
+        try {
+          show(
+            "upmsg",
+            "Encrypting and uploading file to Udyog Samyog vault...",
+          );
+          await api(`/api/applications/${createdAppId}/documents`, {
+            method: "POST",
+            body: new FormData(uploadForm),
+          });
+
+          show("upmsg", "Document uploaded and attached successfully.", true);
+          uploadForm.reset();
+          refreshUploadedDocs();
+        } catch (err) {
+          show("upmsg", err.message);
+        }
+      };
+
+      async function refreshUploadedDocs() {
+        if (!createdAppId) return;
+        try {
+          const docs = await api(`/api/applications/${createdAppId}/documents`);
+          const tbody = document.getElementById("uploadedDocsRows");
+          if (docs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--ink-muted); padding: 20px;">No documents uploaded yet.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = docs
+            .map(
+              (d) => `
+            <tr>
+              <td><b>${d.document_type}</b></td>
+              <td>${d.original_name}</td>
+              <td>${formatBytes(d.size)}</td>
+              <td><span class="badge ${d.verification_status === "Verified" ? "green" : "orange"}">${d.verification_status || "Pending"}</span></td>
+              <td>
+                <a class="btn outline sm" href="/api/documents/${d.id}/view" target="_blank">↗ View Inline</a>
+              </td>
+            </tr>
+          `,
+            )
+            .join("");
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      (async () => {
+        const user = await guard("applicant");
+        if (user && user.isBanned) {
+          const banner = document.getElementById("banBanner");
+          if (banner) {
+            banner.style.display = "block";
+            document.getElementById("banReasonText").textContent =
+              `By order of Directorate of Industries & MSInS (Apex Authority), your enterprise account has been blacklisted. Reason: "${user.banReason || "Statutory Non-Compliance"}". You are barred from receiving future licenses and clearances, and cannot submit new applications.`;
+          }
+          const form = document.getElementById("appForm");
+          if (form) {
+            form.querySelectorAll("input, select, button").forEach((el) => {
+              el.disabled = true;
+            });
+          }
+          show("msg", `Submission Blocked: Enterprise account is blacklisted.`);
+        }
+      })();
+    </script>
+  </body>
+</html>

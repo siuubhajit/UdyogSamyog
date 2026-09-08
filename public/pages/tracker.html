@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Approval Tracker & License Vault | Udyog Samyog - Govt. of Maharashtra
+    </title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        .cert-container,
+        .cert-container * {
+          visibility: visible;
+        }
+        .cert-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          box-shadow: none;
+          border: 2px solid #b8860b;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <!-- Topbar Header -->
+      <header class="topbar no-print">
+        <div class="brand-group">
+          <div class="brand-emblem">🏛️</div>
+          <div class="brand-text">
+            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
+            <div class="brand-tag">
+              Single Window Approval Tracker & License Vault · Govt. of
+              Maharashtra
+            </div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>E</div>
+            <div>
+              <div style="font-weight: 700; line-height: 1.2" data-user-name>
+                Enterprise Applicant
+              </div>
+              <div
+                style="font-size: 0.7rem; color: var(--ink-light)"
+                data-company
+              >
+                Sahyadri Engineering
+              </div>
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar no-print">
+          <div class="sidebar-header">Applicant Workspace</div>
+          <a href="applicant-dashboard.html">
+            <span class="sidebar-icon">📊</span> Enterprise Dashboard
+          </a>
+          <a href="application.html">
+            <span class="sidebar-icon">📝</span> Apply for Permits
+          </a>
+          <a href="tracker.html" class="active">
+            <span class="sidebar-icon">⏱️</span> Approval & License Tracker
+          </a>
+          <div class="sidebar-footer">
+            <b style="color: #ffffff">Maharashtra EoDB Service Desk</b><br />
+            Track parallel departmental workflows, submit compliance
+            clarifications, and download approved certificates.
+          </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main">
+          <!-- Header and Switcher -->
+          <div
+            class="no-print"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              flex-wrap: wrap;
+              gap: 16px;
+              margin-bottom: 24px;
+            "
+          >
+            <div>
+              <div class="page-pretitle">
+                Real-Time Single Window Compliance
+              </div>
+              <h1 class="page-title">Approval Tracker & Statutory Vault</h1>
+              <p class="page-subtitle">
+                Track parallel departmental scrutiny, resolve inspection
+                queries, and access digitally verifiable NOC certificates.
+              </p>
+            </div>
+            <div>
+              <select
+                id="appSelector"
+                onchange="switchApp(this.value)"
+                style="min-width: 250px; padding: 10px 14px; margin-top: 0"
+              >
+                <option value="">Select Application...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Application Overview Banner -->
+          <div class="panel no-print" style="margin-bottom: 24px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 14px;
+              "
+            >
+              <div>
+                <span class="input-hint">Application Reference</span>
+                <h2
+                  style="color: var(--navy); font-size: 1.4rem"
+                  id="bannerAppNo"
+                >
+                  Loading...
+                </h2>
+                <div
+                  style="
+                    font-size: 0.85rem;
+                    color: var(--ink-light);
+                    margin-top: 2px;
+                  "
+                >
+                  <b id="bannerCompany">---</b> ·
+                  <span id="bannerSector">---</span> ·
+                  <span id="bannerDistrict">---</span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center">
+                <span id="bannerRiskBadge" class="risk-tag risk-orange"
+                  >Orange Risk</span
+                >
+                <span id="bannerStatusBadge" class="badge orange"
+                  >In Progress</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. Parallel Departmental Workflow Bar -->
+          <div class="no-print" style="margin-bottom: 24px">
+            <h3
+              style="
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <span>Parallel Departmental Scrutiny Status</span>
+              <span
+                style="
+                  font-size: 0.78rem;
+                  font-weight: 500;
+                  color: var(--ink-light);
+                "
+                >Simultaneous Inter-Departmental Reviews</span
+              >
+            </h3>
+            <div class="grid" id="parallelGrid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- 2. Split Workspace: Query Resolution vs Digital License Vault -->
+          <div class="split">
+            <!-- LEFT: Query Resolution & Clarifications -->
+            <div class="panel no-print">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 12px;
+                  border-bottom: 1px solid var(--line);
+                  padding-bottom: 8px;
+                "
+              >
+                <h2 style="font-size: 1.25rem">
+                  Departmental Query Resolution
+                </h2>
+                <span id="openQueriesBadge" class="badge gray"
+                  >0 Open Queries</span
+                >
+              </div>
+              <p
+                style="
+                  font-size: 0.82rem;
+                  color: var(--ink-light);
+                  margin-bottom: 16px;
+                "
+              >
+                Inspectors may raise technical queries or request layout
+                adjustments. Respond with written explanations and revised
+                blueprints here.
+              </p>
+
+              <!-- Queries Container -->
+              <div id="applicantQueriesList">
+                <div
+                  style="
+                    text-align: center;
+                    color: var(--ink-muted);
+                    padding: 30px;
+                    font-size: 0.85rem;
+                  "
+                >
+                  No active queries raised on this dossier.
+                </div>
+              </div>
+
+              <!-- Scheduled Inspections Section -->
+              <div
+                style="
+                  margin-top: 24px;
+                  padding-top: 18px;
+                  border-top: 1px solid var(--line);
+                "
+              >
+                <h3 style="font-size: 1.05rem; margin-bottom: 10px">
+                  Scheduled Joint On-Site Inspections
+                </h3>
+                <div id="applicantInspectionsList">
+                  <div style="font-size: 0.82rem; color: var(--ink-muted)">
+                    No on-site inspection scheduled at this time.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Digital License Vault & Verifiable Certificate -->
+            <div class="panel">
+              <div
+                class="no-print"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 12px;
+                  border-bottom: 1px solid var(--line);
+                  padding-bottom: 8px;
+                "
+              >
+                <h2 style="font-size: 1.25rem">
+                  Statutory Digital License Vault
+                </h2>
+                <span id="vaultStatusBadge" class="badge orange"
+                  >Processing</span
+                >
+              </div>
+
+              <!-- State When Approved: Verifiable Certificate -->
+              <div id="certContainer" style="display: none">
+                <div class="cert-container">
+                  <div class="cert-header">
+                    <div class="cert-emblem">🏛️</div>
+                    <div
+                      style="
+                        font-size: 0.85rem;
+                        font-weight: 700;
+                        color: #b8860b;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                      "
+                    >
+                      GOVERNMENT OF MAHARASHTRA
+                    </div>
+                    <div
+                      style="
+                        font-size: 0.72rem;
+                        color: var(--ink-light);
+                        margin-top: 2px;
+                      "
+                    >
+                      Department of Skills, Employment, Entrepreneurship &
+                      Innovation · Maharashtra State Innovation Society (MSInS)
+                    </div>
+                    <div class="cert-title" style="margin-top: 12px">
+                      CONSOLIDATED INDUSTRIAL CLEARANCE
+                    </div>
+                    <div
+                      style="
+                        font-size: 0.8rem;
+                        font-weight: 700;
+                        color: var(--navy);
+                        margin-top: 4px;
+                      "
+                    >
+                      CERTIFICATE & NO-OBJECTION APPROVAL (NOC)
+                    </div>
+                  </div>
+
+                  <div class="cert-body">
+                    <p>
+                      This is to certify that the industrial unit specified
+                      below has successfully completed statutory
+                      multi-departmental scrutiny under the
+                      <b>Maharashtra Single Window Clearances Act</b>.
+                    </p>
+                    <div
+                      style="
+                        margin: 14px 0;
+                        background: #f8fafc;
+                        padding: 14px;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 6px;
+                        font-size: 0.88rem;
+                      "
+                    >
+                      <div>
+                        <b>Certificate No:</b>
+                        <span id="certNo" style="font-family: monospace"
+                          >NOC/MH/IND/2026/001</span
+                        >
+                      </div>
+                      <div>
+                        <b>Application Reference:</b>
+                        <span id="certAppNo">---</span>
+                      </div>
+                      <div>
+                        <b>Legal Enterprise Name:</b>
+                        <span id="certCompany">---</span>
+                      </div>
+                      <div>
+                        <b>Registration No / GSTIN:</b>
+                        <span id="certReg">---</span>
+                      </div>
+                      <div>
+                        <b>Industrial Site:</b>
+                        <span id="certLocation">---</span>, Maharashtra
+                      </div>
+                      <div>
+                        <b>Sector & Classification:</b>
+                        <span id="certSector">---</span> (<span id="certRisk"
+                          >---</span
+                        >)
+                      </div>
+                      <div>
+                        <b>Statutory Validity:</b>
+                        <span id="certValid">Valid until 31 Mar 2031</span>
+                      </div>
+                    </div>
+                    <p style="font-size: 0.82rem; color: var(--ink-light)">
+                      All conditions imposed by the Maharashtra Pollution
+                      Control Board (MPCB), Directorate of Industrial Safety &
+                      Health (DISH), Maharashtra Fire Services, and MIDC have
+                      been satisfied.
+                    </p>
+                  </div>
+
+                  <div class="cert-footer">
+                    <div>
+                      <div
+                        style="
+                          width: 70px;
+                          height: 70px;
+                          border: 2px solid #334155;
+                          display: grid;
+                          place-items: center;
+                          font-size: 1.8rem;
+                          background: #ffffff;
+                        "
+                      >
+                        ▦
+                      </div>
+                      <div
+                        class="cert-hash"
+                        id="certHash"
+                        style="margin-top: 6px"
+                      >
+                        HASH: VERIFIED-GOVT-MAHARASHTRA
+                      </div>
+                    </div>
+                    <div style="text-align: right">
+                      <div
+                        style="
+                          font-weight: 700;
+                          font-size: 0.85rem;
+                          color: var(--navy);
+                        "
+                      >
+                        Competent Single Window Authority
+                      </div>
+                      <div style="font-size: 0.72rem; color: var(--ink-light)">
+                        Directorate of Industries & MSInS
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.72rem;
+                          color: var(--emerald);
+                          font-weight: 700;
+                        "
+                      >
+                        ✓ Digitally Signed & Authenticated
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="no-print"
+                  style="text-align: center; margin-top: 20px"
+                >
+                  <button class="btn saffron" onclick="window.print()">
+                    🖨️ Print / Download Official NOC Certificate
+                  </button>
+                </div>
+              </div>
+
+              <!-- State When Still In Progress -->
+              <div
+                id="certPendingNotice"
+                style="text-align: center; padding: 40px 20px"
+              >
+                <div
+                  style="
+                    font-size: 3.5rem;
+                    margin-bottom: 12px;
+                    color: var(--saffron);
+                  "
+                >
+                  ⏱️
+                </div>
+                <h3 style="color: var(--navy); margin-bottom: 8px">
+                  Dossier Under Statutory Scrutiny
+                </h3>
+                <p
+                  style="
+                    font-size: 0.88rem;
+                    color: var(--ink-light);
+                    max-width: 440px;
+                    margin: 0 auto;
+                    line-height: 1.6;
+                  "
+                >
+                  Your application is actively undergoing parallel reviews by
+                  inspecting departments. Once technical scrutiny and
+                  inspections are concluded, your digitally signed,
+                  QR-verifiable Maharashtra Industrial NOC Certificate will be
+                  available here.
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+      let currentAppId = new URLSearchParams(location.search).get("id");
+      let allApps = [];
+
+      async function init() {
+        await guard("applicant");
+        try {
+          allApps = await api("/api/applications");
+          const selector = document.getElementById("appSelector");
+
+          if (allApps.length === 0) {
+            document.getElementById("bannerAppNo").textContent =
+              "No Applications Submitted";
+            return;
+          }
+
+          selector.innerHTML = allApps
+            .map(
+              (a) => `
+            <option value="${a.id}" ${a.id == currentAppId ? "selected" : ""}>
+              ${a.application_no} - ${a.company_name}
+            </option>
+          `,
+            )
+            .join("");
+
+          if (!currentAppId && allApps.length > 0) {
+            currentAppId = allApps[0].id;
+            history.replaceState(null, "", `tracker.html?id=${currentAppId}`);
+          }
+
+          loadApplicationTracker(currentAppId);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function switchApp(id) {
+        if (!id) return;
+        location = `tracker.html?id=${id}`;
+      }
+
+      async function loadApplicationTracker(id) {
+        try {
+          const app = await api(`/api/applications/${id}`);
+
+          // Banner Info
+          document.getElementById("bannerAppNo").textContent =
+            app.application_no;
+          document.getElementById("bannerCompany").textContent =
+            app.company_name;
+          document.getElementById("bannerSector").textContent =
+            app.industry_category || "Manufacturing";
+          document.getElementById("bannerDistrict").textContent =
+            `${app.district || "Pune"} (${app.location || ""})`;
+
+          const statusBadge = document.getElementById("bannerStatusBadge");
+          statusBadge.textContent = app.status;
+          statusBadge.className = `badge ${app.status === "Approved" ? "green" : app.status === "Flagged" || app.status === "Rejected" ? "red" : "orange"}`;
+
+          const riskBadge = document.getElementById("bannerRiskBadge");
+          riskBadge.textContent = `${app.risk_tier} Risk`;
+          riskBadge.className = `risk-tag ${app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
+
+          // Parallel Workflow Rendering
+          renderParallelWorkflows(app);
+
+          // Queries Rendering
+          renderQueries(app.queries || []);
+
+          // Inspections Rendering
+          renderInspections(app.inspections || []);
+
+          // Certificate Vault Rendering
+          renderCertificate(app);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function renderParallelWorkflows(app) {
+        const grid = document.getElementById("parallelGrid");
+        let parallelData = app.parallelStatus || {};
+        let stageStatuses = app.stageStatuses || {};
+
+        const depts = [
+          {
+            key: "midc",
+            name: "MIDC / Town Planning",
+            title: "Building & Land Use Plan",
+            defaultStatus: "Under Review",
+          },
+          {
+            key: "mpcb",
+            name: "Pollution Control (MPCB)",
+            title: "Consent to Establish (CTE)",
+            defaultStatus: "Under Review",
+          },
+          {
+            key: "fire",
+            name: "Maharashtra Fire Services",
+            title: "Provisional Fire NOC",
+            defaultStatus: "Under Review",
+          },
+          {
+            key: "dish",
+            name: "DISH Factory Safety",
+            title: "Machinery Layout & Safety",
+            defaultStatus: "In Progress",
+          },
+          {
+            key: "msedcl",
+            name: "MSEDCL Power Utility",
+            title: "Industrial Connected Load",
+            defaultStatus: "Under Review",
+          },
+        ];
+
+        grid.innerHTML = depts
+          .map((d) => {
+            const info = parallelData[d.key] || {};
+            const stageInfo = stageStatuses[d.key];
+            let status = info.status;
+            if (!status && stageInfo) {
+              status = stageInfo.decision;
+            }
+            if (!status) {
+              status = d.defaultStatus;
+            }
+            if (app.status === "Approved") status = "Approved";
+
+            let badgeClass = "orange";
+            if (status === "Approved") badgeClass = "green";
+            else if (status === "Query Raised" || status === "Deficient" || status === "Rejected") badgeClass = "red";
+
+            const remarks = info.remarks || stageInfo?.remarks || "";
+
+            return `
+            <div class="card">
+              <div style="font-size: 0.72rem; font-weight: 700; color: var(--navy); text-transform: uppercase;">${d.name}</div>
+              <h4 style="font-size: 0.88rem; margin: 4px 0 10px 0;">${d.title}</h4>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge ${badgeClass}">${status}</span>
+                <span style="font-size: 0.7rem; color: var(--ink-muted);">SLA: 7d</span>
+              </div>
+              ${remarks ? `<div style="font-size: 0.72rem; color: var(--ink-light); margin-top: 8px;"><b>Note:</b> ${remarks}</div>` : ""}
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function renderQueries(queries) {
+        const container = document.getElementById("applicantQueriesList");
+        const openQueries = queries.filter((q) => q.status === "Open");
+        document.getElementById("openQueriesBadge").textContent =
+          `${openQueries.length} Action Needed`;
+        document.getElementById("openQueriesBadge").className =
+          `badge ${openQueries.length > 0 ? "red" : "green"}`;
+
+        if (queries.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--ink-muted); padding: 30px; font-size: 0.85rem;">No technical queries raised on your dossier. All checks are passing smoothly.</div>`;
+          return;
+        }
+
+        container.innerHTML = queries
+          .map((q) => {
+            const isOpen = q.status === "Open";
+            return `
+            <div style="border: 1.5px solid ${isOpen ? "var(--saffron)" : "var(--line)"}; border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; background: ${isOpen ? "#fffbf5" : "#ffffff"};">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <b style="color: var(--navy); font-size: 0.86rem;">🏛️ Query from ${q.officer_dept || "Department Scrutiny Officer"}</b>
+                <span class="badge ${isOpen ? "red" : "green"}">${q.status}</span>
+              </div>
+              <div style="font-size: 0.86rem; color: var(--ink); line-height: 1.5; margin-bottom: 12px; background: #ffffff; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--line);">
+                ${q.message}
+              </div>
+
+              ${
+                isOpen
+                  ? `
+                <form onsubmit="replyToQuery(event, ${q.id})">
+                  <label>Your Compliance Clarification
+                    <textarea name="reply" placeholder="Provide explanation or describe revised blueprints uploaded..." required></textarea>
+                  </label>
+                  <label>Attach Revised PDF / Drawing (Optional)
+                    <input name="revisedDocument" type="file" accept=".pdf,.jpg,.png" />
+                  </label>
+                  <button class="btn saffron sm" style="margin-top: 8px;" type="submit">
+                    Submit Response & Resolve Query
+                  </button>
+                  <div id="replyMsg_${q.id}" class="msg"></div>
+                </form>
+              `
+                  : `
+                <div style="background: #f0fdf4; border-left: 3px solid var(--emerald); padding: 10px 12px; border-radius: 4px; font-size: 0.82rem;">
+                  <b style="color: #065f46;">Your Submitted Response:</b>
+                  <div style="margin-top: 2px;">${q.applicant_reply || ""}</div>
+                  ${q.reply_file_name ? `<div style="margin-top: 6px; font-weight: 600;">📎 Attached: ${q.reply_file_name}</div>` : ""}
+                </div>
+              `
+              }
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      async function replyToQuery(e, queryId) {
+        e.preventDefault();
+        const form = e.target;
+        const msgDiv = document.getElementById(`replyMsg_${queryId}`);
+
+        try {
+          show(
+            `replyMsg_${queryId}`,
+            "Submitting clarification to inspecting department...",
+          );
+          await api(`/api/queries/${queryId}/reply`, {
+            method: "POST",
+            body: new FormData(form),
+          });
+
+          show(
+            `replyMsg_${queryId}`,
+            "Response recorded successfully! Dossier resumed.",
+            true,
+          );
+          setTimeout(() => {
+            loadApplicationTracker(currentAppId);
+          }, 1000);
+        } catch (err) {
+          show(`replyMsg_${queryId}`, err.message);
+        }
+      }
+
+      function renderInspections(inspections) {
+        const container = document.getElementById("applicantInspectionsList");
+        if (inspections.length === 0) {
+          container.innerHTML = `<div style="font-size: 0.82rem; color: var(--ink-muted);">No joint on-site inspection scheduled at this time.</div>`;
+          return;
+        }
+
+        container.innerHTML = inspections
+          .map(
+            (i) => `
+          <div style="background: #f8fafc; border: 1px solid var(--line); border-left: 3px solid var(--navy); padding: 12px 14px; border-radius: 6px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.85rem; color: var(--navy);">
+              <span>📅 Scheduled Date: ${new Date(i.scheduled_date).toLocaleDateString()}</span>
+              <span class="badge blue">${i.status}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--ink); margin-top: 2px;"><b>Department:</b> ${i.department}</div>
+            <div style="font-size: 0.76rem; color: var(--ink-light);"><b>Inspector:</b> ${i.inspector_name} · ${i.notes || ""}</div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      async function renderCertificate(app) {
+        const certContainer = document.getElementById("certContainer");
+        const pendingNotice = document.getElementById("certPendingNotice");
+        const vaultBadge = document.getElementById("vaultStatusBadge");
+
+        if (app.status === "Approved") {
+          certContainer.style.display = "block";
+          pendingNotice.style.display = "none";
+          vaultBadge.textContent = "NOC Granted";
+          vaultBadge.className = "badge green";
+
+          try {
+            const cert = await api(`/api/applications/${app.id}/certificate`);
+            document.getElementById("certNo").textContent = cert.certificateNo;
+            document.getElementById("certAppNo").textContent =
+              cert.applicationNo;
+            document.getElementById("certCompany").textContent =
+              cert.companyName;
+            document.getElementById("certReg").textContent =
+              cert.registrationNo || "GSTIN-VALIDATED";
+            document.getElementById("certLocation").textContent = cert.location;
+            document.getElementById("certSector").textContent =
+              cert.industryCategory;
+            document.getElementById("certRisk").textContent =
+              `${cert.riskTier} Category`;
+            document.getElementById("certValid").textContent =
+              `Valid through ${cert.validUntil}`;
+            document.getElementById("certHash").textContent =
+              `DIGITAL SIGNATURE HASH: ${cert.verificationHash}`;
+          } catch (err) {
+            console.error("Certificate load err:", err);
+          }
+        } else {
+          certContainer.style.display = "none";
+          pendingNotice.style.display = "block";
+          vaultBadge.textContent = app.status;
+          vaultBadge.className = `badge ${app.status === "Flagged" ? "red" : "orange"}`;
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

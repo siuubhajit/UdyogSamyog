@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      उद्योग संयोग | Udyog Samyog - Maharashtra Single Window Industrial
+      Approvals & Compliance
+    </title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="gov-stripe"></div>
+    <div class="auth">
+      <!-- Left Hero Panel -->
+      <section class="auth-hero">
+        <div class="hero-header">
+          <div class="brand-emblem">🏛️</div>
+          <div>
+            <h3
+              style="color: #ffb703; font-size: 1.1rem; letter-spacing: 0.02em"
+            >
+              महाराष्ट्र शासन | GOVT. OF MAHARASHTRA
+            </h3>
+            <p style="font-size: 0.76rem; color: #cbd5e1">
+              Maharashtra State Innovation Society (MSInS) & Industries Dept
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-main">
+          <span class="hero-badge">Single Window Clearance System 2026</span>
+          <h1 class="hero-title">
+            Streamlined Industrial Approvals & Incentives in One Accountable
+            Window.
+          </h1>
+          <p class="hero-lead">
+            Empowering entrepreneurs and industrial units across Maharashtra
+            with automated compliance checklists, pre-validated dossiers, joint
+            departmental inspections, and fast-track access to statutory
+            subsidies under <b>उद्योग संयोग (Udyog Samyog)</b>.
+          </p>
+
+          <div class="hero-highlights">
+            <div class="highlight-box">
+              <b>⚡ 1-Stop Clearances</b>
+              <span
+                >Parallel reviews across MIDC, MPCB, Fire Services, DISH &
+                MSEDCL.</span
+              >
+            </div>
+            <div class="highlight-box">
+              <b>📑 Intelligent Scrutiny</b>
+              <span
+                >Automated regulatory rule engine, risk-based tiers & inline
+                document audit.</span
+              >
+            </div>
+            <div class="highlight-box">
+              <b>🤝 Joint Inspections</b>
+              <span
+                >Coordinated multi-departmental site visits preventing
+                repetitive delays.</span
+              >
+            </div>
+            <div class="highlight-box">
+              <b>💰 PSI Schemes & Grants</b>
+              <span
+                >Seamless matching with Maharashtra Package Scheme of Incentives
+                & MSInS Seed Funds.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-footer">
+          Problem Statement ID: 26130 | Ease of Doing Business (EoDB)
+          Maharashtra Initiative | 24x7 Industry Desk: 1800-120-8040
+        </div>
+      </section>
+
+      <!-- Right Form Wrap -->
+      <section class="auth-form-wrap">
+        <div class="auth-card">
+          <!-- Auth Navigation Tabs -->
+          <div class="auth-tabs">
+            <button
+              class="auth-tab-btn active"
+              id="tabLogin"
+              onclick="switchAuthTab('login')"
+            >
+              Sign In
+            </button>
+            <button
+              class="auth-tab-btn"
+              id="tabRegister"
+              onclick="switchAuthTab('register')"
+            >
+              Register Enterprise
+            </button>
+            <button
+              class="auth-tab-btn"
+              id="tabForgot"
+              onclick="switchAuthTab('forgot')"
+            >
+              Forgot Password
+            </button>
+          </div>
+
+          <!-- SIGN IN VIEW -->
+          <div id="viewLogin">
+            <h2>Welcome to Udyog Samyog</h2>
+            <p>
+              Access your enterprise dossier or official departmental scrutiny
+              console.
+            </p>
+
+            <div class="role-pill-group">
+              <div
+                class="role-pill active"
+                id="roleApplicant"
+                onclick="setRole('applicant')"
+              >
+                <span class="role-pill-title">🏢 Industrial Applicant</span>
+                <span class="role-pill-desc"
+                  >Enterprises, Startups & MSMEs</span
+                >
+              </div>
+              <div
+                class="role-pill"
+                id="roleOfficial"
+                onclick="setRole('official')"
+              >
+                <span class="role-pill-title">🏛️ Department Official</span>
+                <span class="role-pill-desc"
+                  >MSInS, MIDC, MPCB, Fire, DISH</span
+                >
+              </div>
+            </div>
+
+            <form id="loginForm">
+              <label
+                >Official Email Address
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="name@company.com or officer@udyog.gov.in"
+                  required
+                />
+              </label>
+              <label
+                >Account Password
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                />
+              </label>
+              <button
+                class="btn saffron"
+                style="width: 100%; margin-top: 10px"
+                type="submit"
+              >
+                Secure Access to Portal →
+              </button>
+            </form>
+            <div id="msg" class="msg"></div>
+
+            <!-- 1-Click Evaluation Credentials for all 5 departments & applicant -->
+            <div class="demo-credentials-box">
+              <div class="demo-credentials-header">
+                <span
+                  >⚡ Instant Evaluation Credentials (Click to Autofill)</span
+                >
+                <span style="font-size: 0.68rem; color: var(--saffron)"
+                  >Password: [Role]@123#</span
+                >
+              </div>
+              <div
+                class="demo-btn-group"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px"
+              >
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('official_msins')"
+                  title="officer@udyog.gov.in / Officer@123#"
+                >
+                  🏛️ MSInS Lead (Apex Approver)
+                </button>
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('official_midc')"
+                  title="midc.officer@udyog.gov.in / Midc@123#"
+                >
+                  🏗️ MIDC Civil & Infra
+                </button>
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('official_mpcb')"
+                  title="mpcb.officer@udyog.gov.in / Mpcb@123#"
+                >
+                  🌿 MPCB Environmental
+                </button>
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('official_fire')"
+                  title="fire.officer@udyog.gov.in / Fire@123#"
+                >
+                  🚒 Fire Services
+                </button>
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('official_dish')"
+                  title="dish.officer@udyog.gov.in / Dish@123#"
+                >
+                  🛡️ DISH Factory Safety
+                </button>
+                <button
+                  type="button"
+                  class="demo-btn"
+                  onclick="fillDemo('applicant')"
+                  title="entrepreneur@mahindra-auto.in / Applicant@123#"
+                >
+                  👤 Enterprise Applicant
+                </button>
+              </div>
+              <div
+                style="
+                  margin-top: 8px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <span style="font-size: 0.7rem; color: var(--ink-muted)"
+                  >All passwords alphanumeric + symbol (8+ chars)</span
+                >
+                <a
+                  href="javascript:void(0)"
+                  onclick="openGmailConfigModal()"
+                  style="font-size: 0.72rem; color: var(--saffron)"
+                  >⚙️ Gmail SMTP Settings</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- REGISTER ENTERPRISE VIEW -->
+          <div id="viewRegister" style="display: none">
+            <h2>Register Your Enterprise</h2>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 14px;
+                flex-wrap: wrap;
+                gap: 8px;
+              "
+            >
+              <p style="margin: 0; font-size: 0.88rem; color: var(--ink-light)">
+                Create your unified profile to access Maharashtra Single Window
+                clearances & incentives.
+              </p>
+              <button
+                type="button"
+                class="btn outline sm"
+                onclick="fillSampleEnterprise()"
+                style="font-size: 0.72rem; white-space: nowrap"
+              >
+                📋 Fill Sample Details
+              </button>
+            </div>
+
+            <form id="registerForm">
+              <label
+                >Company / Enterprise Legal Name *
+                <input
+                  name="companyName"
+                  id="regCompanyName"
+                  placeholder="e.g. Sahyadri Advanced Engineering Pvt Ltd"
+                  required
+                />
+              </label>
+
+              <div class="formgrid">
+                <div>
+                  <label
+                    >GSTIN / Registration No. *
+                    <span
+                      style="
+                        font-size: 0.7rem;
+                        color: var(--ink-light);
+                        font-weight: normal;
+                      "
+                      >(15-16 chars, letters & digits mix, CAPITAL only)</span
+                    >
+                    <input
+                      name="registrationNo"
+                      id="regGstin"
+                      maxlength="16"
+                      placeholder="e.g. 27AABCS1429B1Z8"
+                      style="
+                        text-transform: uppercase;
+                        font-family: monospace;
+                        letter-spacing: 1px;
+                        font-weight: 700;
+                      "
+                      oninput="handleGstinInput(this)"
+                      required
+                    />
+                  </label>
+                  <div
+                    id="gstinValidationMsg"
+                    style="font-size: 0.74rem; margin-top: 2px"
+                  ></div>
+                </div>
+                <label
+                  >Industrial Sector
+                  <select name="sector" id="regSector">
+                    <option value="Light Engineering">
+                      Light Engineering & Auto
+                    </option>
+                    <option value="Chemicals">
+                      Chemicals & Petrochemicals
+                    </option>
+                    <option value="Pharmaceuticals">
+                      Pharmaceuticals & Biotech
+                    </option>
+                    <option value="Food Processing">
+                      Food & Agro Processing
+                    </option>
+                    <option value="Textile">Textiles & Apparel</option>
+                    <option value="IT & Electronics">
+                      IT / ESDM / Electronics
+                    </option>
+                    <option value="Warehousing">Logistics & Warehousing</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="formgrid">
+                <label
+                  >District in Maharashtra
+                  <select name="district" id="regDistrict">
+                    <option value="Pune">
+                      Pune (Chakan / Talegaon / Ranjangaon)
+                    </option>
+                    <option value="Thane">Thane / Navi Mumbai</option>
+                    <option value="Mumbai Suburban">
+                      Mumbai Suburban / MMR
+                    </option>
+                    <option value="Chhatrapati Sambhajinagar">
+                      Chhatrapati Sambhajinagar (Aurangabad)
+                    </option>
+                    <option value="Nagpur">Nagpur (MIHAN / Butibori)</option>
+                    <option value="Nashik">Nashik (Ambad / Satpur)</option>
+                    <option value="Raigad">Raigad (Taloja / Roha)</option>
+                    <option value="Kolhapur">
+                      Kolhapur (Shiroli / Gokul Shirgaon)
+                    </option>
+                    <option value="Solapur">Solapur</option>
+                    <option value="Amravati">Amravati</option>
+                  </select>
+                </label>
+                <label
+                  >Authorized Contact Person *
+                  <input
+                    name="contactPerson"
+                    id="regContactPerson"
+                    placeholder="e.g. Ramesh S. Deshpande"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div class="formgrid">
+                <label>
+                  Official Email Address * (Receives Gmail OTP)
+                  <div class="input-with-btn">
+                    <input
+                      name="email"
+                      id="regEmail"
+                      type="email"
+                      placeholder="official@company.com"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="btn saffron sm"
+                      id="btnSendRegOtp"
+                      onclick="handleSendRegOtp()"
+                    >
+                      Send OTP ✉
+                    </button>
+                  </div>
+                </label>
+                <div>
+                  <label
+                    >Mobile / Phone Number *
+                    <span
+                      style="
+                        font-size: 0.7rem;
+                        color: var(--ink-light);
+                        font-weight: normal;
+                      "
+                      >(Mandatory 10-digit mobile)</span
+                    >
+                    <input
+                      name="phone"
+                      id="regPhone"
+                      type="tel"
+                      maxlength="10"
+                      placeholder="e.g. 9820012345"
+                      style="font-family: monospace; letter-spacing: 1px"
+                      oninput="
+                        this.value = this.value.replace(/\D/g, '');
+                        checkPhoneLive(this.value);
+                      "
+                      required
+                    />
+                  </label>
+                  <div
+                    id="phoneValidationMsg"
+                    style="font-size: 0.74rem; margin-top: 2px"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- OTP Verification Input Group with 1m 30s Countdown & Resend Button -->
+              <div
+                id="regOtpGroup"
+                style="
+                  display: none;
+                  margin-bottom: 16px;
+                  background: #f8fafc;
+                  border: 1.5px solid #cbd5e1;
+                  border-radius: 8px;
+                  padding: 14px 16px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                  "
+                >
+                  <label
+                    style="
+                      margin: 0;
+                      font-weight: 700;
+                      color: var(--navy);
+                      font-size: 0.85rem;
+                    "
+                  >
+                    Enter 6-Digit Email Verification OTP:
+                  </label>
+                  <span
+                    id="otpTimerPill"
+                    style="
+                      font-size: 0.78rem;
+                      font-weight: 700;
+                      color: #b45309;
+                      background: #fef3c7;
+                      padding: 3px 10px;
+                      border-radius: 12px;
+                    "
+                  >
+                    ⏱️ Valid for: <span id="otpCountdown">01:30</span>
+                  </span>
+                </div>
+                <div class="input-with-btn">
+                  <input
+                    name="otp"
+                    id="regOtpInput"
+                    type="text"
+                    maxlength="6"
+                    placeholder="e.g. 123456"
+                    style="
+                      font-family: monospace;
+                      letter-spacing: 3px;
+                      font-size: 1.15rem;
+                      font-weight: 700;
+                    "
+                    oninput="this.value = this.value.replace(/\D/g, '')"
+                  />
+                  <button
+                    type="button"
+                    class="btn emerald sm"
+                    id="btnVerifyRegOtp"
+                    onclick="handleVerifyRegOtp()"
+                  >
+                    Verify OTP ✓
+                  </button>
+                  <button
+                    type="button"
+                    class="btn outline sm"
+                    id="btnResendRegOtp"
+                    onclick="handleResendRegOtp()"
+                    style="white-space: nowrap"
+                  >
+                    🔄 Resend OTP
+                  </button>
+                </div>
+                <div
+                  id="regOtpStatus"
+                  style="font-size: 0.8rem; margin-top: 8px; line-height: 1.4"
+                ></div>
+              </div>
+
+              <!-- Password & Confirm Password -->
+              <div class="formgrid">
+                <label>
+                  Choose Password
+                  <input
+                    name="password"
+                    id="regPassword"
+                    type="password"
+                    minlength="8"
+                    placeholder="••••••••"
+                    oninput="
+                      checkPasswordRules(this.value);
+                      checkPasswordMatch();
+                    "
+                    required
+                  />
+                </label>
+                <label>
+                  Confirm Password
+                  <input
+                    name="confirmPassword"
+                    id="regConfirmPassword"
+                    type="password"
+                    minlength="8"
+                    placeholder="••••••••"
+                    oninput="checkPasswordMatch()"
+                    required
+                  />
+                </label>
+              </div>
+              <div
+                id="pwdMatchMsg"
+                style="font-size: 0.78rem; margin-top: -6px; margin-bottom: 8px"
+              ></div>
+
+              <!-- Password Complexity Safeguards -->
+              <div class="pwd-rules-box">
+                <span style="font-weight: 700; color: var(--navy)"
+                  >Password Requirement:</span
+                >
+                <div class="pwd-rules-grid">
+                  <div class="pwd-rule-item" id="ruleMinLength">
+                    ○ At least 8 characters
+                  </div>
+                  <div class="pwd-rule-item" id="ruleLetter">
+                    ○ Contains letters (a-z, A-Z)
+                  </div>
+                  <div class="pwd-rule-item" id="ruleNumber">
+                    ○ Contains numbers (0-9)
+                  </div>
+                  <div class="pwd-rule-item" id="ruleSymbol">
+                    ○ Contains symbol (@, #, $, %, etc.)
+                  </div>
+                </div>
+              </div>
+
+              <button
+                class="btn emerald"
+                id="btnSubmitRegister"
+                style="width: 100%; margin-top: 10px"
+                type="submit"
+              >
+                Create Unified Enterprise Profile ✓
+              </button>
+            </form>
+            <div id="regmsg" class="msg"></div>
+          </div>
+
+          <!-- FORGOT PASSWORD VIEW (with Gmail OTP & Confirm Password) -->
+          <div id="viewForgot" style="display: none">
+            <h2>Reset Password</h2>
+            <p>
+              Enter your registered official email to receive a secure one-time
+              verification code (OTP).
+            </p>
+
+            <form id="forgotOtpForm">
+              <!-- Step 1: Email + Send OTP -->
+              <label>
+                Registered Official Email
+                <div class="input-with-btn">
+                  <input
+                    id="forgotEmail"
+                    type="email"
+                    placeholder="name@domain.com"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn saffron sm"
+                    id="btnSendForgotOtp"
+                    onclick="handleSendForgotOtp()"
+                  >
+                    Send OTP ✉
+                  </button>
+                </div>
+              </label>
+
+              <!-- Step 2: Enter OTP & New Password -->
+              <div id="forgotOtpGroup" style="display: none; margin-top: 10px">
+                <label>
+                  Enter 6-Digit Email OTP
+                  <input
+                    id="forgotOtp"
+                    type="text"
+                    maxlength="6"
+                    placeholder="123456"
+                    required
+                  />
+                </label>
+
+                <!-- Step 3: New Password & Confirm Password -->
+                <div class="formgrid" style="margin-top: 8px">
+                  <label>
+                    New Password
+                    <input
+                      id="forgotNewPassword"
+                      type="password"
+                      minlength="8"
+                      placeholder="••••••••"
+                      oninput="
+                        checkForgotRules(this.value);
+                        checkForgotMatch();
+                      "
+                      required
+                    />
+                  </label>
+                  <label>
+                    Confirm New Password
+                    <input
+                      id="forgotConfirmPassword"
+                      type="password"
+                      minlength="8"
+                      placeholder="••••••••"
+                      oninput="checkForgotMatch()"
+                      required
+                    />
+                  </label>
+                </div>
+                <div
+                  id="forgotMatchMsg"
+                  style="font-size: 0.78rem; margin-top: 4px"
+                ></div>
+
+                <div class="pwd-rules-box" style="margin-top: 10px">
+                  <span style="font-weight: 700; color: var(--navy)"
+                    >Password Requirement:</span
+                  >
+                  <div class="pwd-rules-grid">
+                    <div class="pwd-rule-item" id="fRuleMin">
+                      ○ 8+ characters
+                    </div>
+                    <div class="pwd-rule-item" id="fRuleLetter">○ Letters</div>
+                    <div class="pwd-rule-item" id="fRuleNum">○ Numbers</div>
+                    <div class="pwd-rule-item" id="fRuleSym">
+                      ○ Special Symbol (@#$%)
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  class="btn emerald"
+                  style="width: 100%; margin-top: 14px"
+                  type="button"
+                  onclick="handleResetPasswordSubmit()"
+                >
+                  Update Account Password ✓
+                </button>
+              </div>
+            </form>
+            <div id="forgotmsg" class="msg"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Gmail SMTP Configuration Modal -->
+    <div id="gmailModal" class="modal-overlay">
+      <div class="modal-card">
+        <h2>⚙️ Configure Gmail SMTP</h2>
+        <p
+          style="
+            font-size: 0.85rem;
+            color: var(--ink-light);
+            margin-bottom: 16px;
+          "
+        >
+          Connect your actual Gmail address to dispatch live OTP emails. If not
+          configured, Udyog Samyog automatically operates in
+          <b>Development Mode</b> (displaying OTPs on screen and in server
+          console).
+        </p>
+        <label>
+          Your Gmail Address
+          <input
+            type="email"
+            id="gmailUserConfig"
+            placeholder="youremail@gmail.com"
+          />
+        </label>
+        <label style="margin-top: 10px">
+          Google App Password (16 Characters)
+          <input
+            type="password"
+            id="gmailPassConfig"
+            placeholder="xxxx xxxx xxxx xxxx"
+          />
+        </label>
+        <div
+          style="
+            font-size: 0.75rem;
+            color: var(--ink-muted);
+            margin-top: 6px;
+            line-height: 1.4;
+          "
+        >
+          Tip: Generate a 16-character App Password at:
+          <i>myaccount.google.com/apppasswords</i>.
+        </div>
+        <div
+          class="modal-actions"
+          style="
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+          "
+        >
+          <button
+            type="button"
+            class="btn outline sm"
+            onclick="closeGmailConfigModal()"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn saffron sm"
+            onclick="testGmailConfig()"
+          >
+            ⚡ Test SMTP Connection
+          </button>
+          <button
+            type="button"
+            class="btn emerald sm"
+            onclick="saveGmailConfig()"
+          >
+            Save & Activate
+          </button>
+        </div>
+        <div id="gmailConfigMsg" class="msg" style="margin-top: 10px"></div>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+  </body>
+</html>
