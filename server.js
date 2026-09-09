@@ -1097,7 +1097,6 @@ function evaluateRegulatoryChecklist(data) {
 const OTP_EXPIRY_MS = 90 * 1000; // 1 minute 30 seconds (90 seconds)
 
 // Send OTP via Gmail or Dev Fallback
-app.post("/api/otp/send", async (req, res) => {
 app.post("/api/otp/send", otpSendRateLimiter.middleware((req) => `${req.ip || "ip"}:${(req.body?.email || "").toLowerCase()}`), async (req, res) => {
   try {
     const { email, purpose } = req.body;
@@ -1131,36 +1130,19 @@ app.post("/api/otp/send", otpSendRateLimiter.middleware((req) => `${req.ip || "i
       }
     }
 
-    // Invalidate any previous unused OTP for this email and purpose to support fresh resends cleanly
-    db.prepare(
-      "UPDATE otps SET used=1 WHERE email=? AND purpose=? AND used=0",
-    ).run(emailNorm, purpose);
     const otpCode = String(crypto.randomInt(100000, 999999));
     const expiresAt = Date.now() + OTP_EXPIRY_MS;
 
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
-    const dispatchResult = await sendOtpEmail(emailNorm, otp, purpose);
     db.prepare("UPDATE otps SET used=1 WHERE email=? AND purpose=?").run(
       emailNorm,
       purpose,
     );
 
-    if (dispatchResult.sent === false) {
-      return res.status(500).json({
-        error: `Failed to deliver email via Gmail to ${emailNorm}: ${dispatchResult.error || "SMTP delivery failed"}. Please verify your Gmail SMTP Settings or recipient email address.`,
-      });
-    }
-
-    const expiresAt = Date.now() + OTP_EXPIRY_MS; // 90 seconds (1 min 30 sec) from actual delivery
-
     db.prepare(
       `
-      INSERT INTO otps (email, otp, purpose, expires_at)
-      VALUES (?, ?, ?, ?)
       INSERT INTO otps (email, otp, purpose, expires_at, used, attempts)
       VALUES (?, ?, ?, ?, 0, 0)
     `,
-    ).run(emailNorm, otp, purpose, expiresAt);
     ).run(emailNorm, otpCode, purpose, expiresAt);
 
     const dispatchResult = await sendOtpEmail(emailNorm, otpCode, purpose);
@@ -1173,11 +1155,6 @@ app.post("/api/otp/send", otpSendRateLimiter.middleware((req) => `${req.ip || "i
       ok: true,
       message: `Verification One-Time Password sent to ${emailNorm}.`,
       recipient: emailNorm,
-      message:
-        dispatchResult.mode === "gmail"
-          ? `Verification OTP sent to ${emailNorm} via Gmail (Valid for 1 min 30 sec). Check your Inbox and Spam folder.`
-          : `Verification OTP generated. (Dev Mode: ${otp})`,
-      devOtp: dispatchResult.mode === "gmail" ? undefined : otp,
       devOtp: dispatchResult.mode !== "gmail" ? otpCode : undefined,
       mode: dispatchResult.mode,
       expiresInSeconds: 90,
@@ -1188,7 +1165,6 @@ app.post("/api/otp/send", otpSendRateLimiter.middleware((req) => `${req.ip || "i
   }
 });
 
-// Verify OTP
 // Verify OTP with Attempt Throttling & Invalidation Defense
 app.post("/api/otp/verify", (req, res) => {
   try {
@@ -1201,62 +1177,41 @@ app.post("/api/otp/verify", (req, res) => {
     const emailNorm = String(email).trim().toLowerCase();
     const otpNorm = String(otp).trim();
 
-    const record = db
     // Check active unexpired unspent OTP for this email and purpose
     const activeOtp = db
       .prepare(
         `
       SELECT * FROM otps
-      WHERE email=? AND otp=? AND purpose=? AND used=0 AND expires_at > ?
       WHERE email=? AND purpose=? AND used=0 AND expires_at > ?
       ORDER BY id DESC LIMIT 1
     `,
       )
-      .get(emailNorm, otpNorm, purpose, Date.now());
       .get(emailNorm, purpose, Date.now());
 
-    if (!record) {
-      // Check if code was matched but expired
     if (!activeOtp) {
       // Check if expired
       const expiredRecord = db
         .prepare(
           `
         SELECT * FROM otps
-        WHERE email=? AND otp=? AND purpose=? AND used=0 AND expires_at <= ?
         WHERE email=? AND purpose=? AND used=0 AND expires_at <= ?
         ORDER BY id DESC LIMIT 1
       `,
         )
-        .get(emailNorm, otpNorm, purpose, Date.now());
         .get(emailNorm, purpose, Date.now());
 
       if (expiredRecord) {
         return res.status(400).json({
           error:
-            "This OTP code has expired (validity is 1 minute 30 seconds). Please click 'Resend OTP' to receive a fresh code.",
             "This One-Time Password code has expired (validity is 1 minute 30 seconds). Please click 'Resend OTP' to receive a fresh code.",
         });
       }
 
-      // Check if the OTP was issued for a different email address (e.g. sender email)
-      const sentElsewhere = db
-        .prepare(
-          `
-        SELECT email FROM otps
-        WHERE otp=? AND purpose=? AND expires_at > ?
-        ORDER BY id DESC LIMIT 1
-      `,
-        )
-        .get(otpNorm, purpose, Date.now());
       return res.status(400).json({
         error: `No active One-Time Password found for '${emailNorm}'. Please click 'Send OTP' to request a code.`,
       });
     }
 
-      if (sentElsewhere && sentElsewhere.email !== emailNorm) {
-        return res.status(400).json({
-          error: `The OTP entered was issued for '${sentElsewhere.email}', not '${emailNorm}'. Please click 'Send OTP' to receive a fresh code at '${emailNorm}'.`,
     // Verify code match
     if (activeOtp.otp !== otpNorm) {
       const newAttempts = (activeOtp.attempts || 0) + 1;
@@ -1272,12 +1227,10 @@ app.post("/api/otp/verify", (req, res) => {
 
       const remaining = 5 - newAttempts;
       return res.status(400).json({
-        error: `Invalid OTP code for '${emailNorm}'. Please enter the correct 6-digit code or click 'Resend OTP'.`,
         error: `Invalid One-Time Password code for '${emailNorm}'. Attempts remaining: ${remaining}.`,
       });
     }
 
-    db.prepare("UPDATE otps SET used=1 WHERE id=?").run(record.id);
     // Code matched! Mark as used and update session
     db.prepare("UPDATE otps SET used=1 WHERE id=?").run(activeOtp.id);
 
@@ -1287,7 +1240,6 @@ app.post("/api/otp/verify", (req, res) => {
     res.json({
       ok: true,
       verified: true,
-      message: "OTP successfully verified.",
       message: "One-Time Password successfully verified.",
     });
   } catch (err) {
@@ -1603,7 +1555,6 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-app.post("/api/login", async (req, res) => {
 app.post("/api/login", loginRateLimiter.middleware(), async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -1628,23 +1579,6 @@ app.post("/api/login", loginRateLimiter.middleware(), async (req, res) => {
       });
     }
 
-    req.session.user = {
-      id: user.id,
-      role: user.role,
-      email: user.email,
-      companyName: user.company_name,
-      department:
-        user.department ||
-        (user.role === "official" ? "Government of Maharashtra" : "Enterprise"),
-      contactPerson: user.contact_person,
-      district: user.district,
-      phone: user.phone,
-      registrationNo: user.registration_no,
-      deptCode: user.dept_code || (user.role === "official" ? "msins" : null),
-      isApex: user.is_apex === 1,
-      isBanned: user.is_banned === 1,
-      banReason: user.ban_reason || "",
-    };
     // Thwart Session Fixation by regenerating the session identifier on successful auth
     req.session.regenerate((err) => {
       if (err) {
@@ -1654,7 +1588,6 @@ app.post("/api/login", loginRateLimiter.middleware(), async (req, res) => {
           .json({ error: "Session security initialization failed." });
       }
 
-    res.json({ ok: true, user: req.session.user });
       req.session.user = {
         id: user.id,
         role: user.role,
@@ -1689,7 +1622,6 @@ app.get("/api/me", (req, res) => {
   res.json({ user: req.session.user || null });
 });
 
-app.post("/api/forgot-password", async (req, res) => {
 app.post("/api/forgot-password", forgotPasswordRateLimiter.middleware((req) => `${req.ip || "ip"}:${(req.body?.email || "").toLowerCase()}`), async (req, res) => {
   try {
     const email = String(req.body.email || "")
@@ -1700,7 +1632,6 @@ app.post("/api/forgot-password", forgotPasswordRateLimiter.middleware((req) => `
       return res.json({
         ok: true,
         message:
-          "If registered, a secure verification OTP has been dispatched to your email.",
           "If registered, a secure verification One-Time Password has been dispatched to your email.",
       });
     }
@@ -1710,21 +1641,16 @@ app.post("/api/forgot-password", forgotPasswordRateLimiter.middleware((req) => `
       "INSERT INTO reset_tokens(user_id, token, expires_at) VALUES(?, ?, ?)",
     ).run(u.id, token, Date.now() + 30 * 60 * 1000);
 
-    // Also dispatch OTP for email flow
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
     // Invalidate previous unused reset OTPs for this email
     db.prepare("UPDATE otps SET used=1 WHERE email=? AND purpose='reset'").run(email);
 
-    // Also dispatch OTP for email flow (90 seconds validity standard)
+    // Also dispatch One-Time Password for email flow (90 seconds validity standard)
     const otp = String(crypto.randomInt(100000, 999999));
     db.prepare(
       `
-      INSERT INTO otps (email, otp, purpose, expires_at)
-      VALUES (?, ?, 'reset', ?)
       INSERT INTO otps (email, otp, purpose, expires_at, used, attempts)
       VALUES (?, ?, 'reset', ?, 0, 0)
     `,
-    ).run(email, otp, Date.now() + 15 * 60 * 1000);
     ).run(email, otp, Date.now() + OTP_EXPIRY_MS);
 
     const dispatch = await sendOtpEmail(email, otp, "reset");
@@ -1733,8 +1659,6 @@ app.post("/api/forgot-password", forgotPasswordRateLimiter.middleware((req) => `
       ok: true,
       message:
         dispatch.mode === "gmail"
-          ? `Password reset OTP sent to ${email} via Gmail. Check your inbox and spam folder.`
-          : `Password reset OTP generated. (Dev Mode: ${otp})`,
           ? `Password reset One-Time Password sent to ${email} via Gmail. Check your inbox and spam folder.`
           : `Password reset One-Time Password generated. (Dev Mode: ${otp})`,
       devOtp: dispatch.mode === "gmail" ? undefined : otp,
@@ -2717,8 +2641,6 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
       }
     }
 
-    const filePath = path.join(uploadsDir, d.stored_name);
-    if (!fs.existsSync(filePath)) {
     const safeStoredName = path.basename(d.stored_name || "");
     const resolvedPath = path.resolve(uploadsDir, safeStoredName);
     const normalizedUploads = path.resolve(uploadsDir);
@@ -2742,7 +2664,6 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
       "Content-Disposition",
       `inline; filename="${encodeURIComponent(d.original_name)}"`,
     );
-    fs.createReadStream(filePath).pipe(res);
     fs.createReadStream(resolvedPath).pipe(res);
   } catch (e) {
     res.status(500).send("Document preview error: " + e.message);
@@ -2786,8 +2707,6 @@ app.get("/api/documents/:id", auth, (req, res) => {
       }
     }
 
-    const filePath = path.join(uploadsDir, d.stored_name);
-    if (!fs.existsSync(filePath)) {
     const safeStoredName = path.basename(d.stored_name || "");
     const resolvedPath = path.resolve(uploadsDir, safeStoredName);
     const normalizedUploads = path.resolve(uploadsDir);
@@ -2800,7 +2719,6 @@ app.get("/api/documents/:id", auth, (req, res) => {
       return res.status(404).json({ error: "File not found" });
     }
 
-    res.download(filePath, d.original_name);
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.download(resolvedPath, d.original_name);
   } catch (err) {
