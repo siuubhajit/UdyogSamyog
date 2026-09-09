@@ -654,14 +654,20 @@
         container.innerHTML = queries
           .map((q) => {
             const isOpen = q.status === "Open";
+            const safeDept = typeof escapeHtml === "function" ? escapeHtml(q.officer_dept || "Department Scrutiny Officer") : (q.officer_dept || "Department Scrutiny Officer");
+            const safeMsg = typeof escapeHtml === "function" ? escapeHtml(q.message) : q.message;
+            const safeReply = typeof escapeHtml === "function" ? escapeHtml(q.applicant_reply || "") : (q.applicant_reply || "");
+            const safeFile = typeof escapeHtml === "function" ? escapeHtml(q.reply_file_name || "") : (q.reply_file_name || "");
             return `
             <div style="border: 1.5px solid ${isOpen ? "var(--saffron)" : "var(--line)"}; border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; background: ${isOpen ? "#fffbf5" : "#ffffff"};">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <b style="color: var(--navy); font-size: 0.86rem;">🏛️ Query from ${q.officer_dept || "Department Scrutiny Officer"}</b>
+                <b style="color: var(--navy); font-size: 0.86rem;">🏛️ Query from ${safeDept}</b>
                 <span class="badge ${isOpen ? "red" : "green"}">${q.status}</span>
               </div>
               <div style="font-size: 0.86rem; color: var(--ink); line-height: 1.5; margin-bottom: 12px; background: #ffffff; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--line);">
                 ${q.message}
+                ${safeMsg}
               </div>
 
               ${
@@ -685,6 +691,8 @@
                   <b style="color: #065f46;">Your Submitted Response:</b>
                   <div style="margin-top: 2px;">${q.applicant_reply || ""}</div>
                   ${q.reply_file_name ? `<div style="margin-top: 6px; font-weight: 600;">📎 Attached: ${q.reply_file_name}</div>` : ""}
+                  <div style="margin-top: 2px;">${safeReply}</div>
+                  ${safeFile ? `<div style="margin-top: 6px; font-weight: 600;">📎 Attached: ${safeFile}</div>` : ""}
                 </div>
               `
               }
@@ -732,6 +740,11 @@
         container.innerHTML = inspections
           .map(
             (i) => `
+            (i) => {
+              const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
+              const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
+              const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
+              return `
           <div style="background: #f8fafc; border: 1px solid var(--line); border-left: 3px solid var(--navy); padding: 12px 14px; border-radius: 6px; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.85rem; color: var(--navy);">
               <span>📅 Scheduled Date: ${new Date(i.scheduled_date).toLocaleDateString()}</span>
@@ -739,8 +752,12 @@
             </div>
             <div style="font-size: 0.8rem; color: var(--ink); margin-top: 2px;"><b>Department:</b> ${i.department}</div>
             <div style="font-size: 0.76rem; color: var(--ink-light);"><b>Inspector:</b> ${i.inspector_name} · ${i.notes || ""}</div>
+            <div style="font-size: 0.8rem; color: var(--ink); margin-top: 2px;"><b>Department:</b> ${safeDept}</div>
+            <div style="font-size: 0.76rem; color: var(--ink-light);"><b>Inspector:</b> ${safeName} · ${safeNotes}</div>
           </div>
         `,
+        `;
+            }
           )
           .join("");
       }

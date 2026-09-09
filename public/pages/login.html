@@ -646,6 +646,31 @@
                     required
                   />
                 </label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                  <label style="margin: 0; font-weight: 700; color: var(--navy); font-size: 0.85rem;">
+                    Enter 6-Digit Email OTP:
+                  </label>
+                  <span
+                    id="otpTimerPillForgot"
+                    style="
+                      font-size: 0.78rem;
+                      font-weight: 700;
+                      color: #b45309;
+                      background: #fef3c7;
+                      padding: 3px 10px;
+                      border-radius: 12px;
+                    "
+                  >
+                    ⏱️ Valid for: <span id="forgotOtpCountdown">01:30</span>
+                  </span>
+                </div>
+                <input
+                  id="forgotOtp"
+                  type="text"
+                  maxlength="6"
+                  placeholder="123456"
+                  required
+                />
 
                 <!-- Step 3: New Password & Confirm Password -->
                 <div class="formgrid" style="margin-top: 8px">

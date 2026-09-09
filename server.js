@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS otps (
   purpose TEXT NOT NULL,
   expires_at INTEGER NOT NULL,
   used INTEGER DEFAULT 0,
+  attempts INTEGER DEFAULT 0,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -214,6 +215,10 @@ try {
   db.prepare("UPDATE documents SET department = 'midc' WHERE plan_type = 'civil_plan' OR document_type LIKE '%Site%' OR document_type LIKE '%Civil%' OR document_type LIKE '%Layout%'").run();
   db.prepare("UPDATE documents SET department = 'dish' WHERE plan_type = 'factory_safety_plan' OR document_type LIKE '%Safety%' OR document_type LIKE '%Factory%' OR document_type LIKE '%Hazard%'").run();
   db.prepare("UPDATE documents SET department = 'fire' WHERE plan_type = 'fire_safety_plan' OR document_type LIKE '%Fire%' OR document_type LIKE '%Hydrant%' OR document_type LIKE '%Evacuation%'").run();
+} catch (_) {}
+
+try {
+  db.exec("ALTER TABLE otps ADD COLUMN attempts INTEGER DEFAULT 0;");
 } catch (_) {}
 
 function determinePlanType(docType, explicitType) {
@@ -663,6 +668,99 @@ function validatePasswordComplexity(password) {
   return hasLetter && hasNumber && hasSymbol;
 }
 
+/**
+ * In-Memory Sliding Window Rate Limiter
+ * Provides anti-brute-force and rate-limiting defense with zero external dependencies
+ */
+class SlidingWindowRateLimiter {
+  constructor({ windowMs, maxRequests, message, minIntervalMs = 0 }) {
+    this.windowMs = windowMs;
+    this.maxRequests = maxRequests;
+    this.message = message || "Too many requests. Please try again later.";
+    this.minIntervalMs = minIntervalMs;
+    this.hits = new Map();
+    const timer = setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    if (timer && timer.unref) timer.unref();
+  }
+
+  cleanup() {
+    const now = Date.now();
+    for (const [key, timestamps] of this.hits.entries()) {
+      const valid = timestamps.filter((t) => now - t < this.windowMs);
+      if (valid.length === 0) {
+        this.hits.delete(key);
+      } else {
+        this.hits.set(key, valid);
+      }
+    }
+  }
+
+  reset(key) {
+    if (key) {
+      this.hits.delete(key);
+    } else {
+      this.hits.clear();
+    }
+  }
+
+  middleware(keyExtractor = (req) => req.ip || req.socket.remoteAddress || "global") {
+    return (req, res, next) => {
+      const key = keyExtractor(req);
+      const now = Date.now();
+      const timestamps = this.hits.get(key) || [];
+      const validTimestamps = timestamps.filter((t) => now - t < this.windowMs);
+
+      // Check minInterval cooldown if configured
+      if (this.minIntervalMs > 0 && validTimestamps.length > 0) {
+        const lastHit = validTimestamps[validTimestamps.length - 1];
+        const elapsed = now - lastHit;
+        if (elapsed < this.minIntervalMs) {
+          const waitSeconds = Math.ceil((this.minIntervalMs - elapsed) / 1000);
+          res.setHeader("Retry-After", waitSeconds);
+          return res.status(429).json({
+            error: `Please wait ${waitSeconds} second${waitSeconds > 1 ? "s" : ""} before requesting another One-Time Password.`,
+          });
+        }
+      }
+
+      if (validTimestamps.length >= this.maxRequests) {
+        const oldest = validTimestamps[0];
+        const retryAfterSec = Math.max(1, Math.ceil((oldest + this.windowMs - now) / 1000));
+        res.setHeader("Retry-After", retryAfterSec);
+        return res.status(429).json({
+          error: `${this.message} (Retry allowed in ${retryAfterSec} seconds).`,
+        });
+      }
+
+      validTimestamps.push(now);
+      this.hits.set(key, validTimestamps);
+      next();
+    };
+  }
+}
+
+// Rate Limiter instances
+const loginRateLimiter = new SlidingWindowRateLimiter({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  maxRequests: 10,
+  message: "Too many login attempts. Account access temporarily throttled for security.",
+});
+
+const otpSendRateLimiter = new SlidingWindowRateLimiter({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  maxRequests: 5,
+  minIntervalMs: 15 * 1000, // 15 seconds cooldown
+  message: "Too many One-Time Password dispatch requests. Maximum 5 requests allowed per 5 minutes.",
+});
+
+const forgotPasswordRateLimiter = new SlidingWindowRateLimiter({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  maxRequests: 5,
+  minIntervalMs: 15 * 1000, // 15 seconds cooldown
+  message: "Too many password recovery requests. Maximum 5 requests allowed per 5 minutes.",
+});
+
+
 // Gmail OTP Dispatch Configuration & Helper
 let customGmailConfig = {
   user: process.env.GMAIL_USER || "",
@@ -1000,6 +1098,7 @@ const OTP_EXPIRY_MS = 90 * 1000; // 1 minute 30 seconds (90 seconds)
 
 // Send OTP via Gmail or Dev Fallback
 app.post("/api/otp/send", async (req, res) => {
+app.post("/api/otp/send", otpSendRateLimiter.middleware((req) => `${req.ip || "ip"}:${(req.body?.email || "").toLowerCase()}`), async (req, res) => {
   try {
     const { email, purpose } = req.body;
     if (!email || !purpose) {
@@ -1036,9 +1135,15 @@ app.post("/api/otp/send", async (req, res) => {
     db.prepare(
       "UPDATE otps SET used=1 WHERE email=? AND purpose=? AND used=0",
     ).run(emailNorm, purpose);
+    const otpCode = String(crypto.randomInt(100000, 999999));
+    const expiresAt = Date.now() + OTP_EXPIRY_MS;
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
     const dispatchResult = await sendOtpEmail(emailNorm, otp, purpose);
+    db.prepare("UPDATE otps SET used=1 WHERE email=? AND purpose=?").run(
+      emailNorm,
+      purpose,
+    );
 
     if (dispatchResult.sent === false) {
       return res.status(500).json({
@@ -1052,8 +1157,13 @@ app.post("/api/otp/send", async (req, res) => {
       `
       INSERT INTO otps (email, otp, purpose, expires_at)
       VALUES (?, ?, ?, ?)
+      INSERT INTO otps (email, otp, purpose, expires_at, used, attempts)
+      VALUES (?, ?, ?, ?, 0, 0)
     `,
     ).run(emailNorm, otp, purpose, expiresAt);
+    ).run(emailNorm, otpCode, purpose, expiresAt);
+
+    const dispatchResult = await sendOtpEmail(emailNorm, otpCode, purpose);
 
     console.log(
       `[/api/otp/send] Successfully issued OTP for ${emailNorm} (mode: ${dispatchResult.mode}, expires in 90s)`,
@@ -1061,12 +1171,14 @@ app.post("/api/otp/send", async (req, res) => {
 
     res.json({
       ok: true,
+      message: `Verification One-Time Password sent to ${emailNorm}.`,
       recipient: emailNorm,
       message:
         dispatchResult.mode === "gmail"
           ? `Verification OTP sent to ${emailNorm} via Gmail (Valid for 1 min 30 sec). Check your Inbox and Spam folder.`
           : `Verification OTP generated. (Dev Mode: ${otp})`,
       devOtp: dispatchResult.mode === "gmail" ? undefined : otp,
+      devOtp: dispatchResult.mode !== "gmail" ? otpCode : undefined,
       mode: dispatchResult.mode,
       expiresInSeconds: 90,
     });
@@ -1077,6 +1189,7 @@ app.post("/api/otp/send", async (req, res) => {
 });
 
 // Verify OTP
+// Verify OTP with Attempt Throttling & Invalidation Defense
 app.post("/api/otp/verify", (req, res) => {
   try {
     const { email, otp, purpose } = req.body;
@@ -1089,31 +1202,40 @@ app.post("/api/otp/verify", (req, res) => {
     const otpNorm = String(otp).trim();
 
     const record = db
+    // Check active unexpired unspent OTP for this email and purpose
+    const activeOtp = db
       .prepare(
         `
       SELECT * FROM otps
       WHERE email=? AND otp=? AND purpose=? AND used=0 AND expires_at > ?
+      WHERE email=? AND purpose=? AND used=0 AND expires_at > ?
       ORDER BY id DESC LIMIT 1
     `,
       )
       .get(emailNorm, otpNorm, purpose, Date.now());
+      .get(emailNorm, purpose, Date.now());
 
     if (!record) {
       // Check if code was matched but expired
+    if (!activeOtp) {
+      // Check if expired
       const expiredRecord = db
         .prepare(
           `
         SELECT * FROM otps
         WHERE email=? AND otp=? AND purpose=? AND used=0 AND expires_at <= ?
+        WHERE email=? AND purpose=? AND used=0 AND expires_at <= ?
         ORDER BY id DESC LIMIT 1
       `,
         )
         .get(emailNorm, otpNorm, purpose, Date.now());
+        .get(emailNorm, purpose, Date.now());
 
       if (expiredRecord) {
         return res.status(400).json({
           error:
             "This OTP code has expired (validity is 1 minute 30 seconds). Please click 'Resend OTP' to receive a fresh code.",
+            "This One-Time Password code has expired (validity is 1 minute 30 seconds). Please click 'Resend OTP' to receive a fresh code.",
         });
       }
 
@@ -1127,19 +1249,37 @@ app.post("/api/otp/verify", (req, res) => {
       `,
         )
         .get(otpNorm, purpose, Date.now());
+      return res.status(400).json({
+        error: `No active One-Time Password found for '${emailNorm}'. Please click 'Send OTP' to request a code.`,
+      });
+    }
 
       if (sentElsewhere && sentElsewhere.email !== emailNorm) {
         return res.status(400).json({
           error: `The OTP entered was issued for '${sentElsewhere.email}', not '${emailNorm}'. Please click 'Send OTP' to receive a fresh code at '${emailNorm}'.`,
+    // Verify code match
+    if (activeOtp.otp !== otpNorm) {
+      const newAttempts = (activeOtp.attempts || 0) + 1;
+      db.prepare("UPDATE otps SET attempts=? WHERE id=?").run(newAttempts, activeOtp.id);
+
+      if (newAttempts >= 5) {
+        // Invalidate OTP after 5 consecutive failures
+        db.prepare("UPDATE otps SET used=1 WHERE id=?").run(activeOtp.id);
+        return res.status(429).json({
+          error: "Too many failed One-Time Password verification attempts. This code has been invalidated for security. Please request a fresh One-Time Password.",
         });
       }
 
+      const remaining = 5 - newAttempts;
       return res.status(400).json({
         error: `Invalid OTP code for '${emailNorm}'. Please enter the correct 6-digit code or click 'Resend OTP'.`,
+        error: `Invalid One-Time Password code for '${emailNorm}'. Attempts remaining: ${remaining}.`,
       });
     }
 
     db.prepare("UPDATE otps SET used=1 WHERE id=?").run(record.id);
+    // Code matched! Mark as used and update session
+    db.prepare("UPDATE otps SET used=1 WHERE id=?").run(activeOtp.id);
 
     if (!req.session.verifiedOtps) req.session.verifiedOtps = {};
     req.session.verifiedOtps[`${purpose}_${emailNorm}`] = Date.now();
@@ -1148,6 +1288,7 @@ app.post("/api/otp/verify", (req, res) => {
       ok: true,
       verified: true,
       message: "OTP successfully verified.",
+      message: "One-Time Password successfully verified.",
     });
   } catch (err) {
     console.error("OTP verification error:", err);
@@ -1463,6 +1604,7 @@ app.post("/api/register", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
+app.post("/api/login", loginRateLimiter.middleware(), async (req, res) => {
   try {
     const { email, password, role } = req.body;
     if (!email || !password) {
@@ -1503,8 +1645,36 @@ app.post("/api/login", async (req, res) => {
       isBanned: user.is_banned === 1,
       banReason: user.ban_reason || "",
     };
+    // Thwart Session Fixation by regenerating the session identifier on successful auth
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regeneration failure:", err);
+        return res
+          .status(500)
+          .json({ error: "Session security initialization failed." });
+      }
 
     res.json({ ok: true, user: req.session.user });
+      req.session.user = {
+        id: user.id,
+        role: user.role,
+        email: user.email,
+        companyName: user.company_name,
+        department:
+          user.department ||
+          (user.role === "official" ? "Government of Maharashtra" : "Enterprise"),
+        contactPerson: user.contact_person,
+        district: user.district,
+        phone: user.phone,
+        registrationNo: user.registration_no,
+        deptCode: user.dept_code || (user.role === "official" ? "msins" : null),
+        isApex: user.is_apex === 1,
+        isBanned: user.is_banned === 1,
+        banReason: user.ban_reason || "",
+      };
+
+      res.json({ ok: true, user: req.session.user });
+    });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Login service encountered an issue." });
@@ -1520,6 +1690,7 @@ app.get("/api/me", (req, res) => {
 });
 
 app.post("/api/forgot-password", async (req, res) => {
+app.post("/api/forgot-password", forgotPasswordRateLimiter.middleware((req) => `${req.ip || "ip"}:${(req.body?.email || "").toLowerCase()}`), async (req, res) => {
   try {
     const email = String(req.body.email || "")
       .trim()
@@ -1530,6 +1701,7 @@ app.post("/api/forgot-password", async (req, res) => {
         ok: true,
         message:
           "If registered, a secure verification OTP has been dispatched to your email.",
+          "If registered, a secure verification One-Time Password has been dispatched to your email.",
       });
     }
 
@@ -1540,12 +1712,20 @@ app.post("/api/forgot-password", async (req, res) => {
 
     // Also dispatch OTP for email flow
     const otp = String(Math.floor(100000 + Math.random() * 900000));
+    // Invalidate previous unused reset OTPs for this email
+    db.prepare("UPDATE otps SET used=1 WHERE email=? AND purpose='reset'").run(email);
+
+    // Also dispatch OTP for email flow (90 seconds validity standard)
+    const otp = String(crypto.randomInt(100000, 999999));
     db.prepare(
       `
       INSERT INTO otps (email, otp, purpose, expires_at)
       VALUES (?, ?, 'reset', ?)
+      INSERT INTO otps (email, otp, purpose, expires_at, used, attempts)
+      VALUES (?, ?, 'reset', ?, 0, 0)
     `,
     ).run(email, otp, Date.now() + 15 * 60 * 1000);
+    ).run(email, otp, Date.now() + OTP_EXPIRY_MS);
 
     const dispatch = await sendOtpEmail(email, otp, "reset");
 
@@ -1555,6 +1735,8 @@ app.post("/api/forgot-password", async (req, res) => {
         dispatch.mode === "gmail"
           ? `Password reset OTP sent to ${email} via Gmail. Check your inbox and spam folder.`
           : `Password reset OTP generated. (Dev Mode: ${otp})`,
+          ? `Password reset One-Time Password sent to ${email} via Gmail. Check your inbox and spam folder.`
+          : `Password reset One-Time Password generated. (Dev Mode: ${otp})`,
       devOtp: dispatch.mode === "gmail" ? undefined : otp,
       resetUrl:
         dispatch.mode === "gmail"
@@ -1565,6 +1747,17 @@ app.post("/api/forgot-password", async (req, res) => {
     console.error("Forgot password error:", err);
     res.status(500).json({ error: "Failed to initiate password reset." });
   }
+});
+
+// Test Suite Support: Reset Rate Limiting counters in development/test
+app.post("/api/test/reset-limits", (req, res) => {
+  if (process.env.NODE_ENV !== "production") {
+    loginRateLimiter.reset();
+    otpSendRateLimiter.reset();
+    forgotPasswordRateLimiter.reset();
+    return res.json({ ok: true, message: "Rate limiters reset." });
+  }
+  res.status(403).json({ error: "Forbidden in production environment" });
 });
 
 app.post("/api/reset-password", async (req, res) => {
@@ -1713,6 +1906,25 @@ app.delete("/api/account", auth, (req, res) => {
     const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
     if (!user) {
       return res.status(404).json({ error: "Account not found." });
+    }
+
+    // Safety guard: prevent deletion if enterprise has active or approved statutory applications
+    const activeApps = db
+      .prepare(
+        `
+      SELECT application_no, status FROM applications
+      WHERE user_id = ? AND status IN ('In Progress', 'Flagged', 'Approved')
+    `,
+      )
+      .all(userId);
+
+    if (activeApps.length > 0) {
+      const distinctStatuses = [
+        ...new Set(activeApps.map((a) => a.status)),
+      ].join(", ");
+      return res.status(400).json({
+        error: `Cannot delete enterprise account while statutory applications are active or approved (${distinctStatuses}). Official regulatory records must be preserved for statutory audit compliance.`,
+      });
     }
 
     // 1. Remove physical files on disk from uploads/
@@ -2507,11 +2719,21 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
 
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
+    const safeStoredName = path.basename(d.stored_name || "");
+    const resolvedPath = path.resolve(uploadsDir, safeStoredName);
+    const normalizedUploads = path.resolve(uploadsDir);
+
+    if (!resolvedPath.startsWith(normalizedUploads + path.sep)) {
+      return res.status(400).send("Invalid document path in vault.");
+    }
+
+    if (!fs.existsSync(resolvedPath)) {
       return res
         .status(404)
         .send("Physical file is missing from the server vault.");
     }
 
+    res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader(
       "Content-Type",
       d.mime_type || "application/octet-stream",
@@ -2521,6 +2743,7 @@ app.get("/api/documents/:id/view", auth, (req, res) => {
       `inline; filename="${encodeURIComponent(d.original_name)}"`,
     );
     fs.createReadStream(filePath).pipe(res);
+    fs.createReadStream(resolvedPath).pipe(res);
   } catch (e) {
     res.status(500).send("Document preview error: " + e.message);
   }
@@ -2565,10 +2788,21 @@ app.get("/api/documents/:id", auth, (req, res) => {
 
     const filePath = path.join(uploadsDir, d.stored_name);
     if (!fs.existsSync(filePath)) {
+    const safeStoredName = path.basename(d.stored_name || "");
+    const resolvedPath = path.resolve(uploadsDir, safeStoredName);
+    const normalizedUploads = path.resolve(uploadsDir);
+
+    if (!resolvedPath.startsWith(normalizedUploads + path.sep)) {
+      return res.status(400).json({ error: "Invalid document path in vault." });
+    }
+
+    if (!fs.existsSync(resolvedPath)) {
       return res.status(404).json({ error: "File not found" });
     }
 
     res.download(filePath, d.original_name);
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.download(resolvedPath, d.original_name);
   } catch (err) {
     res.status(500).json({ error: "Download failed" });
   }

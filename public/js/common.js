@@ -97,3 +97,21 @@ function formatBytes(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
+
+/**
+ * Universal HTML Sanitization Helper to prevent Cross-Site Scripting (XSS)
+ * @param {string|number|null|undefined} str
+ * @returns {string} Escaped safe HTML string
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+if (typeof window !== "undefined") {
+  window.escapeHtml = escapeHtml;
+}
