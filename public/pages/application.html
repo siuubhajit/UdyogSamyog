@@ -455,45 +455,162 @@
               <span class="badge blue">Direct Vault Encryption</span>
             </div>
 
+            <!-- Statutory Departmental Mandatory Document Cards -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                <div>
+                  <h3 style="margin: 0; font-size: 1.05rem; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                    <span>📋</span> Mandatory Departmental Statutory Plan Submissions
+                  </h3>
+                  <div style="font-size: 0.8rem; color: var(--ink-light); margin-top: 2px;">
+                    Statutory compliance requires uploading a technical blueprint for each of the 4 departments before proceeding.
+                  </div>
+                </div>
+                <div id="mandatoryCounterBadge" class="badge red" style="font-size: 0.82rem; padding: 6px 12px;">
+                  0 of 4 Mandatory Plans Uploaded
+                </div>
+              </div>
+
+              <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px;">
+                <!-- 1. Pollution Control Board -->
+                <div id="cardMpcb" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase;">🌿 Phase 1 Gateway</span>
+                      <span id="statusBadgeMpcb" class="badge red" style="font-size: 0.7rem;">❌ Required</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); margin: 6px 0 2px 0;">
+                      Pollution Control Board
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); line-height: 1.4;">
+                      Environmental Management &amp; Effluent Scheme
+                    </div>
+                    <div id="fileInfoMpcb" style="margin-top: 6px;"></div>
+                  </div>
+                  <div id="fileActionMpcb" style="margin-top: 10px;">
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputMpcb').click()">
+                      📁 Upload Environmental Plan PDF
+                    </button>
+                  </div>
+                  <input type="file" id="fileInputMpcb" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('environmental_plan', 'Environmental Management & Effluent Treatment Scheme', this)" />
+                </div>
+
+                <!-- 2. Industrial Development Corporation -->
+                <div id="cardMidc" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #1e40af; text-transform: uppercase;">📐 Phase 2 Civil</span>
+                      <span id="statusBadgeMidc" class="badge red" style="font-size: 0.7rem;">❌ Required</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); margin: 6px 0 2px 0;">
+                      Industrial Development Corp
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); line-height: 1.4;">
+                      Civil Infrastructure &amp; Building Layout
+                    </div>
+                    <div id="fileInfoMidc" style="margin-top: 6px;"></div>
+                  </div>
+                  <div id="fileActionMidc" style="margin-top: 10px;">
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputMidc').click()">
+                      📁 Upload Civil Plan PDF
+                    </button>
+                  </div>
+                  <input type="file" id="fileInputMidc" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('civil_plan', 'Civil Infrastructure & Building Layout Plan', this)" />
+                </div>
+
+                <!-- 3. Industrial Safety and Health -->
+                <div id="cardDish" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #9a3412; text-transform: uppercase;">🛡️ Phase 2 Safety</span>
+                      <span id="statusBadgeDish" class="badge red" style="font-size: 0.7rem;">❌ Required</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); margin: 6px 0 2px 0;">
+                      Industrial Safety &amp; Health
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); line-height: 1.4;">
+                      Factory Safety &amp; Hazardous Blueprint
+                    </div>
+                    <div id="fileInfoDish" style="margin-top: 6px;"></div>
+                  </div>
+                  <div id="fileActionDish" style="margin-top: 10px;">
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputDish').click()">
+                      📁 Upload Safety Blueprint PDF
+                    </button>
+                  </div>
+                  <input type="file" id="fileInputDish" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('factory_safety_plan', 'Factory Safety & Hazardous Materials Blueprint', this)" />
+                </div>
+
+                <!-- 4. Fire Services -->
+                <div id="cardFire" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #991b1b; text-transform: uppercase;">🚒 Phase 2 Fire</span>
+                      <span id="statusBadgeFire" class="badge red" style="font-size: 0.7rem;">❌ Required</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); margin: 6px 0 2px 0;">
+                      Fire Services Directorate
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); line-height: 1.4;">
+                      Fire Hydrant &amp; Evacuation Layout
+                    </div>
+                    <div id="fileInfoFire" style="margin-top: 6px;"></div>
+                  </div>
+                  <div id="fileActionFire" style="margin-top: 10px;">
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputFire').click()">
+                      📁 Upload Fire Plan PDF
+                    </button>
+                  </div>
+                  <input type="file" id="fileInputFire" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('fire_safety_plan', 'Fire Hydrant & Evacuation Layout Plan', this)" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional General Statutory Supporting Documents -->
+            <div style="border-top: 1px solid var(--line); padding-top: 18px; margin-top: 24px; margin-bottom: 14px;">
+              <h3 style="margin: 0; font-size: 1.05rem; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                <span>📎</span> General Statutory Supporting Documents
+              </h3>
+              <p style="font-size: 0.82rem; color: var(--ink-light); margin: 3px 0 0 0;">
+                Upload general statutory proof, land allotment letters, machinery power lists, and project reports to support your industrial dossier.
+              </p>
+            </div>
+
             <form id="uploadForm">
               <div class="formgrid">
-                <label
-                  >Document Category &amp; Statutory Plan Type
+                <label>
+                  Supporting Document Category
                   <select name="documentType" id="docTypeSelect" onchange="updatePlanType(this)">
-                    <optgroup label="Mandatory Statutory Plan Blueprints (PDF Format)">
-                      <option value="Environmental Management & Effluent Treatment Scheme" data-plantype="environmental_plan" selected>
-                        🌿 Environmental Plan (PDF) &rarr; Maharashtra Pollution Control Board (Phase 1)
-                      </option>
-                      <option value="Civil Infrastructure & Building Layout Plan" data-plantype="civil_plan">
-                        📐 Civil Plan (PDF) &rarr; Maharashtra Industrial Development Corporation (Phase 2)
-                      </option>
-                      <option value="Factory Safety & Hazardous Materials Blueprint" data-plantype="factory_safety_plan">
-                        🛡️ Factory Safety Blueprint (PDF) &rarr; Directorate of Industrial Safety &amp; Health (Phase 2)
-                      </option>
-                      <option value="Fire Hydrant & Evacuation Layout Plan" data-plantype="fire_safety_plan">
-                        🚒 Fire Safety Plan (PDF) &rarr; Directorate of Maharashtra Fire Services (Phase 2)
-                      </option>
-                    </optgroup>
-                    <optgroup label="General Statutory Supporting Documents">
-                      <option value="Land Title Deed / Industrial Allotment" data-plantype="">
-                        Land Title Deed / Industrial Allotment Letter
-                      </option>
-                      <option value="Plant & Machinery List" data-plantype="">
-                        Plant &amp; Machinery Power Rating List
-                      </option>
-                      <option value="Detailed Project Feasibility Report" data-plantype="">
-                        Detailed Project Feasibility Report
-                      </option>
-                      <option value="Tax Registration & Identity Proof" data-plantype="">
-                        Company Registration &amp; Identity Proof
-                      </option>
-                    </optgroup>
+                    <option value="Land Title Deed / Industrial Allotment Letter" data-plantype="" selected>
+                      📄 Land Title Deed / Industrial Allotment Letter
+                    </option>
+                    <option value="Plant & Machinery Power Rating List" data-plantype="">
+                      ⚙️ Plant &amp; Machinery Power Rating List
+                    </option>
+                    <option value="Detailed Project Feasibility Report (DPR)" data-plantype="">
+                      📊 Detailed Project Feasibility Report (DPR)
+                    </option>
+                    <option value="Company Registration & Identity Proof / GSTIN" data-plantype="">
+                      🏢 Company Registration &amp; Identity Proof / GSTIN Certificate
+                    </option>
+                    <option value="Electricity Connected Load / Substation Feasibility" data-plantype="">
+                      ⚡ Electricity Connected Load / Substation Sanction Letter
+                    </option>
+                    <option value="Water Supply Connection / Borewell Permission" data-plantype="">
+                      💧 Water Supply Connection / Local Authority Permission
+                    </option>
+                    <option value="Raw Materials Declaration & Sourcing Plan" data-plantype="">
+                      🧪 Raw Materials Storage &amp; Sourcing Declaration
+                    </option>
+                    <option value="Other Statutory Supporting Document" data-plantype="">
+                      📑 Other Statutory Supporting Document
+                    </option>
                   </select>
                 </label>
-                <input type="hidden" name="planType" id="planTypeInput" value="environmental_plan" />
+                <input type="hidden" name="planType" id="planTypeInput" value="" />
 
-                <label
-                  >Select Statutory Plan PDF or Document File
+                <label>
+                  Select Supporting Document File (PDF, JPG, PNG)
                   <input
                     name="document"
                     type="file"
@@ -503,9 +620,9 @@
                 </label>
               </div>
 
-              <div style="margin-top: 14px; display: flex; gap: 12px">
+              <div style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <button class="btn emerald" type="submit">
-                  ⬆ Upload & Attach to Dossier
+                  ⬆ Upload Supporting Document
                 </button>
                 <a class="btn outline" id="btnGoToTracker" href="tracker.html">
                   Go to Live Approval Tracker →
@@ -702,9 +819,11 @@
       runKnowledgeEngine();
 
       function updatePlanType(selectEl) {
+        if (!selectEl) return;
         const opt = selectEl.options[selectEl.selectedIndex];
-        const pt = opt.getAttribute("data-plantype") || "";
-        document.getElementById("planTypeInput").value = pt;
+        const pt = opt ? (opt.getAttribute("data-plantype") || "") : "";
+        const input = document.getElementById("planTypeInput");
+        if (input) input.value = pt;
       }
 
       // Application Form Submission
@@ -718,10 +837,12 @@
         try {
           show(
             "msg",
-            "Generating unified application dossier and submitting to Maharashtra Single Window...",
+            createdAppId
+              ? "Updating application dossier particulars..."
+              : "Generating unified application dossier and submitting to Maharashtra Single Window...",
           );
-          const res = await api("/api/applications", {
-            method: "POST",
+          const res = await api(createdAppId ? `/api/applications/${createdAppId}` : "/api/applications", {
+            method: createdAppId ? "PUT" : "POST",
             body: JSON.stringify(payload),
           });
 
@@ -732,7 +853,7 @@
 
           show(
             "msg",
-            `Application ${res.applicationNo} created successfully! Please upload your statutory plans (Environmental, Civil, Safety, Fire) below.`,
+            `Application ${res.applicationNo} ${res.message ? "updated" : "created"} successfully! Please upload your statutory plans below.`,
             true,
           );
 
@@ -778,11 +899,145 @@
         }
       };
 
+      async function directPlanUpload(planType, docType, inputEl) {
+        if (!createdAppId) {
+          alert("Please complete and submit the initial application particulars first.");
+          if (inputEl) inputEl.value = "";
+          return;
+        }
+        if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
+
+        const file = inputEl.files[0];
+        const formData = new FormData();
+        formData.append("document", file);
+        formData.append("documentType", docType);
+        formData.append("planType", planType);
+
+        try {
+          show("upmsg", `Encrypting and uploading ${docType} to Udyog Samyog vault...`);
+          await api(`/api/applications/${createdAppId}/documents`, {
+            method: "POST",
+            body: formData,
+          });
+          show("upmsg", `Statutory ${docType} uploaded successfully!`, true);
+          inputEl.value = "";
+          await refreshUploadedDocs();
+        } catch (err) {
+          show("upmsg", err.message || "Failed to upload document");
+          if (inputEl) inputEl.value = "";
+        }
+      }
+      window.directPlanUpload = directPlanUpload;
+
+      let mandatoryUploadsComplete = false;
+
       async function refreshUploadedDocs() {
         if (!createdAppId) return;
         try {
           const docs = await api(`/api/applications/${createdAppId}/documents`);
           const tbody = document.getElementById("uploadedDocsRows");
+
+          const mpcbDoc = docs.find(d => d.plan_type === "environmental_plan" || d.department === "mpcb" || (d.document_type || "").toLowerCase().includes("environment") || (d.document_type || "").toLowerCase().includes("effluent"));
+          const midcDoc = docs.find(d => d.plan_type === "civil_plan" || d.department === "midc" || (d.document_type || "").toLowerCase().includes("civil") || (d.document_type || "").toLowerCase().includes("building layout"));
+          const dishDoc = docs.find(d => d.plan_type === "factory_safety_plan" || d.department === "dish" || (d.document_type || "").toLowerCase().includes("safety") || (d.document_type || "").toLowerCase().includes("hazardous"));
+          const fireDoc = docs.find(d => d.plan_type === "fire_safety_plan" || d.department === "fire" || (d.document_type || "").toLowerCase().includes("fire") || (d.document_type || "").toLowerCase().includes("hydrant"));
+
+          const hasMpcb = !!mpcbDoc;
+          const hasMidc = !!midcDoc;
+          const hasDish = !!dishDoc;
+          const hasFire = !!fireDoc;
+
+          const updateDeptCard = (prefix, doc, docTitle) => {
+            const b = document.getElementById(`statusBadge${prefix}`);
+            const c = document.getElementById(`card${prefix}`);
+            const info = document.getElementById(`fileInfo${prefix}`);
+            const action = document.getElementById(`fileAction${prefix}`);
+
+            if (doc) {
+              if (b) {
+                b.className = "badge green";
+                b.textContent = "✅ Uploaded";
+              }
+              if (c) {
+                c.style.borderColor = "#86efac";
+                c.style.background = "#f0fdf4";
+              }
+              if (info) {
+                info.innerHTML = `
+                  <div style="font-size:0.75rem; color:#166534; font-weight:600; margin-top:6px; word-break:break-all;">
+                    📄 ${escapeHtml(doc.original_name || doc.file_name || "Plan.pdf")}
+                    <span style="font-size:0.7rem; color:#64748b;">(${formatBytes(doc.size)})</span>
+                  </div>
+                `;
+              }
+              if (action) {
+                action.innerHTML = `
+                  <div style="display:flex; gap:6px; margin-top:8px;">
+                    <a class="btn sm outline" style="flex:1; padding:4px 6px; font-size:0.72rem; text-align:center;" href="/api/documents/${doc.id}/view" target="_blank">
+                      ↗ View Inline
+                    </a>
+                    <button type="button" class="btn sm outline" style="flex:1; padding:4px 6px; font-size:0.72rem;" onclick="document.getElementById('fileInput${prefix}').click()">
+                      🔄 Replace
+                    </button>
+                  </div>
+                `;
+              }
+            } else {
+              if (b) {
+                b.className = "badge red";
+                b.textContent = "❌ Required";
+              }
+              if (c) {
+                c.style.borderColor = "#e2e8f0";
+                c.style.background = "#ffffff";
+              }
+              if (info) info.innerHTML = "";
+              if (action) {
+                action.innerHTML = `
+                  <button type="button" class="btn outline sm" style="width:100%; font-size:0.75rem;" onclick="document.getElementById('fileInput${prefix}').click()">
+                    📁 Upload ${docTitle} PDF
+                  </button>
+                `;
+              }
+            }
+          };
+
+          updateDeptCard("Mpcb", mpcbDoc, "Environmental Plan");
+          updateDeptCard("Midc", midcDoc, "Civil Plan");
+          updateDeptCard("Dish", dishDoc, "Safety Blueprint");
+          updateDeptCard("Fire", fireDoc, "Fire Plan");
+
+          const mandatoryCount = (hasMpcb ? 1 : 0) + (hasMidc ? 1 : 0) + (hasDish ? 1 : 0) + (hasFire ? 1 : 0);
+          mandatoryUploadsComplete = mandatoryCount === 4;
+
+          const counterBadge = document.getElementById("mandatoryCounterBadge");
+          if (counterBadge) {
+            counterBadge.textContent = `${mandatoryCount} of 4 Mandatory Plans Uploaded`;
+            counterBadge.className = `badge ${mandatoryUploadsComplete ? "green" : "red"}`;
+          }
+
+          const trackerBtn = document.getElementById("btnGoToTracker");
+          if (trackerBtn) {
+            if (mandatoryUploadsComplete) {
+              trackerBtn.className = "btn emerald";
+              trackerBtn.innerHTML = "Proceed to Live Approval Tracker & Statutory Vault &rarr;";
+              trackerBtn.style.opacity = "1";
+              trackerBtn.style.cursor = "pointer";
+              trackerBtn.onclick = null;
+              const s4 = document.getElementById("stepIndicator4");
+              const s5 = document.getElementById("stepIndicator5");
+              if (s4) s4.className = "step done";
+              if (s5) s5.className = "step active";
+            } else {
+              trackerBtn.className = "btn outline";
+              trackerBtn.innerHTML = `Go to Live Approval Tracker (${mandatoryCount}/4 Plans)`;
+              trackerBtn.onclick = (e) => {
+                e.preventDefault();
+                alert(`Statutory Requirement: Under the Maharashtra Single Window Act, you must upload all 4 mandatory departmental blueprints (Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, Fire Services) before proceeding to Live Scrutiny. (Currently uploaded: ${mandatoryCount}/4).`);
+              };
+            }
+          }
+
           if (docs.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--ink-muted); padding: 20px;">No documents uploaded yet. Choose a file above and click Upload.</td></tr>`;
             return;
@@ -792,22 +1047,22 @@
             .map(
               (d) => {
                 let planBadge = "";
-                if (d.plan_type === "environmental_plan") {
+                if (d.plan_type === "environmental_plan" || d.department === "mpcb") {
                   planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Pollution Control Board">🌿 Pollution Control Board</span>';
-                } else if (d.plan_type === "civil_plan") {
+                } else if (d.plan_type === "civil_plan" || d.department === "midc") {
                   planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Industrial Development Corporation">📐 Industrial Development Corporation</span>';
-                } else if (d.plan_type === "factory_safety_plan") {
+                } else if (d.plan_type === "factory_safety_plan" || d.department === "dish") {
                   planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Industrial Safety &amp; Health">🛡️ Industrial Safety &amp; Health</span>';
-                } else if (d.plan_type === "fire_safety_plan") {
+                } else if (d.plan_type === "fire_safety_plan" || d.department === "fire") {
                   planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Maharashtra Fire Services">🚒 Fire Services</span>';
                 }
 
                 return `
                 <tr>
-                  <td><b>${d.document_type}</b> ${planBadge}</td>
-                  <td>${d.original_name}</td>
+                  <td><b>${escapeHtml(d.document_type)}</b> ${planBadge}</td>
+                  <td>${escapeHtml(d.original_name)}</td>
                   <td>${formatBytes(d.size)}</td>
-                  <td><span class="badge ${d.verification_status === "Verified" ? "green" : "orange"}">${d.verification_status || "Pending"}</span></td>
+                  <td><span class="badge ${d.verification_status === "Verified" ? "green" : "orange"}">${escapeHtml(d.verification_status || "Pending")}</span></td>
                   <td>
                     <a class="btn outline sm" href="/api/documents/${d.id}/view" target="_blank">↗ View Inline</a>
                   </td>
@@ -847,6 +1102,53 @@
             });
           }
           show("msg", `Submission Blocked: Enterprise account is blacklisted.`);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlAppId = urlParams.get("id");
+        if (urlAppId) {
+          createdAppId = urlAppId;
+          try {
+            const existingApp = await api(`/api/applications/${urlAppId}`);
+            if (existingApp && existingApp.id) {
+              document.getElementById("vaultAppNo").textContent = existingApp.application_no;
+              document.getElementById("btnGoToTracker").href = `tracker.html?id=${createdAppId}`;
+              document.getElementById("uploadPanel").style.display = "block";
+
+              // Prefill existing application form inputs
+              if (existingApp.company_name) document.getElementById("companyName").value = existingApp.company_name;
+              if (existingApp.registration_no) document.getElementById("registrationNo").value = existingApp.registration_no;
+              if (existingApp.industry_category) document.getElementById("industryCategory").value = existingApp.industry_category;
+              if (existingApp.location) document.getElementById("location").value = existingApp.location;
+              if (existingApp.district) document.getElementById("district").value = existingApp.district;
+              if (existingApp.land_size) document.getElementById("landSize").value = existingApp.land_size;
+              if (existingApp.project_cost) document.getElementById("projectCost").value = existingApp.project_cost;
+              if (existingApp.water_use) document.getElementById("waterUse").value = existingApp.water_use;
+              if (existingApp.electricity) document.getElementById("electricity").value = existingApp.electricity;
+              if (existingApp.employment_potential) document.getElementById("employmentPotential").value = existingApp.employment_potential;
+              if (existingApp.hazardous !== undefined) document.getElementById("hazardous").checked = !!existingApp.hazardous;
+              if (existingApp.hazard_level || existingApp.hazardLevel) {
+                const hl = document.getElementById("hazardLevel");
+                if (hl) hl.value = existingApp.hazard_level || existingApp.hazardLevel;
+              }
+              runKnowledgeEngine();
+
+              const submitBtn = document.getElementById("btnSubmitApp");
+              if (submitBtn) submitBtn.textContent = "💾 Update Application Particulars & Proceed →";
+
+              const s1 = document.getElementById("stepIndicator1");
+              const s2 = document.getElementById("stepIndicator2");
+              const s3 = document.getElementById("stepIndicator3");
+              const s4 = document.getElementById("stepIndicator4");
+              if (s1) s1.className = "step done";
+              if (s2) s2.className = "step done";
+              if (s3) s3.className = "step done";
+              if (s4) s4.className = "step active";
+              refreshUploadedDocs();
+            }
+          } catch (e) {
+            console.warn("Could not preload application from URL:", e);
+          }
         }
       })();
     </script>

@@ -563,6 +563,8 @@ function seedInitialData() {
     const civilFile = seedDummyPdf("Industrial Site Master Layout Plan", "Chakan_Site_Layout_Plan.pdf");
     const safetyFile = seedDummyPdf("Factory Safety & Machinery Layout Blueprint", "Chakan_Factory_Safety_Plan.pdf");
     const fireFile = seedDummyPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
+    const landFile = seedDummyPdf("Land Title Deed & Industrial Allotment Order", "Chakan_Land_Allotment_Deed.pdf");
+    const dprFile = seedDummyPdf("Detailed Project Feasibility Report (DPR)", "Sahyadri_DPR_Feasibility_Report.pdf");
 
     const insertDocStmt = db.prepare(`
       INSERT INTO documents (application_id, user_id, document_type, original_name, stored_name, mime_type, size, verification_status, officer_remarks, plan_type, department)
@@ -573,6 +575,8 @@ function seedInitialData() {
     insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and Industrial Development Corporation roadway alignment', 'civil_plan', 'midc');
     insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under Directorate of Industrial Safety & Health scrutiny', 'factory_safety_plan', 'dish');
     insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Directorate of Fire Services scrutiny', 'fire_safety_plan', 'fire');
+    insertDocStmt.run(appId1, applicantId, 'Land Title Deed / Industrial Allotment Letter', 'Chakan_Land_Allotment_Deed.pdf', landFile.storedName, landFile.size, 'Verified', 'MIDC Land Allotment Order verified', 'supporting_doc', 'midc');
+    insertDocStmt.run(appId1, applicantId, 'Detailed Project Feasibility Report (DPR)', 'Sahyadri_DPR_Feasibility_Report.pdf', dprFile.storedName, dprFile.size, 'Verified', 'Project investment & feasibility appraised', 'supporting_doc', 'msins');
 
     // Add query and scheduled inspection
     const officerRow = db
@@ -632,6 +636,13 @@ function seedInitialData() {
     if (!hasFire) {
       const f = seedPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
       insertDocStmt.run(app1.id, app1.user_id, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', f.storedName, f.size, 'Pending', 'Static water tank & pump pressure specs under Directorate of Fire Services scrutiny', 'fire_safety_plan', 'fire');
+    }
+    const hasSupporting = existingDocs.some(d => d.plan_type === 'supporting_doc' || !['environmental_plan', 'civil_plan', 'factory_safety_plan', 'fire_safety_plan'].includes(d.plan_type));
+    if (!hasSupporting) {
+      const fLand = seedPdf("Land Title Deed & Industrial Allotment Order", "Chakan_Land_Allotment_Deed.pdf");
+      const fDpr = seedPdf("Detailed Project Feasibility Report (DPR)", "Sahyadri_DPR_Feasibility_Report.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Land Title Deed / Industrial Allotment Letter', 'Chakan_Land_Allotment_Deed.pdf', fLand.storedName, fLand.size, 'Verified', 'MIDC Land Allotment Order verified', 'supporting_doc', 'midc');
+      insertDocStmt.run(app1.id, app1.user_id, 'Detailed Project Feasibility Report (DPR)', 'Sahyadri_DPR_Feasibility_Report.pdf', fDpr.storedName, fDpr.size, 'Verified', 'Project investment & feasibility appraised', 'supporting_doc', 'msins');
     }
   }
 }
@@ -2150,6 +2161,96 @@ app.post("/api/applications", auth, (req, res) => {
   }
 });
 
+app.put("/api/applications/:id", auth, (req, res) => {
+  try {
+    const appId = req.params.id;
+    const a = db.prepare("SELECT * FROM applications WHERE id=?").get(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    if (
+      req.session.user.role !== "official" &&
+      a.user_id !== req.session.user.id
+    ) {
+      return res.status(403).json({ error: "Unauthorized to update this application" });
+    }
+
+    const {
+      industryCategory,
+      landSize,
+      waterUse,
+      electricity,
+      hazardous,
+      hazardLevel: rawHazardLevel,
+      location,
+      district,
+      projectCost,
+      employmentPotential,
+    } = req.body;
+
+    const hazardLevel =
+      rawHazardLevel ||
+      (hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
+
+    const evaluation = evaluateRegulatoryChecklist({
+      industryCategory: industryCategory || a.industry_category,
+      landSize: landSize !== undefined ? landSize : a.land_size,
+      waterUse: waterUse !== undefined ? waterUse : a.water_use,
+      electricity: electricity !== undefined ? electricity : a.electricity,
+      hazardous: hazardous !== undefined ? hazardous : a.hazardous,
+      projectCost: projectCost !== undefined ? projectCost : a.project_cost,
+    });
+
+    db.prepare(`
+      UPDATE applications
+      SET industry_category = ?,
+          land_size = ?,
+          water_use = ?,
+          electricity = ?,
+          hazardous = ?,
+          hazard_level = ?,
+          location = ?,
+          district = ?,
+          project_cost = ?,
+          employment_potential = ?,
+          msme_category = ?,
+          risk_tier = ?,
+          clearances_json = ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(
+      industryCategory || a.industry_category,
+      landSize !== undefined ? parseFloat(landSize) : a.land_size,
+      waterUse !== undefined ? parseFloat(waterUse) : a.water_use,
+      electricity !== undefined ? parseFloat(electricity) : a.electricity,
+      hazardous !== undefined ? (hazardous ? 1 : 0) : a.hazardous,
+      hazardLevel,
+      location || a.location,
+      district || a.district,
+      projectCost !== undefined ? parseFloat(projectCost) : a.project_cost,
+      employmentPotential !== undefined ? parseInt(employmentPotential) : a.employment_potential,
+      evaluation.msme,
+      evaluation.riskTier,
+      JSON.stringify(evaluation.clearances),
+      appId
+    );
+
+    res.json({
+      ok: true,
+      id: a.id,
+      applicationNo: a.application_no,
+      msmeCategory: evaluation.msme,
+      riskTier: evaluation.riskTier,
+      hazardLevel,
+      clearances: evaluation.clearances,
+      schemes: evaluation.schemes,
+      message: "Application updated successfully.",
+    });
+  } catch (err) {
+    console.error("Error updating application:", err);
+    res.status(500).json({ error: "Failed to update application: " + err.message });
+  }
+});
+
 app.get("/api/applications", auth, (req, res) => {
   try {
     if (req.session.user.role === "official") {
@@ -3018,6 +3119,23 @@ app.post(
         }
       } else if (currentStage === "msins") {
         // Phase 3 complete -> Final approval
+        // Enforce that general statutory supporting documents are submitted before granting final single-window approval
+        const suppRow = db
+          .prepare(
+            `
+          SELECT COUNT(*) as count FROM documents
+          WHERE application_id = ? AND (plan_type = 'supporting_doc' OR plan_type NOT IN ('environmental_plan', 'civil_plan', 'factory_safety_plan', 'fire_safety_plan'))
+        `,
+          )
+          .get(appId);
+
+        if (!suppRow || suppRow.count === 0) {
+          return res.status(400).json({
+            error:
+              "Statutory Pre-requisite Unfulfilled: General statutory supporting documents must be submitted by the enterprise before final single-window Apex approval can be granted.",
+          });
+        }
+
         nextStage = "completed";
         newOverallStatus = "Approved";
         if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
@@ -3732,6 +3850,7 @@ app.get("/api/applications/:id/certificate", auth, (req, res) => {
       district: a.district,
       industryCategory: a.industry_category,
       riskTier: a.risk_tier,
+      projectCost: a.project_cost,
       status: a.status,
       issuedBy: "Government of Maharashtra - Directorate of Industries & State Innovation Society",
       issuedDate: new Date().toISOString().split("T")[0],

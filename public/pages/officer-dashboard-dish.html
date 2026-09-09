@@ -28,9 +28,9 @@
       .btn-reject:hover { background: #b91c1c; }
       .btn-query { background: #d97706; color: #fff; border: none; }
       .btn-query:hover { background: #b45309; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; }
-      .checklist li { font-size: .83rem; color: #334155; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
-      .checklist li::before { content: "\2610"; color: #94a3b8; font-size: 1rem; line-height: 1; flex-shrink: 0; }
+      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #c2410c); margin-top: 2px; flex-shrink: 0; }
       .stage-info-box { background: linear-gradient(135deg, var(--dept-light), #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
       .dish-tool-card { background: #fff; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 18px; margin-top: 20px; }
     </style>
@@ -209,13 +209,31 @@
         </p>
 
         <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:10px 14px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Hazard Assessment: <span id="safetyModalHazard" style="color:#c2410c;">---</span></div>
-          <ul class="checklist" style="margin-top:6px;">
-            <li>Safety layout blueprint and machine positioning verified</li>
-            <li>Hazardous materials containment &amp; ventilation adequate</li>
-            <li>Section 16 air space &ge; 14.2 m³ / worker verified</li>
-            <li>Emergency exit routes and personal protective equipment compliant</li>
-          </ul>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Hazard Assessment: <span id="safetyModalHazard" style="color:#c2410c;">---</span></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="dishChecklistCounter" style="font-size:.74rem;font-weight:700;color:#c2410c;">0 of 4 verified</span>
+              <button type="button" id="dishToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('dish', 4, this)">Select All</button>
+            </div>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item">
+              <input type="checkbox" class="dish-chk" onchange="updateChecklistCounter('dish', 4)" />
+              <span>Safety layout blueprint and machine guarding positioning verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="dish-chk" onchange="updateChecklistCounter('dish', 4)" />
+              <span>Hazardous materials containment &amp; local exhaust ventilation adequate</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="dish-chk" onchange="updateChecklistCounter('dish', 4)" />
+              <span>Section 16 internal workspace &ge; 14.2 m³ per worker verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="dish-chk" onchange="updateChecklistCounter('dish', 4)" />
+              <span>Emergency exit egress routes and personal protective equipment compliant</span>
+            </label>
+          </div>
         </div>
 
         <div>

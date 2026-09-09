@@ -7,28 +7,6 @@
       Approval Tracker & License Vault | Udyog Samyog - Govt. of Maharashtra
     </title>
     <link rel="stylesheet" href="/css/style.css" />
-    <style>
-      @media print {
-        body * {
-          visibility: hidden;
-        }
-        .cert-container,
-        .cert-container * {
-          visibility: visible;
-        }
-        .cert-container {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          box-shadow: none;
-          border: 2px solid #b8860b;
-        }
-        .no-print {
-          display: none !important;
-        }
-      }
-    </style>
   </head>
   <body>
     <div class="gov-stripe"></div>
@@ -164,28 +142,45 @@
           <!-- 3-Phase Statutory Clearance Matrix -->
           <div id="applicantWorkflowContainer" style="margin-bottom: 24px"></div>
 
-          <!-- 1. Parallel Departmental Workflow Bar -->
-          <div class="no-print" style="margin-bottom: 24px">
-            <h3
-              style="
-                margin-bottom: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <span>Parallel Departmental Scrutiny Status</span>
-              <span
-                style="
-                  font-size: 0.78rem;
-                  font-weight: 500;
-                  color: var(--ink-light);
-                "
-                >Simultaneous Inter-Departmental Reviews</span
-              >
-            </h3>
-            <div class="grid" id="parallelGrid">
-              <!-- Dynamically populated -->
+          <!-- STATUTORY DOCUMENT VAULT: Uploaded Dossier Blueprints & Regulatory Documents -->
+          <div class="panel no-print" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
+              <div>
+                <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+                  <span>🔒</span> Statutory Document Vault &amp; Technical Plans
+                </h2>
+                <p style="font-size: 0.82rem; color: var(--ink-light); margin: 3px 0 0 0;">
+                  Legally certified technical blueprints, architectural layouts, and compliance reports attached to Application <b id="vaultAppNoRef" style="color: var(--navy);">---</b>.
+                </p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="vaultDocCountBadge" class="badge blue">0 Documents</span>
+                <a id="btnUploadMoreDocs" class="btn outline sm" href="application.html">
+                  ➕ Upload Additional Document
+                </a>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Statutory Department &amp; Plan</th>
+                    <th>Document Category</th>
+                    <th>Original Filename</th>
+                    <th>File Size</th>
+                    <th>Scrutiny Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="statutoryVaultRows">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--ink-muted); padding: 24px;">
+                      Loading statutory document vault...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -276,196 +271,92 @@
                 >
               </div>
 
-              <!-- State When Approved: Verifiable Certificate -->
+              <!-- State When Approved: Consolidated Master Clearance & Certificate Card -->
               <div id="certContainer" style="display: none">
-                <div class="cert-container">
-                  <div class="cert-header">
-                    <div class="cert-emblem">🏛️</div>
-                    <div
-                      style="
-                        font-size: 0.85rem;
-                        font-weight: 700;
-                        color: #b8860b;
-                        letter-spacing: 0.08em;
-                        text-transform: uppercase;
-                      "
-                    >
-                      GOVERNMENT OF MAHARASHTRA
+                <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);">
+                  <div style="text-align: center; border-bottom: 1.5px dashed #bbf7d0; padding-bottom: 14px; margin-bottom: 14px;">
+                    <div style="font-size: 2.2rem; margin-bottom: 4px;">🏛️</div>
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #b45309; letter-spacing: 0.08em; text-transform: uppercase;">
+                      Government of Maharashtra
                     </div>
-                    <div
-                      style="
-                        font-size: 0.72rem;
-                        color: var(--ink-light);
-                        margin-top: 2px;
-                      "
-                    >
-                      Department of Skills, Employment, Entrepreneurship &
-                      Innovation · Maharashtra State Innovation Society
+                    <div style="font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-top: 2px;">
+                      Consolidated Master Industrial Clearance
                     </div>
-                    <div class="cert-title" style="margin-top: 12px">
-                      CONSOLIDATED INDUSTRIAL CLEARANCE
-                    </div>
-                    <div
-                      style="
-                        font-size: 0.8rem;
-                        font-weight: 700;
-                        color: var(--navy);
-                        margin-top: 4px;
-                      "
-                    >
-                      CERTIFICATE & SANCTION APPROVAL
+                    <div style="font-size: 0.76rem; color: #15803d; font-weight: 700; text-transform: uppercase; margin-top: 2px;">
+                      ★ Digitally Signed &amp; Statutorily Sanctioned
                     </div>
                   </div>
 
-                  <div class="cert-body">
-                    <p>
-                      This is to certify that the industrial unit specified
-                      below has successfully completed statutory
-                      multi-departmental scrutiny under the
-                      <b>Maharashtra Single Window Clearances Act</b>.
-                    </p>
-                    <div
-                      style="
-                        margin: 14px 0;
-                        background: #f8fafc;
-                        padding: 14px;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 6px;
-                        font-size: 0.88rem;
-                      "
-                    >
-                      <div>
-                        <b>Certificate No:</b>
-                        <span id="certNo" style="font-family: monospace"
-                          >CERT/MH/IND/2026/001</span
-                        >
-                      </div>
-                      <div>
-                        <b>Application Reference:</b>
-                        <span id="certAppNo">---</span>
-                      </div>
-                      <div>
-                        <b>Legal Enterprise Name:</b>
-                        <span id="certCompany">---</span>
-                      </div>
-                      <div>
-                        <b>Registration No / GSTIN:</b>
-                        <span id="certReg">---</span>
-                      </div>
-                      <div>
-                        <b>Industrial Site:</b>
-                        <span id="certLocation">---</span>, Maharashtra
-                      </div>
-                      <div>
-                        <b>Sector & Classification:</b>
-                        <span id="certSector">---</span> (<span id="certRisk"
-                          >---</span
-                        >)
-                      </div>
-                      <div>
-                        <b>Statutory Validity:</b>
-                        <span id="certValid">Valid until 31 Mar 2031</span>
-                      </div>
+                  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; font-size: 0.84rem; margin-bottom: 14px;">
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Certificate No:</span><br /><b id="certNo" style="font-family: monospace; color: #b45309;">---</b></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Enterprise:</span><br /><b id="certCompany">---</b></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">GSTIN / Reg No:</span><br /><span id="certReg">---</span></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Industrial Site:</span><br /><span id="certLocation">---</span></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Statutory Validity:</span><br /><span id="certValid" style="color: #166534; font-weight: 700;">Valid Permanent / 5 Years</span></div>
                     </div>
-                    <p style="font-size: 0.82rem; color: var(--ink-light)">
-                      All conditions imposed by the Maharashtra Pollution
-                      Control Board, Directorate of Industrial Safety &
-                      Health, Directorate of Maharashtra Fire Services, and Maharashtra Industrial Development Corporation have
-                      been satisfied.
-                    </p>
                   </div>
 
-                  <div class="cert-footer">
-                    <div>
-                      <div
-                        style="
-                          width: 70px;
-                          height: 70px;
-                          border: 2px solid #334155;
-                          display: grid;
-                          place-items: center;
-                          font-size: 1.8rem;
-                          background: #ffffff;
-                        "
-                      >
-                        ▦
+                  <div style="margin-bottom: 14px;">
+                    <div style="font-size: 0.78rem; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Confirming Departments Cleared:</div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <span>🌿 Pollution Control Board (Phase 1)</span>
+                        <span class="badge green" style="font-size: 0.68rem;">✓ Cleared</span>
                       </div>
-                      <div
-                        class="cert-hash"
-                        id="certHash"
-                        style="margin-top: 6px"
-                      >
-                        HASH: VERIFIED-GOVT-MAHARASHTRA
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <span>📐 Industrial Development Corp (Phase 2)</span>
+                        <span class="badge green" style="font-size: 0.68rem;">✓ Sanctioned</span>
                       </div>
-                    </div>
-                    <div style="text-align: right">
-                      <div
-                        style="
-                          font-weight: 700;
-                          font-size: 0.85rem;
-                          color: var(--navy);
-                        "
-                      >
-                        Competent Single Window Authority
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <span>🛡️ Industrial Safety &amp; Health (Phase 2)</span>
+                        <span class="badge green" style="font-size: 0.68rem;">✓ Endorsed</span>
                       </div>
-                      <div style="font-size: 0.72rem; color: var(--ink-light)">
-                        Directorate of Industries & State Innovation Society
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <span>🚒 Maharashtra Fire Services (Phase 2)</span>
+                        <span class="badge green" style="font-size: 0.68rem;">✓ Cleared</span>
                       </div>
-                      <div
-                        style="
-                          font-size: 0.72rem;
-                          color: var(--emerald);
-                          font-weight: 700;
-                        "
-                      >
-                        ✓ Digitally Signed & Authenticated
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <span>🏆 State Innovation Society (Apex Sanction)</span>
+                        <span class="badge green" style="font-size: 0.68rem;">✓ Approved</span>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  class="no-print"
-                  style="text-align: center; margin-top: 20px"
-                >
-                  <button class="btn saffron" onclick="window.print()">
-                    🖨️ Print / Download Official Clearance Certificate
-                  </button>
+                  <div style="background: #f1f5f9; padding: 8px 10px; border-radius: 4px; font-size: 0.68rem; font-family: monospace; color: #475569; word-break: break-all; margin-bottom: 14px;">
+                    <span style="font-weight: 700; color: #0f172a;">DIGITAL HASH:</span> <span id="certHash">---</span>
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a class="btn emerald" id="btnOpenCertPage" href="#" target="_blank" style="font-weight: 700; text-align: center; justify-content: center;">
+                      📜 View Official Printable Certificate &rarr;
+                    </a>
+                    <a class="btn saffron" id="btnPrintCertDirect" href="#" target="_blank" style="font-weight: 700; text-align: center; justify-content: center;">
+                      🖨️ Direct Print / Save PDF
+                    </a>
+                  </div>
                 </div>
               </div>
 
               <!-- State When Still In Progress -->
-              <div
-                id="certPendingNotice"
-                style="text-align: center; padding: 40px 20px"
-              >
-                <div
-                  style="
-                    font-size: 3.5rem;
-                    margin-bottom: 12px;
-                    color: var(--saffron);
-                  "
-                >
-                  ⏱️
+              <div id="certPendingNotice" style="padding: 16px 8px;">
+                <div style="text-align: center; margin-bottom: 18px;">
+                  <div style="font-size: 2.8rem; margin-bottom: 8px;">⏳</div>
+                  <h3 style="color: var(--navy); margin-bottom: 4px; font-size: 1.15rem;">
+                    Dossier Under Statutory Review
+                  </h3>
+                  <p style="font-size: 0.82rem; color: var(--ink-light); max-width: 400px; margin: 0 auto; line-height: 1.5;">
+                    Your single-window clearance application is undergoing parallel technical scrutiny. Follow departmental milestones below:
+                  </p>
                 </div>
-                <h3 style="color: var(--navy); margin-bottom: 8px">
-                  Dossier Under Statutory Scrutiny
-                </h3>
-                <p
-                  style="
-                    font-size: 0.88rem;
-                    color: var(--ink-light);
-                    max-width: 440px;
-                    margin: 0 auto;
-                    line-height: 1.6;
-                  "
-                >
-                  Your application is actively undergoing parallel reviews by
-                  inspecting departments. Once technical scrutiny and
-                  inspections are concluded, your digitally signed,
-                  QR-verifiable Maharashtra Industrial Clearance Certificate will be
-                  available here.
-                </p>
+
+                <div id="vaultPendingMilestones" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+                  <!-- Dynamically updated in renderCertificate -->
+                </div>
+
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; font-size: 0.78rem; color: #1e40af; line-height: 1.5;">
+                  <b>🛡️ Service Level Guarantee:</b> Under the Maharashtra Single Window Act, statutory departments are mandated to process simultaneous reviews within stipulated service targets. As soon as Apex approval is logged, your tamper-proof certificate will activate above.
+                </div>
               </div>
             </div>
           </div>
@@ -476,26 +367,90 @@
     <script src="/js/common.js"></script>
     <script src="/js/applicant-workflow.js"></script>
     <script>
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
       let currentAppId = new URLSearchParams(location.search).get("id");
       let allApps = [];
 
       async function init() {
-        await guard("applicant");
+        const user = await guard();
+        if (!user) return;
+
+        // Customize navigation for officials inspecting tracker
+        if (user.role === "official") {
+          const dashUrl = typeof getOfficerDashboardUrl === "function" ? getOfficerDashboardUrl(user) : "/pages/officer-dashboard.html";
+          const sbHeader = document.querySelector(".sidebar-header");
+          if (sbHeader) sbHeader.textContent = "Statutory Officer Workspace";
+          const dLink = document.querySelector(".sidebar a[href='applicant-dashboard.html']");
+          if (dLink) {
+            dLink.href = dashUrl;
+            dLink.innerHTML = `<span class="sidebar-icon">🏛️</span> Department Dashboard`;
+          }
+          const aLink = document.querySelector(".sidebar a[href='application.html']");
+          if (aLink) {
+            aLink.href = dashUrl;
+            aLink.innerHTML = `<span class="sidebar-icon">📋</span> Applications Queue`;
+          }
+        }
+
         try {
           allApps = await api("/api/applications");
           const selector = document.getElementById("appSelector");
 
-          if (allApps.length === 0) {
-            document.getElementById("bannerAppNo").textContent =
-              "No Applications Submitted";
+          // If currentAppId passed in URL, make sure it's available in list
+          if (currentAppId && (!allApps || !allApps.some(a => String(a.id) === String(currentAppId)))) {
+            try {
+              const singleApp = await api(`/api/applications/${currentAppId}`);
+              if (singleApp && singleApp.id) {
+                if (!allApps) allApps = [];
+                allApps.unshift(singleApp);
+              }
+            } catch (err) {
+              console.warn("Could not fetch application from id param:", err);
+            }
+          }
+
+          if (!allApps || allApps.length === 0) {
+            document.getElementById("bannerAppNo").textContent = "No Applications Submitted";
+            document.getElementById("bannerCompany").textContent = "No active dossiers found";
+            document.getElementById("bannerSector").textContent = "---";
+            document.getElementById("bannerDistrict").textContent = "---";
+            selector.innerHTML = `<option value="">No applications to select</option>`;
+            selector.disabled = true;
+            const wfContainer = document.getElementById("applicantWorkflowContainer");
+            if (wfContainer) {
+              wfContainer.innerHTML = `
+                <div style="background: #f8fafc; border: 1.5px dashed var(--line); padding: 36px 20px; text-align: center; border-radius: 8px;">
+                  <div style="font-size: 2.5rem; margin-bottom: 8px;">📋</div>
+                  <h3 style="color: var(--navy); margin-bottom: 6px;">No Applications to Select</h3>
+                  <p style="font-size: 0.88rem; color: var(--ink-light); max-width: 480px; margin: 0 auto 16px auto;">
+                    There are no submitted industrial clearance applications associated with this account. Submit a new application to initiate statutory single-window clearances.
+                  </p>
+                  <a href="application.html" class="btn saffron">+ Apply for New Industrial Permit</a>
+                </div>
+              `;
+            }
+            const vRows = document.getElementById("statutoryVaultRows");
+            if (vRows) {
+              vRows.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--ink-muted); padding: 24px;">No applications submitted.</td></tr>`;
+            }
             return;
           }
 
+          selector.disabled = false;
           selector.innerHTML = allApps
             .map(
               (a) => `
-            <option value="${a.id}" ${a.id == currentAppId ? "selected" : ""}>
-              ${a.application_no} - ${a.company_name}
+            <option value="${a.id}" ${String(a.id) === String(currentAppId) ? "selected" : ""}>
+              ${escapeHtml(a.application_no)} - ${escapeHtml(a.company_name)}
             </option>
           `,
             )
@@ -539,13 +494,13 @@
           riskBadge.textContent = `${app.risk_tier} Risk`;
           riskBadge.className = `risk-tag ${app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
 
-          // Parallel Workflow Rendering
-          renderParallelWorkflows(app);
-
           // 3-Phase Statutory Clearance Matrix
           if (typeof loadApplicantWorkflow === "function") {
             loadApplicantWorkflow(id);
           }
+
+          // Statutory Document Vault Rendering
+          renderStatutoryVault(app.documents || [], app.id, app.application_no);
 
           // Queries Rendering
           renderQueries(app.queries || []);
@@ -560,82 +515,57 @@
         }
       }
 
-      function renderParallelWorkflows(app) {
-        const grid = document.getElementById("parallelGrid");
-        let parallelData = app.parallelStatus || {};
-        let stageStatuses = app.stageStatuses || {};
+      function renderStatutoryVault(docs, appId, appNo) {
+        const tbody = document.getElementById("statutoryVaultRows");
+        const countBadge = document.getElementById("vaultDocCountBadge");
+        const appRef = document.getElementById("vaultAppNoRef");
+        const uploadLink = document.getElementById("btnUploadMoreDocs");
 
-        const depts = [
-          {
-            key: "mpcb",
-            name: "Pollution Control Board",
-            title: "Consent to Establish · Phase 1 Gateway",
-            defaultStatus: "Under Review",
-          },
-          {
-            key: "midc",
-            name: "Industrial Development Corporation",
-            title: "Building & Land Use Plan · Phase 2 Civil",
-            defaultStatus: "Under Review",
-          },
-          {
-            key: "dish",
-            name: "Industrial Safety & Health",
-            title: "Factory Safety Blueprint · Phase 2 Safety",
-            defaultStatus: "In Progress",
-          },
-          {
-            key: "fire",
-            name: "Maharashtra Fire Services Directorate",
-            title: "Fire Safety Clearance Certificate · Phase 2 Fire",
-            defaultStatus: "Under Review",
-          },
-          {
-            key: "msedcl",
-            name: "State Electricity Distribution Company",
-            title: "Industrial Connected Load · Grid Feasibility",
-            defaultStatus: "Under Review",
-          },
-        ];
+        if (appRef) appRef.textContent = appNo;
+        if (uploadLink) uploadLink.href = `application.html?id=${appId}`;
+        if (countBadge) countBadge.textContent = `${docs.length} Documents`;
 
-        grid.innerHTML = depts
-          .map((d) => {
-            const info = parallelData[d.key] || {};
-            const stageInfo = stageStatuses[d.key];
-            let status = info.status;
-            if (!status && stageInfo) {
-              status = stageInfo.decision;
-            }
-            if (!status) {
-              status = d.defaultStatus;
-            }
-            if (app.status === "Approved") status = "Approved";
-
-            let badgeClass = "orange";
-            if (status === "Approved") badgeClass = "green";
-            else if (status === "Query Raised" || status === "Deficient" || status === "Rejected") badgeClass = "red";
-
-            const remarks = info.remarks || stageInfo?.remarks || "";
-            const planDoc = d.key === "midc" ? app.plans?.civil
-              : d.key === "mpcb" ? app.plans?.environmental
-              : d.key === "fire" ? app.plans?.fireSafety
-              : d.key === "dish" ? app.plans?.factorySafety
-              : null;
-
-            return `
-            <div class="card">
-              <div style="font-size: 0.72rem; font-weight: 700; color: var(--navy); text-transform: uppercase;">${d.name}</div>
-              <h4 style="font-size: 0.88rem; margin: 4px 0 10px 0;">${d.title}</h4>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="badge ${badgeClass}">${status}</span>
-                <span style="font-size: 0.7rem; color: var(--ink-muted);">Service Level Target: 7 Days</span>
-              </div>
-              ${remarks ? `<div style="font-size: 0.72rem; color: var(--ink-light); margin-top: 8px;"><b>Note:</b> ${remarks}</div>` : ""}
-              ${planDoc ? `<div style="margin-top: 8px;"><a href="/api/documents/${planDoc.id}/view" target="_blank" class="btn outline sm" style="font-size: 0.72rem; padding: 3px 8px;">📄 View Plan PDF</a></div>` : ""}
-            </div>
+        if (!docs || docs.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--ink-muted); padding: 24px;">
+                No statutory blueprints or documents uploaded for this application yet.
+                <a href="application.html?id=${appId}" class="btn saffron sm" style="margin-left: 12px;">Upload Documents Now &rarr;</a>
+              </td>
+            </tr>
           `;
-          })
-          .join("");
+          return;
+        }
+
+        tbody.innerHTML = docs.map((d) => {
+          let deptBadge = '<span class="badge gray">📄 General Supporting</span>';
+          if (d.plan_type === "environmental_plan" || (d.document_type || "").toLowerCase().includes("environment") || (d.document_type || "").toLowerCase().includes("effluent")) {
+            deptBadge = '<span class="badge green" style="font-size:0.7rem;">🌿 Pollution Control Board (Phase 1)</span>';
+          } else if (d.plan_type === "civil_plan" || (d.document_type || "").toLowerCase().includes("civil") || (d.document_type || "").toLowerCase().includes("building layout")) {
+            deptBadge = '<span class="badge blue" style="font-size:0.7rem;">📐 Industrial Development Corp (Phase 2)</span>';
+          } else if (d.plan_type === "factory_safety_plan" || (d.document_type || "").toLowerCase().includes("safety") || (d.document_type || "").toLowerCase().includes("hazardous")) {
+            deptBadge = '<span class="badge red" style="font-size:0.7rem;">🛡️ Industrial Safety &amp; Health (Phase 2)</span>';
+          } else if (d.plan_type === "fire_safety_plan" || (d.document_type || "").toLowerCase().includes("fire") || (d.document_type || "").toLowerCase().includes("hydrant")) {
+            deptBadge = '<span class="badge orange" style="font-size:0.7rem;">🚒 Fire Services Directorate (Phase 2)</span>';
+          }
+
+          const isVerified = d.verification_status === "Verified";
+          const statusBadge = `<span class="badge ${isVerified ? "green" : "orange"}">${escapeHtml(d.verification_status || "Pending")}</span>`;
+
+          return `
+            <tr>
+              <td>${deptBadge}</td>
+              <td><b>${escapeHtml(d.document_type)}</b></td>
+              <td style="font-family: monospace; font-size: 0.8rem;">${escapeHtml(d.original_name || d.file_name || "document.pdf")}</td>
+              <td>${formatBytes(d.size)}</td>
+              <td>${statusBadge}</td>
+              <td style="white-space: nowrap;">
+                <a class="btn outline sm" href="/api/documents/${d.id}/view" target="_blank" style="padding: 3px 8px; font-size: 0.74rem;">↗ View Inline</a>
+                <a class="btn outline sm" href="/api/documents/${d.id}" target="_blank" style="padding: 3px 8px; font-size: 0.74rem; margin-left: 4px;">⬇ Download</a>
+              </td>
+            </tr>
+          `;
+        }).join("");
       }
 
       function renderQueries(queries) {
@@ -661,12 +591,10 @@
             return `
             <div style="border: 1.5px solid ${isOpen ? "var(--saffron)" : "var(--line)"}; border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; background: ${isOpen ? "#fffbf5" : "#ffffff"};">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <b style="color: var(--navy); font-size: 0.86rem;">🏛️ Query from ${q.officer_dept || "Department Scrutiny Officer"}</b>
                 <b style="color: var(--navy); font-size: 0.86rem;">🏛️ Query from ${safeDept}</b>
                 <span class="badge ${isOpen ? "red" : "green"}">${q.status}</span>
               </div>
               <div style="font-size: 0.86rem; color: var(--ink); line-height: 1.5; margin-bottom: 12px; background: #ffffff; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--line);">
-                ${q.message}
                 ${safeMsg}
               </div>
 
@@ -689,8 +617,6 @@
                   : `
                 <div style="background: #f0fdf4; border-left: 3px solid var(--emerald); padding: 10px 12px; border-radius: 4px; font-size: 0.82rem;">
                   <b style="color: #065f46;">Your Submitted Response:</b>
-                  <div style="margin-top: 2px;">${q.applicant_reply || ""}</div>
-                  ${q.reply_file_name ? `<div style="margin-top: 6px; font-weight: 600;">📎 Attached: ${q.reply_file_name}</div>` : ""}
                   <div style="margin-top: 2px;">${safeReply}</div>
                   ${safeFile ? `<div style="margin-top: 6px; font-weight: 600;">📎 Attached: ${safeFile}</div>` : ""}
                 </div>
@@ -738,27 +664,21 @@
         }
 
         container.innerHTML = inspections
-          .map(
-            (i) => `
-            (i) => {
-              const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
-              const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
-              const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
-              return `
+          .map((i) => {
+            const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
+            const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
+            const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
+            return `
           <div style="background: #f8fafc; border: 1px solid var(--line); border-left: 3px solid var(--navy); padding: 12px 14px; border-radius: 6px; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.85rem; color: var(--navy);">
               <span>📅 Scheduled Date: ${new Date(i.scheduled_date).toLocaleDateString()}</span>
               <span class="badge blue">${i.status}</span>
             </div>
-            <div style="font-size: 0.8rem; color: var(--ink); margin-top: 2px;"><b>Department:</b> ${i.department}</div>
-            <div style="font-size: 0.76rem; color: var(--ink-light);"><b>Inspector:</b> ${i.inspector_name} · ${i.notes || ""}</div>
             <div style="font-size: 0.8rem; color: var(--ink); margin-top: 2px;"><b>Department:</b> ${safeDept}</div>
             <div style="font-size: 0.76rem; color: var(--ink-light);"><b>Inspector:</b> ${safeName} · ${safeNotes}</div>
           </div>
-        `,
         `;
-            }
-          )
+          })
           .join("");
       }
 
@@ -773,6 +693,31 @@
           vaultBadge.textContent = "Clearance Granted";
           vaultBadge.className = "badge green";
 
+          const certPageBtn = document.getElementById("btnOpenCertPage");
+          if (certPageBtn) {
+            certPageBtn.href = `/pages/certificate.html?id=${app.id}`;
+          }
+
+          const printBtn = document.getElementById("btnPrintCertDirect");
+          if (printBtn) {
+            printBtn.href = `/pages/certificate.html?id=${app.id}&print=true`;
+          }
+
+          let bannerCertBtn = document.getElementById("bannerCertLink");
+          const statusBadge = document.getElementById("bannerStatusBadge");
+          if (statusBadge) {
+            if (!bannerCertBtn) {
+              bannerCertBtn = document.createElement("a");
+              bannerCertBtn.id = "bannerCertLink";
+              bannerCertBtn.className = "btn emerald sm";
+              bannerCertBtn.target = "_blank";
+              bannerCertBtn.innerHTML = "📜 View Certificate &rarr;";
+              statusBadge.parentNode.appendChild(bannerCertBtn);
+            }
+            bannerCertBtn.href = `/pages/certificate.html?id=${app.id}`;
+            bannerCertBtn.style.display = "inline-flex";
+          }
+
           try {
             const cert = await api(`/api/applications/${app.id}/certificate`);
             document.getElementById("certNo").textContent = cert.certificateNo;
@@ -783,12 +728,8 @@
             document.getElementById("certReg").textContent =
               cert.registrationNo || "GSTIN-VALIDATED";
             document.getElementById("certLocation").textContent = cert.location;
-            document.getElementById("certSector").textContent =
-              cert.industryCategory;
-            document.getElementById("certRisk").textContent =
-              `${cert.riskTier} Category`;
             document.getElementById("certValid").textContent =
-              `Valid through ${cert.validUntil}`;
+              `Valid through ${cert.validUntil || "5 Years"}`;
             document.getElementById("certHash").textContent =
               `DIGITAL SIGNATURE HASH: ${cert.verificationHash}`;
           } catch (err) {
@@ -799,6 +740,31 @@
           pendingNotice.style.display = "block";
           vaultBadge.textContent = app.status;
           vaultBadge.className = `badge ${app.status === "Flagged" ? "red" : "orange"}`;
+
+          const milestonesEl = document.getElementById("vaultPendingMilestones");
+          if (milestonesEl) {
+            const stages = app.stageStatuses || {};
+            const mpcb = stages.mpcb || {};
+            const midc = stages.midc || {};
+            const dish = stages.dish || {};
+            const fire = stages.fire || {};
+            const msins = stages.msins || {};
+
+            const items = [
+              { dept: "🌿 Maharashtra Pollution Control Board (Phase 1)", status: mpcb.decision === "Approved" ? "Cleared" : "Under Review", ok: mpcb.decision === "Approved" },
+              { dept: "📐 Industrial Development Corp (Phase 2 Civil)", status: midc.decision === "Approved" ? "Sanctioned" : (app.current_stage === "mpcb" ? "Queued" : "In Scrutiny"), ok: midc.decision === "Approved" },
+              { dept: "🛡️ Industrial Safety & Health (Phase 2 Safety)", status: dish.decision === "Approved" ? "Endorsed" : (app.current_stage === "mpcb" ? "Queued" : "In Scrutiny"), ok: dish.decision === "Approved" },
+              { dept: "🚒 Maharashtra Fire Services (Phase 2 Fire)", status: fire.decision === "Approved" ? "Cleared" : (app.current_stage === "mpcb" ? "Queued" : "In Scrutiny"), ok: fire.decision === "Approved" },
+              { dept: "🏆 State Innovation Society (Phase 3 Apex)", status: msins.decision === "Approved" ? "Approved" : (app.current_stage === "msins" ? "Under Final Review" : "Awaiting Prior Phases"), ok: msins.decision === "Approved" },
+            ];
+
+            milestonesEl.innerHTML = items.map(it => `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.76rem;">
+                <span>${it.dept}</span>
+                <span class="badge ${it.ok ? "green" : "orange"}" style="font-size: 0.68rem;">${it.ok ? "✓ " : "● "}${it.status}</span>
+              </div>
+            `).join("");
+          }
         }
       }
 

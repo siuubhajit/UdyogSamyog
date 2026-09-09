@@ -239,12 +239,24 @@ function openCteDecisionModal(id, appNo, companyName) {
   document.getElementById("cteModalAppNo").textContent = appNo;
   document.getElementById("cteModalCompany").textContent = companyName;
   document.getElementById("cteModalRemarks").value = "";
+  if (typeof resetChecklist === "function") {
+    resetChecklist("mpcb", 4);
+  }
   document.getElementById("cteModal").style.display = "flex";
 }
 
 async function submitMpcbDecision(decision) {
   if (!activeAppId) return;
   const remarks = document.getElementById("cteModalRemarks").value.trim();
+
+  if (decision === "Approved") {
+    const checkboxes = document.querySelectorAll(".mpcb-chk");
+    const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+    if (checkboxes.length > 0 && checked < checkboxes.length) {
+      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} environmental statutory checklist items before granting Consent to Establish.`);
+      return;
+    }
+  }
 
   if (decision === "Query" && !remarks) {
     alert("Please provide the clarification query message for the applicant.");

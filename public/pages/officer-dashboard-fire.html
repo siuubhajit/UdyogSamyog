@@ -28,9 +28,9 @@
       .btn-reject:hover { background: #b91c1c; }
       .btn-query { background: #d97706; color: #fff; border: none; }
       .btn-query:hover { background: #b45309; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; }
-      .checklist li { font-size: .83rem; color: #334155; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
-      .checklist li::before { content: "\2610"; color: #94a3b8; font-size: 1rem; line-height: 1; flex-shrink: 0; }
+      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #b91c1c); margin-top: 2px; flex-shrink: 0; }
       .stage-info-box { background: linear-gradient(135deg, var(--dept-light), #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
       .fire-tool-card { background: #fff; border: 1.5px solid #fecaca; border-radius: 8px; padding: 18px; margin-top: 20px; }
     </style>
@@ -209,13 +209,31 @@
         </p>
 
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Fire Services Compliance Checklist:</div>
-          <ul class="checklist">
-            <li>Fire hydrant &amp; riser system layout verified</li>
-            <li>Static water storage demand compliant with National Building Code</li>
-            <li>Main and diesel standby pump ratings verified</li>
-            <li>6m unobstructed all-round perimeter access confirmed</li>
-          </ul>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Fire Services Compliance Checklist:</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="fireChecklistCounter" style="font-size:.74rem;font-weight:700;color:#b91c1c;">0 of 4 verified</span>
+              <button type="button" id="fireToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('fire', 4, this)">Select All</button>
+            </div>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item">
+              <input type="checkbox" class="fire-chk" onchange="updateChecklistCounter('fire', 4)" />
+              <span>Fire hydrant, wet riser network and hose reel layout verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="fire-chk" onchange="updateChecklistCounter('fire', 4)" />
+              <span>Static underground water storage capacity compliant with National Building Code</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="fire-chk" onchange="updateChecklistCounter('fire', 4)" />
+              <span>Main electric pump, diesel standby pump and jockey pump ratings verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="fire-chk" onchange="updateChecklistCounter('fire', 4)" />
+              <span>6-meter unobstructed all-round perimeter access and fire tender turning radius confirmed</span>
+            </label>
+          </div>
         </div>
 
         <div>

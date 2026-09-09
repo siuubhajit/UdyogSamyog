@@ -52,7 +52,6 @@ function renderWorkflowCard(data) {
             🏛️ Maharashtra Single-Window Statutory Clearance Pipeline
           </h2>
           <p style="margin:4px 0 0 0; font-size:0.82rem; color:var(--ink-light);">
-            Application No: <b>${data.application_no}</b> · Enterprise: <b>${data.company_name}</b> · District: <b>${data.district}</b>
             Application No: <b>${data.application_no}</b> · Enterprise: <b>${typeof escapeHtml === 'function' ? escapeHtml(data.company_name) : data.company_name}</b> · District: <b>${typeof escapeHtml === 'function' ? escapeHtml(data.district) : data.district}</b>
           </p>
         </div>
@@ -78,7 +77,6 @@ function renderWorkflowCard(data) {
             <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
               Statutory review: Environmental Management Plan, Effluent Treatment Scheme, and Air Emission mitigation.
             </p>
-            ${mpcb.remarks ? `<div style="font-size:0.82rem; color:#0f766e; background:#f0fdfa; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Officer Remarks:</b> "${mpcb.remarks}"</div>` : ''}
             ${mpcb.remarks ? `<div style="font-size:0.82rem; color:#0f766e; background:#f0fdfa; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Officer Remarks:</b> "${typeof escapeHtml === 'function' ? escapeHtml(mpcb.remarks) : mpcb.remarks}"</div>` : ''}
           </div>
           <div>
@@ -113,7 +111,6 @@ function renderWorkflowCard(data) {
             </div>
             <div style="font-size:0.72rem; color:#1e40af; font-weight:600; margin-top:2px;">Maharashtra Industrial Development Corporation</div>
             <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Floor Space Index, building setbacks & vehicle driveway access under Regional and Town Planning standards.</div>
-            ${midc.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${midc.remarks}"</div>` : ''}
             ${midc.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(midc.remarks) : midc.remarks}"</div>` : ''}
             ${civilDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${civilDoc.id}/view" target="_blank">📄 View Civil Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
           </div>
@@ -127,7 +124,6 @@ function renderWorkflowCard(data) {
             <div style="font-size:0.72rem; color:#9a3412; font-weight:600; margin-top:2px;">Directorate of Industrial Safety & Health</div>
             <div style="margin:4px 0;"><span class="badge ${hazardText.includes('Chemical') ? 'red' : 'blue'}" style="font-size:0.7rem;">${hazardText}</span></div>
             <div style="font-size:0.78rem; color:#64748b; margin-bottom:6px;">Worker density (14.2 m³ air space), machine guarding & emergency egress under Factories Act 1948.</div>
-            ${dish.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${dish.remarks}"</div>` : ''}
             ${dish.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(dish.remarks) : dish.remarks}"</div>` : ''}
             ${dishDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${dishDoc.id}/view" target="_blank">📄 View Safety Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
           </div>
@@ -140,7 +136,6 @@ function renderWorkflowCard(data) {
             </div>
             <div style="font-size:0.72rem; color:#991b1b; font-weight:600; margin-top:2px;">Directorate of Maharashtra Fire Services</div>
             <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Static water storage (100–250 kL), 2280+ LPM pump rating & peripheral tender access for Life Safety Clearance.</div>
-            ${fire.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${fire.remarks}"</div>` : ''}
             ${fire.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(fire.remarks) : fire.remarks}"</div>` : ''}
             ${fireDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${fireDoc.id}/view" target="_blank">📄 View Fire Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
           </div>
@@ -164,13 +159,12 @@ function renderWorkflowCard(data) {
             <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
               Consolidates all departmental clearances into an official Government of Maharashtra Single-Window Master Permit with digital verification QR code &amp; cryptographic hash.
             </p>
-            ${msins.remarks ? `<div style="font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Apex Decision:</b> "${msins.remarks}"</div>` : ''}
             ${msins.remarks ? `<div style="font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Apex Decision:</b> "${typeof escapeHtml === 'function' ? escapeHtml(msins.remarks) : msins.remarks}"</div>` : ''}
           </div>
           <div>
             ${msinsApproved ? `
-              <a class="btn emerald" href="tracker.html?id=${data.id}" target="_blank">
-                🏆 Download Master Sanction License
+              <a class="btn emerald" href="/pages/certificate.html?id=${data.id}" target="_blank">
+                📜 View Single Window Clearance Certificate &rarr;
               </a>
             ` : isApexActive ? `
               <span class="badge yellow" style="padding:6px 12px; font-size:0.8rem;">⏳ Under Apex Authority Review</span>

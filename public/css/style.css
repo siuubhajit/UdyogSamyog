@@ -991,6 +991,24 @@ tbody tr:hover {
   border: 1px solid var(--line);
   margin-bottom: 10px;
   background: #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.checklist-item:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.checklist-item:has(input:checked) {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.checklist-item:has(input:checked) span {
+  color: #166534;
+  font-weight: 600;
 }
 
 .checklist-item input[type="checkbox"] {
@@ -999,6 +1017,7 @@ tbody tr:hover {
   margin-top: 2px;
   accent-color: var(--emerald);
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .checklist-content {

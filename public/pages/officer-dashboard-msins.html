@@ -35,6 +35,9 @@
       .btn-query:hover { background: #b45309; }
       .stage-info-box { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
       .psi-calc-box { background: #fff; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 18px; margin-top: 20px; }
+      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #1e3a8a); margin-top: 2px; flex-shrink: 0; }
     </style>
   </head>
   <body>
@@ -286,6 +289,42 @@
 
         <div id="miniPipeline" class="pipeline-mini"></div>
 
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;margin-top:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Apex Statutory Review Checklist:</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="msinsChecklistCounter" style="font-size:.74rem;font-weight:700;color:#15803d;">0 of 6 verified</span>
+              <button type="button" id="msinsToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('msins', 6, this)">Select All</button>
+            </div>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>Maharashtra Pollution Control Board Phase 1 Consent to Establish verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>Maharashtra Industrial Development Corporation Civil &amp; Building Blueprint sanctioned</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>Directorate of Industrial Safety &amp; Health Factory Safety layout endorsed</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>Directorate of Maharashtra Fire Services Provisional Fire Clearance granted</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>General statutory supporting documents verified and submitted by enterprise</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="msins-chk" onchange="updateChecklistCounter('msins', 6)" />
+              <span>Single-Window Statutory Deemed Clearances &amp; Guarantee compliance satisfied</span>
+            </label>
+          </div>
+        </div>
+
         <div style="margin-top:14px">
           <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
             Official Decision Remarks / Order Reference <span style="color:#dc2626">*</span>
@@ -335,35 +374,79 @@
       </div>
     </div>
 
-    <!-- APEX INSPECT DOSSIER MODAL (COLLATED PLANS & REMARKS) -->
+    <!-- APEX INSPECT DOSSIER MODAL (COLLATED PLANS, GENERAL SUPPORTING DOCS & REMARKS) -->
     <div id="apexInspectModal" class="modal-overlay" style="display:none">
-      <div class="modal-card" style="max-width:760px; max-height:90vh; overflow-y:auto;">
+      <div class="modal-card" style="max-width:860px; max-height:90vh; overflow-y:auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
           <div>
-            <h2 style="margin:0; color:var(--navy); font-size:1.2rem;">📑 Consolidated Statutory Dossier &amp; Blueprint Scrutiny</h2>
-            <div style="font-size:0.8rem; color:var(--ink-light); margin-top:2px;">
-              App: <b id="modalInspectAppNo">---</b> · Enterprise: <b id="modalInspectCompany">---</b> (GSTIN: <span id="modalInspectGstin">---</span>)
+            <h2 style="margin:0; color:var(--navy); font-size:1.25rem; display:flex; align-items:center; gap:8px;">
+              <span>📑</span> Consolidated Statutory Dossier &amp; Blueprint Scrutiny
+            </h2>
+            <div style="font-size:0.82rem; color:var(--ink-light); margin-top:3px;">
+              Application: <b id="modalInspectAppNo" style="color:var(--navy);">---</b> · Enterprise: <b id="modalInspectCompany" style="color:var(--navy);">---</b> (GSTIN: <span id="modalInspectGstin">---</span>)
             </div>
           </div>
           <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
         </div>
 
-        <div style="font-size:0.82rem; color:#475569; margin-bottom:14px;">
-          Location: <b id="modalInspectLocation">---</b> · Current Pipeline Phase: <span class="badge blue" id="modalInspectStage">---</span>
+        <!-- Meta info bar -->
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 14px; margin-bottom:16px; font-size:0.82rem; color:#475569;">
+          <div>Location: <b id="modalInspectLocation">---</b></div>
+          <div>Hazard Level: <b id="modalInspectHazard">---</b></div>
+          <div>Current Pipeline Phase: <span class="badge blue" id="modalInspectStage">---</span></div>
         </div>
 
-        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">1. Collated Statutory Plan Blueprints (PDFs)</h3>
-        <div id="modalAllPlansList" style="margin-bottom:18px;">
-          <!-- Loaded dynamically -->
+        <!-- Section 1: General Statutory Supporting Documents -->
+        <div style="margin-bottom:24px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+            <div>
+              <h3 style="margin:0; color:var(--navy); font-size:1.02rem; display:flex; align-items:center; gap:6px;">
+                <span>📁</span> 1. General Statutory Supporting Documents
+              </h3>
+              <div style="font-size:0.78rem; color:var(--ink-light); margin-top:2px;">
+                Mandatory enterprise proof documents (e.g. Land Title / Allotment Deed, Detailed Project Report, Incorporation Certificate). <b>Required prior to Apex approval.</b>
+              </div>
+            </div>
+            <div id="modalSupportingDocsBadge">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+
+          <div id="modalSupportingDocsNotice">
+            <!-- Dynamic statutory compliance notice -->
+          </div>
+
+          <div id="modalSupportingDocsList">
+            <!-- Loaded dynamically with side [↗ View Document] buttons -->
+          </div>
         </div>
 
-        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">2. Confirming Department Clearance Decisions &amp; Remarks</h3>
-        <div id="modalDepartmentRemarksList" style="margin-bottom:18px;">
-          <!-- Loaded dynamically -->
+        <!-- Section 2: Mandatory Departmental Statutory Plan Submissions -->
+        <div style="margin-bottom:20px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+            <div>
+              <h3 style="margin:0; color:var(--navy); font-size:1.02rem; display:flex; align-items:center; gap:6px;">
+                <span>🏛️</span> 2. Mandatory Departmental Statutory Plan Submissions
+              </h3>
+              <div style="font-size:0.78rem; color:var(--ink-light); margin-top:2px;">
+                Technical blueprints for all 4 statutory authorities along with confirming departmental scrutiny and approval determinations.
+              </div>
+            </div>
+            <div id="modalDepartmentalSummaryBadge">
+              <!-- Loaded dynamically: e.g. 4 of 4 Plans Uploaded -->
+            </div>
+          </div>
+
+          <div id="modalAllPlansList">
+            <!-- Loaded dynamically with department approval statuses and side [↗ View Plan PDF] buttons -->
+          </div>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn outline sm" onclick="closeModals()">Close</button>
+        <div class="modal-actions" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid #e2e8f0; padding-top:14px; margin-top:16px;">
+          <div id="modalApexQuickAction">
+            <!-- Loaded dynamically: e.g. Grant Clearance button or status notice -->
+          </div>
+          <button type="button" class="btn outline sm" onclick="closeModals()">Close Dossier</button>
         </div>
       </div>
     </div>

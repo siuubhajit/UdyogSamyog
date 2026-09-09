@@ -26,9 +26,9 @@
       .btn-reject:hover { background:#b91c1c; }
       .btn-query { background:#d97706; color:#fff; border:none; }
       .btn-query:hover { background:#b45309; }
-      .checklist { list-style:none; padding:0; margin:8px 0 0; }
-      .checklist li { font-size:.83rem; color:#334155; padding:3px 0; display:flex; align-items:flex-start; gap:6px; }
-      .checklist li::before { content:"\u2610"; color:#94a3b8; font-size:1rem; line-height:1; flex-shrink:0; }
+      .checklist { list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:6px; }
+      .checklist-item { font-size:.83rem; color:#334155; padding:3px 0; display:flex; align-items:flex-start; gap:8px; cursor:pointer; user-select:none; }
+      .checklist-item input[type="checkbox"] { width:16px; height:16px; cursor:pointer; accent-color:var(--dept-color, #1e40af); margin-top:2px; flex-shrink:0; }
       .stage-info-box { background:linear-gradient(135deg,var(--dept-light),#fff); border-left:4px solid var(--dept-color); border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:.84rem; color:#334155; }
     </style>
   </head>
@@ -174,9 +174,15 @@
           <span id="decRisk" class="badge gray">Risk</span>
         </div>
         <div class="decision-panel">
-          <h4 id="checklistTitle">Verification Checklist</h4>
-          <p style="font-size:.78rem;color:var(--ink-light);margin:2px 0 6px">Ensure all items are verified before approving.</p>
-          <ul class="checklist" id="deptChecklist"></ul>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 id="checklistTitle" style="margin:0;">Verification Checklist</h4>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="genChecklistCounter" style="font-size:.74rem; font-weight:700; color:var(--dept-color, #1e40af);">0 verified</span>
+              <button type="button" id="genToggleBtn" class="btn outline sm" style="font-size:.7rem; padding:2px 8px; background:#fff;" onclick="toggleAllChecklist('gen', window._curChecklistCount || 6, this)">Select All</button>
+            </div>
+          </div>
+          <p style="font-size:.78rem;color:var(--ink-light);margin:4px 0 8px">Ensure all statutory items are verified before approving.</p>
+          <div class="checklist" id="deptChecklist"></div>
         </div>
         <div style="margin-top:14px">
           <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
@@ -348,6 +354,7 @@
             "<td style='white-space:nowrap'>" +
             (canAct ? "<button class='btn sm' style='background:" + cfg.color + ";color:#fff;border:none;margin-right:4px' onclick='openDecisionModal(" + app.id + ")'>✏️ Decide</button>" : "") +
             "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>🔍 Dossier</a>" +
+            (app.status === "Approved" ? " <a class='btn sm' style='background:#16a34a;color:#fff;border:none;margin-left:4px' href='/pages/certificate.html?id=" + app.id + "' target='_blank'>📜 Certificate</a>" : "") +
             "</td></tr>";
         }).join("");
       }
@@ -383,7 +390,20 @@
           document.getElementById("decDossierLink").href = "verification.html?id=" + appId;
           document.getElementById("miniPipeline").innerHTML = buildMiniPipeline(stage, app.stageStatuses);
           document.getElementById("checklistTitle").textContent = "📋 " + cfg.kpi1 + " — Checklist";
-          document.getElementById("deptChecklist").innerHTML = cfg.checklist.map(i => "<li>" + i + "</li>").join("");
+          window._curChecklistCount = cfg.checklist.length;
+          document.getElementById("deptChecklist").innerHTML = cfg.checklist
+            .map(
+              (i) => `
+            <label class="checklist-item">
+              <input type="checkbox" class="gen-chk" onchange="updateChecklistCounter('gen', ${cfg.checklist.length})" />
+              <span>${escapeHtml(i)}</span>
+            </label>
+          `,
+            )
+            .join("");
+          if (typeof resetChecklist === "function") {
+            resetChecklist("gen", cfg.checklist.length);
+          }
           document.getElementById("decisionModal").style.display = "grid";
         } catch (err) {
           alert("Failed to load application: " + err.message);
@@ -397,6 +417,16 @@
 
       async function submitDecision(decision) {
         if (!activeDecisionAppId) return;
+
+        if (decision === "Approved") {
+          const checkboxes = document.querySelectorAll(".gen-chk");
+          const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+          if (checkboxes.length > 0 && checked < checkboxes.length) {
+            alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} statutory checklist items before approving.`);
+            return;
+          }
+        }
+
         const remarks = document.getElementById("decisionRemarks").value.trim();
         const msgEl = document.getElementById("decisionMsg");
         if (!remarks) { msgEl.style.color = "#dc2626"; msgEl.textContent = "Please enter official remarks before submitting."; return; }

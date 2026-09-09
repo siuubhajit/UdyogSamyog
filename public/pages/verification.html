@@ -740,6 +740,24 @@
           statusBadge.textContent = d.status;
           statusBadge.className = `badge ${d.status === "Approved" ? "green" : d.status === "Flagged" || d.status === "Rejected" ? "red" : "orange"}`;
 
+          let certBtn = document.getElementById("headerCertLink");
+          if (d.status === "Approved") {
+            if (!certBtn) {
+              certBtn = document.createElement("a");
+              certBtn.id = "headerCertLink";
+              certBtn.className = "btn emerald sm";
+              certBtn.target = "_blank";
+              certBtn.style.marginLeft = "8px";
+              certBtn.style.fontWeight = "700";
+              certBtn.innerHTML = "📜 View Certificate &rarr;";
+              statusBadge.parentNode.appendChild(certBtn);
+            }
+            certBtn.href = `/pages/certificate.html?id=${d.id}`;
+            certBtn.style.display = "inline-flex";
+          } else if (certBtn) {
+            certBtn.style.display = "none";
+          }
+
           const riskBadge = document.getElementById("headerRiskBadge");
           riskBadge.textContent = `${d.risk_tier} Risk Tier`;
           riskBadge.className = `risk-tag ${d.risk_tier === "Red" ? "risk-red" : d.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
@@ -998,22 +1016,18 @@
         }
 
         thread.innerHTML = queries
-          .map(
-            (q) => `
-            (q) => {
-              const safeDept = typeof escapeHtml === "function" ? escapeHtml(q.officer_dept || "Department Officer") : (q.officer_dept || "Department Officer");
-              const safeOfficer = typeof escapeHtml === "function" ? escapeHtml(q.officer_name || "Scrutiny Officer") : (q.officer_name || "Scrutiny Officer");
-              const safeMsg = typeof escapeHtml === "function" ? escapeHtml(q.message) : q.message;
-              const safeReply = typeof escapeHtml === "function" ? escapeHtml(q.applicant_reply || "") : (q.applicant_reply || "");
-              const safeFile = typeof escapeHtml === "function" ? escapeHtml(q.reply_file_name || "") : (q.reply_file_name || "");
-              return `
+          .map((q) => {
+            const safeDept = typeof escapeHtml === "function" ? escapeHtml(q.officer_dept || "Department Officer") : (q.officer_dept || "Department Officer");
+            const safeOfficer = typeof escapeHtml === "function" ? escapeHtml(q.officer_name || "Scrutiny Officer") : (q.officer_name || "Scrutiny Officer");
+            const safeMsg = typeof escapeHtml === "function" ? escapeHtml(q.message) : q.message;
+            const safeReply = typeof escapeHtml === "function" ? escapeHtml(q.applicant_reply || "") : (q.applicant_reply || "");
+            const safeFile = typeof escapeHtml === "function" ? escapeHtml(q.reply_file_name || "") : (q.reply_file_name || "");
+            return `
           <div class="query-bubble officer">
             <div class="query-author">
-              <span>🏛️ ${q.officer_dept || "Department Officer"} (${q.officer_name || "Scrutiny Officer"})</span>
               <span>🏛️ ${safeDept} (${safeOfficer})</span>
               <span style="font-size: 0.7rem; color: var(--ink-muted);">${new Date(q.created_at).toLocaleString()}</span>
             </div>
-            <div class="query-text">${q.message}</div>
             <div class="query-text">${safeMsg}</div>
             
             ${
@@ -1024,13 +1038,11 @@
                   <span>🏢 Applicant Clarification Response</span>
                   <span style="font-size: 0.7rem; color: var(--ink-muted);">${q.resolved_at ? new Date(q.resolved_at).toLocaleString() : "Submitted"}</span>
                 </div>
-                <div class="query-text">${q.applicant_reply}</div>
                 <div class="query-text">${safeReply}</div>
                 ${
                   q.reply_file_name
                     ? `
                   <div class="query-attachment">
-                    <span>📎 Uploaded:</span> <b>${q.reply_file_name}</b>
                     <span>📎 Uploaded:</span> <b>${safeFile}</b>
                   </div>
                 `
@@ -1041,10 +1053,8 @@
                 : `<div style="margin-top: 6px; font-size: 0.75rem; color: var(--saffron); font-weight: 600;">⏳ Awaiting applicant response...</div>`
             }
           </div>
-        `,
         `;
-            }
-          )
+          })
           .join("");
       }
 
@@ -1079,27 +1089,21 @@
         }
 
         list.innerHTML = inspections
-          .map(
-            (i) => `
-            (i) => {
-              const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
-              const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
-              const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
-              return `
+          .map((i) => {
+            const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
+            const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
+            const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
+            return `
           <div style="background: #f1f5f9; border-left: 3px solid var(--navy); padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.84rem; color: var(--navy);">
               <span>📅 ${new Date(i.scheduled_date).toLocaleDateString()}</span>
               <span class="badge blue">${i.status}</span>
             </div>
-            <div style="font-size: 0.78rem; color: var(--ink); margin-top: 2px;"><b>Agency:</b> ${i.department}</div>
-            <div style="font-size: 0.74rem; color: var(--ink-light);"><b>Inspector:</b> ${i.inspector_name} · ${i.notes || ""}</div>
             <div style="font-size: 0.78rem; color: var(--ink); margin-top: 2px;"><b>Agency:</b> ${safeDept}</div>
             <div style="font-size: 0.74rem; color: var(--ink-light);"><b>Inspector:</b> ${safeName} · ${safeNotes}</div>
           </div>
-        `,
         `;
-            }
-          )
+          })
           .join("");
       }
 

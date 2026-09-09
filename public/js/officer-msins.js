@@ -176,7 +176,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
               </button>
               ${
                 msinsOk
-                  ? `<a class="btn green sm" href="/api/applications/${a.id}/certificate" target="_blank">
+                  ? `<a class="btn green sm" href="/pages/certificate.html?id=${a.id}" target="_blank">
                        📜 View License Certificate
                      </a>`
                   : readyForFinal
@@ -346,8 +346,8 @@ function renderApplicationsTable() {
             </button>
             ${
               isApproved
-                ? `<a class="btn green sm" href="/api/applications/${a.id}/certificate" target="_blank">
-                     📜 Certificate
+                ? `<a class="btn green sm" href="/pages/certificate.html?id=${a.id}" target="_blank">
+                     📜 View Certificate
                    </a>`
                 : isReadyForFinal
                   ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
@@ -363,10 +363,13 @@ function renderApplicationsTable() {
     .join("");
 }
 
+let activeAppDossier = null;
+
 async function inspectApexDossier(id) {
   try {
     const data = await api(`/api/applications/${id}`);
     activeAppId = id;
+    activeAppDossier = data;
 
     const modal = document.getElementById("apexInspectModal");
     if (!modal) return;
@@ -379,132 +382,282 @@ async function inspectApexDossier(id) {
       data.registration_no || "PENDING";
     document.getElementById("modalInspectLocation").textContent =
       `${data.district} · ${data.location}`;
+    if (document.getElementById("modalInspectHazard")) {
+      document.getElementById("modalInspectHazard").textContent =
+        data.hazardLevel || (data.hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
+    }
     document.getElementById("modalInspectStage").textContent =
       data.current_stage || "mpcb";
 
-    // Collated Plan PDFs
-    const plansContainer = document.getElementById("modalAllPlansList");
-    if (plansContainer) {
-      const planItems = [
-        {
-          key: "environmental",
-          title: "🌿 Environmental Management Plan & Effluent Scheme · Maharashtra Pollution Control Board",
-          doc:
-            data.plans?.environmental ||
-            (data.documents || []).find(
-              (d) =>
-                d.plan_type === "environmental_plan" ||
-                d.document_type?.toLowerCase().includes("effluent"),
-            ),
-        },
-        {
-          key: "civil",
-          title: "📐 Civil Master Layout & Infrastructure · Maharashtra Industrial Development Corporation",
-          doc:
-            data.plans?.civil ||
-            (data.documents || []).find(
-              (d) =>
-                d.plan_type === "civil_plan" ||
-                d.document_type?.toLowerCase().includes("civil") ||
-                d.document_type?.toLowerCase().includes("site"),
-            ),
-        },
-        {
-          key: "factorySafety",
-          title: `🛡️ Factory Safety Blueprint · Directorate of Industrial Safety & Health - ${data.hazardLevel || "Standard"} Hazard`,
-          doc:
-            data.plans?.factorySafety ||
-            (data.documents || []).find(
-              (d) =>
-                d.plan_type === "factory_safety_plan" ||
-                d.document_type?.toLowerCase().includes("safety"),
-            ),
-        },
-        {
-          key: "fireSafety",
-          title: "🚒 Fire Hydrant & Evacuation Layout · Directorate of Maharashtra Fire Services",
-          doc:
-            data.plans?.fireSafety ||
-            (data.documents || []).find(
-              (d) =>
-                d.plan_type === "fire_safety_plan" ||
-                d.document_type?.toLowerCase().includes("fire"),
-            ),
-        },
-      ];
+    const allDocs = data.documents || [];
+    const stages = data.stageStatuses || {};
 
-      plansContainer.innerHTML = planItems
-        .map(
-          (p) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px; margin-bottom:8px;">
-          <div>
-            <div style="font-weight:700; font-size:0.9rem; color:var(--navy);">${p.title}</div>
-            <div style="font-size:0.78rem; color:var(--ink-light);">
-              ${p.doc ? `File: <b>${p.doc.original_name}</b> (${formatBytes(p.doc.size)})` : "⚠️ Plan PDF pending submission"}
+    // 1. GENERAL STATUTORY SUPPORTING DOCUMENTS
+    const supportingDocs = allDocs.filter((d) => {
+      const pt = (d.plan_type || "").toLowerCase();
+      const isDeptPlan = [
+        "environmental_plan",
+        "civil_plan",
+        "factory_safety_plan",
+        "fire_safety_plan",
+      ].includes(pt);
+      return !isDeptPlan;
+    });
+
+    const suppBadgeEl = document.getElementById("modalSupportingDocsBadge");
+    if (suppBadgeEl) {
+      if (supportingDocs.length > 0) {
+        suppBadgeEl.innerHTML = `<span class="badge green" style="font-weight:700; font-size:0.75rem;">✓ Submitted (${supportingDocs.length} Document${supportingDocs.length > 1 ? "s" : ""})</span>`;
+      } else {
+        suppBadgeEl.innerHTML = `<span class="badge red" style="font-weight:700; font-size:0.75rem;">⚠️ 0 Submitted (Action Required)</span>`;
+      }
+    }
+
+    const suppNoticeEl = document.getElementById("modalSupportingDocsNotice");
+    if (suppNoticeEl) {
+      if (supportingDocs.length > 0) {
+        suppNoticeEl.innerHTML = `
+          <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:0.8rem; color:#166534; display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700;">✓</span>
+            <div><b>Statutory Pre-requisite Satisfied:</b> Enterprise has submitted general statutory supporting documents required for Apex single-window appraisal.</div>
+          </div>
+        `;
+      } else {
+        suppNoticeEl.innerHTML = `
+          <div style="background:#fef2f2; border:1.5px solid #fecaca; border-radius:6px; padding:10px 14px; margin-bottom:12px; font-size:0.82rem; color:#991b1b; display:flex; align-items:flex-start; gap:8px;">
+            <span style="font-size:1.1rem; line-height:1;">⚠️</span>
+            <div>
+              <div style="font-weight:700;">Mandatory Statutory Requirement:</div>
+              <div>General statutory supporting documents (e.g. Land Title / Allotment Deed, Detailed Project Report, Incorporation Proof) <b>must be submitted by the enterprise before Apex single-window approval can be granted</b>.</div>
             </div>
           </div>
-          ${
-            p.doc
-              ? `<a class="btn outline sm" href="/api/documents/${p.doc.id}/view" target="_blank">
-                   ↗ View PDF
-                 </a>`
-              : '<span class="badge gray">Not Uploaded</span>'
-          }
-        </div>
-      `,
-        )
+        `;
+      }
+    }
+
+    const suppListEl = document.getElementById("modalSupportingDocsList");
+    if (suppListEl) {
+      if (supportingDocs.length === 0) {
+        suppListEl.innerHTML = `
+          <div style="text-align:center; padding:16px; background:#fff7ed; border:1px dashed #fdba74; border-radius:6px; color:#c2410c; font-size:0.82rem;">
+            ❌ No general statutory supporting documents have been submitted yet. Upload is pending from the enterprise portal.
+          </div>
+        `;
+      } else {
+        suppListEl.innerHTML = supportingDocs
+          .map(
+            (doc) => `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px; margin-bottom:8px; gap:12px;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:700; font-size:0.88rem; color:var(--navy); display:flex; align-items:center; gap:6px;">
+                <span>📄</span>
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(doc.document_type || "General Statutory Document")}</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--ink-light); margin-top:2px;">
+                File: <b>${escapeHtml(doc.original_name || doc.file_name || "document.pdf")}</b> (${formatBytes(doc.size || 0)}) · Uploaded: ${doc.created_at ? new Date(doc.created_at).toLocaleDateString() : "Recorded"}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+              <span class="badge green" style="font-size:0.72rem;">Uploaded</span>
+              <a class="btn outline sm" href="/api/documents/${doc.id}/view" target="_blank" style="white-space:nowrap; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                ↗ View Document
+              </a>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+    }
+
+    // 2. MANDATORY DEPARTMENTAL STATUTORY PLAN SUBMISSIONS (4 Authorities)
+    const planItems = [
+      {
+        key: "environmental",
+        title: "🌿 Environmental Management Plan & Effluent Scheme",
+        deptCode: "mpcb",
+        deptName: "Maharashtra Pollution Control Board",
+        doc:
+          data.plans?.environmental ||
+          allDocs.find(
+            (d) =>
+              d.plan_type === "environmental_plan" ||
+              d.department === "mpcb" ||
+              (d.document_type || "").toLowerCase().includes("effluent"),
+          ),
+        info: stages.mpcb,
+      },
+      {
+        key: "civil",
+        title: "📐 Civil Master Layout & Infrastructure Plan",
+        deptCode: "midc",
+        deptName: "Maharashtra Industrial Development Corporation",
+        doc:
+          data.plans?.civil ||
+          allDocs.find(
+            (d) =>
+              d.plan_type === "civil_plan" ||
+              d.department === "midc" ||
+              (d.document_type || "").toLowerCase().includes("civil") ||
+              (d.document_type || "").toLowerCase().includes("site"),
+          ),
+        info: stages.midc,
+      },
+      {
+        key: "factorySafety",
+        title: `🛡️ Factory Safety Blueprint & Machine Layout (${data.hazardLevel || "Standard Risk"})`,
+        deptCode: "dish",
+        deptName: "Directorate of Industrial Safety & Health",
+        doc:
+          data.plans?.factorySafety ||
+          allDocs.find(
+            (d) =>
+              d.plan_type === "factory_safety_plan" ||
+              d.department === "dish" ||
+              (d.document_type || "").toLowerCase().includes("safety"),
+          ),
+        info: stages.dish,
+      },
+      {
+        key: "fireSafety",
+        title: "🚒 Fire Hydrant & Emergency Evacuation Layout",
+        deptCode: "fire",
+        deptName: "Directorate of Maharashtra Fire Services",
+        doc:
+          data.plans?.fireSafety ||
+          allDocs.find(
+            (d) =>
+              d.plan_type === "fire_safety_plan" ||
+              d.department === "fire" ||
+              (d.document_type || "").toLowerCase().includes("fire"),
+          ),
+        info: stages.fire,
+      },
+    ];
+
+    const uploadedPlansCount = planItems.filter((p) => !!p.doc).length;
+    const deptSummaryBadge = document.getElementById("modalDepartmentalSummaryBadge");
+    if (deptSummaryBadge) {
+      deptSummaryBadge.innerHTML = `
+        <span class="badge ${uploadedPlansCount === 4 ? "green" : "yellow"}" style="font-size:0.75rem; font-weight:700;">
+          ${uploadedPlansCount} of 4 Mandatory Plans Uploaded
+        </span>
+      `;
+    }
+
+    const plansContainer = document.getElementById("modalAllPlansList");
+    if (plansContainer) {
+      plansContainer.innerHTML = planItems
+        .map((p) => {
+          const isApp = p.info?.decision === "Approved";
+          const isRej = p.info?.decision === "Rejected";
+          const isQue = p.info?.decision === "Query";
+          const statusBadge = isApp
+            ? `<span class="badge green" style="font-weight:700; font-size:0.75rem;">✅ Approved by ${p.deptName}</span>`
+            : isRej
+              ? `<span class="badge red" style="font-weight:700; font-size:0.75rem;">❌ Rejected by ${p.deptName}</span>`
+              : isQue
+                ? `<span class="badge yellow" style="font-weight:700; font-size:0.75rem;">⚠️ Query Raised by ${p.deptName}</span>`
+                : `<span class="badge yellow" style="font-weight:600; font-size:0.75rem;">⏳ Under Scrutiny (${p.deptName})</span>`;
+
+          return `
+            <div style="background:${isApp ? "#fafffa" : "#f8fafc"}; border:1px solid #e2e8f0; border-left:4px solid ${isApp ? "#16a34a" : isRej ? "#dc2626" : isQue ? "#ca8a04" : "#94a3b8"}; border-radius:6px; padding:12px 14px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:240px;">
+                  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span style="font-weight:700; font-size:0.92rem; color:var(--navy);">${p.title}</span>
+                    ${statusBadge}
+                  </div>
+                  <div style="font-size:0.78rem; color:var(--ink-light); margin-top:4px;">
+                    ${p.doc ? `Blueprint File: <b>${escapeHtml(p.doc.original_name || p.doc.file_name)}</b> (${formatBytes(p.doc.size || 0)})` : '<span style="color:#b91c1c; font-weight:600;">⚠️ Plan Blueprint PDF pending submission</span>'}
+                  </div>
+                </div>
+                <div style="flex-shrink:0;">
+                  ${
+                    p.doc
+                      ? `<a class="btn outline sm" href="/api/documents/${p.doc.id}/view" target="_blank" style="white-space:nowrap; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                           ↗ View Plan PDF
+                         </a>`
+                      : '<span class="badge gray">Not Uploaded</span>'
+                  }
+                </div>
+              </div>
+              ${
+                p.info?.remarks
+                  ? `
+              <div style="font-size:0.8rem; color:#334155; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">
+                <b>Department Findings:</b> "${escapeHtml(p.info.remarks)}"
+                ${p.info.officer ? `<span style="color:#64748b; font-size:0.75rem;"> — ${escapeHtml(p.info.officer)} · ${new Date(p.info.decided_at).toLocaleString()}</span>` : ""}
+              </div>`
+                  : ""
+              }
+            </div>
+          `;
+        })
         .join("");
     }
 
-    // Confirming Department Remarks
-    const remarksContainer = document.getElementById(
-      "modalDepartmentRemarksList",
-    );
-    if (remarksContainer) {
-      const stages = data.stageStatuses || {};
-      const depts = [
-        {
-          code: "mpcb",
-          name: "Maharashtra Pollution Control Board (Phase 1 Environmental Gateway)",
-          info: stages.mpcb,
-          icon: "🌿",
-        },
-        {
-          code: "midc",
-          name: "Maharashtra Industrial Development Corporation (Phase 2 Civil & Infrastructure)",
-          info: stages.midc,
-          icon: "📐",
-        },
-        {
-          code: "dish",
-          name: "Directorate of Industrial Safety & Health (Phase 2 Factory Safety)",
-          info: stages.dish,
-          icon: "🛡️",
-        },
-        {
-          code: "fire",
-          name: "Directorate of Maharashtra Fire Services (Phase 2 Life Safety Clearance)",
-          info: stages.fire,
-          icon: "🚒",
-        },
-      ];
+    // 3. APEX QUICK ACTION FOOTER
+    const mpcbOk = stages.mpcb?.decision === "Approved";
+    const midcOk = stages.midc?.decision === "Approved";
+    const dishOk = stages.dish?.decision === "Approved";
+    const fireOk = stages.fire?.decision === "Approved";
+    const allDeptsApproved = mpcbOk && midcOk && dishOk && fireOk;
+    const hasSupporting = supportingDocs.length > 0;
+    const isApproved = data.status === "Approved";
 
-      remarksContainer.innerHTML = depts
-        .map(
-          (d) => `
-        <div style="padding:10px 14px; background:${d.info?.decision === "Approved" ? "#f0fdf4" : "#fefce8"}; border-left:4px solid ${d.info?.decision === "Approved" ? "#16a34a" : "#ca8a04"}; border-radius:4px; margin-bottom:8px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b>${d.icon} ${d.name}</b>
-            <span class="badge ${d.info?.decision === "Approved" ? "green" : "yellow"}">${d.info?.decision || "Pending Review"}</span>
+    const quickActionEl = document.getElementById("modalApexQuickAction");
+    if (quickActionEl) {
+      if (isApproved) {
+        quickActionEl.innerHTML = `
+          <a class="btn green sm" href="/pages/certificate.html?id=${data.id}" target="_blank" style="font-weight:700;">
+            📜 View Clearance Certificate
+          </a>
+        `;
+      } else if (allDeptsApproved && hasSupporting) {
+        quickActionEl.innerHTML = `
+          <button type="button" class="btn saffron sm" style="font-weight:700;" onclick="closeModals(); openFinalApprovalModal(${data.id}, '${data.application_no}', '${escapeHtml(data.company_name)}')">
+            🏆 Grant Final Single-Window Clearance
+          </button>
+        `;
+      } else if (allDeptsApproved && !hasSupporting) {
+        quickActionEl.innerHTML = `
+          <span class="badge red" style="font-weight:700; font-size:0.8rem; padding:6px 12px;">
+            ⚠️ Clearance Blocked: General Supporting Documents Missing
+          </span>
+        `;
+      } else {
+        quickActionEl.innerHTML = `
+          <span class="badge yellow" style="font-weight:600; font-size:0.8rem; padding:6px 12px;">
+            ⏳ Awaiting Confirming Department Clearances
+          </span>
+        `;
+      }
+    }
+
+    // Certificate banner for approved application
+    let certBanner = document.getElementById("modalApexCertBanner");
+    if (!certBanner) {
+      certBanner = document.createElement("div");
+      certBanner.id = "modalApexCertBanner";
+      const parent = document.getElementById("apexInspectModal").querySelector(".modal-card");
+      parent.insertBefore(certBanner, parent.children[1]);
+    }
+    if (isApproved) {
+      certBanner.style.display = "block";
+      certBanner.innerHTML = `
+        <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 700; color: #166534; font-size: 0.95rem;">📜 Single-Window Clearance Certificate Issued</div>
+            <div style="font-size: 0.78rem; color: #15803d; margin-top: 2px;">This application has received consolidated approval and a digitally signed clearance certificate has been generated.</div>
           </div>
-          <div style="font-size:0.82rem; color:#334155; margin-top:4px;">
-            ${d.info?.remarks || "No official remarks logged yet."}
-          </div>
-          ${d.info?.officer ? `<div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Decided by: ${d.info.officer} · ${new Date(d.info.decided_at).toLocaleString()}</div>` : ""}
+          <a class="btn green sm" href="/pages/certificate.html?id=${data.id}" target="_blank" style="font-weight: 700;">
+            View Official Certificate &rarr;
+          </a>
         </div>
-      `,
-        )
-        .join("");
+      `;
+    } else {
+      certBanner.style.display = "none";
     }
 
     modal.style.display = "flex";
@@ -513,16 +666,73 @@ async function inspectApexDossier(id) {
   }
 }
 
-function openFinalApprovalModal(id, appNo, companyName) {
+function openFinalApprovalModal(id, appNo, companyName, district = "Maharashtra") {
   activeAppId = id;
-  document.getElementById("finalModalAppNo").textContent = appNo;
-  document.getElementById("finalModalCompany").textContent = companyName;
-  document.getElementById("finalModalRemarks").value = "";
-  document.getElementById("finalApprovalModal").style.display = "flex";
+  // Pre-load dossier if not already loaded to check supporting docs
+  if (!activeAppDossier || activeAppDossier.id !== id) {
+    api(`/api/applications/${id}`).then((d) => {
+      activeAppDossier = d;
+    }).catch(() => {});
+  }
+
+  const decModal = document.getElementById("decisionModal");
+  if (decModal) {
+    const appEl = document.getElementById("decAppNo");
+    if (appEl) appEl.textContent = appNo;
+    const compEl = document.getElementById("decCompany");
+    if (compEl) compEl.textContent = companyName;
+    const distEl = document.getElementById("decDistrict");
+    if (distEl) distEl.textContent = district || "Maharashtra";
+    const remEl = document.getElementById("decisionRemarks");
+    if (remEl) remEl.value = "";
+    const linkEl = document.getElementById("decDossierLink");
+    if (linkEl) linkEl.href = `/pages/verification.html?id=${id}`;
+    if (typeof resetChecklist === "function") {
+      resetChecklist("msins", 6);
+    }
+    decModal.style.display = "flex";
+  } else {
+    const finalModal = document.getElementById("finalApprovalModal");
+    if (finalModal) {
+      document.getElementById("finalModalAppNo").textContent = appNo;
+      document.getElementById("finalModalCompany").textContent = companyName;
+      document.getElementById("finalModalRemarks").value = "";
+      finalModal.style.display = "flex";
+    }
+  }
 }
 
 async function submitFinalApexDecision(decision, explicitRemarks = null) {
   if (!activeAppId) return;
+
+  if (decision === "Approved") {
+    // 1. Enforce General Statutory Supporting Documents submission
+    if (!activeAppDossier || activeAppDossier.id !== activeAppId) {
+      try {
+        activeAppDossier = await api(`/api/applications/${activeAppId}`);
+      } catch (e) {
+        console.warn("Could not reload dossier:", e);
+      }
+    }
+
+    const suppDocs = (activeAppDossier?.documents || []).filter(
+      (d) => !["environmental_plan", "civil_plan", "factory_safety_plan", "fire_safety_plan"].includes(d.plan_type)
+    );
+
+    if (suppDocs.length === 0) {
+      alert("Statutory Requirement: General statutory supporting documents must be submitted by the enterprise before Apex approval can be granted.");
+      return;
+    }
+
+    // 2. Enforce checklist completion
+    const checkboxes = document.querySelectorAll(".msins-chk");
+    const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+    if (checkboxes.length > 0 && checked < checkboxes.length) {
+      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} Apex statutory review checklist items before granting final clearance.`);
+      return;
+    }
+  }
+
   const remarks =
     explicitRemarks !== null
       ? explicitRemarks
@@ -530,6 +740,7 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
         document.getElementById("decisionRemarks")?.value.trim();
 
   try {
+    const approvedId = activeAppId;
     const res = await api(`/api/applications/${activeAppId}/stage-decision`, {
       method: "POST",
       body: JSON.stringify({
@@ -545,6 +756,10 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
     closeDecisionModal();
     closeModals();
     await loadApplications();
+
+    if (decision === "Approved") {
+      window.open(`/pages/certificate.html?id=${approvedId}`, "_blank");
+    }
   } catch (err) {
     alert("Action failed: " + err.message);
   }
@@ -553,6 +768,8 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
 function closeDecisionModal() {
   const m = document.getElementById("decisionModal");
   if (m) m.style.display = "none";
+  const f = document.getElementById("finalApprovalModal");
+  if (f) f.style.display = "none";
   closeModals();
 }
 

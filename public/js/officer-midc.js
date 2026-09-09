@@ -231,12 +231,24 @@ function openCivilDecisionModal(id, appNo, companyName) {
   document.getElementById("civilModalAppNo").textContent = appNo;
   document.getElementById("civilModalCompany").textContent = companyName;
   document.getElementById("civilModalRemarks").value = "";
+  if (typeof resetChecklist === "function") {
+    resetChecklist("midc", 4);
+  }
   document.getElementById("civilModal").style.display = "flex";
 }
 
 async function submitCivilDecision(decision) {
   if (!activeAppId) return;
   const remarks = document.getElementById("civilModalRemarks").value.trim();
+
+  if (decision === "Approved") {
+    const checkboxes = document.querySelectorAll(".midc-chk");
+    const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+    if (checkboxes.length > 0 && checked < checkboxes.length) {
+      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} civil & planning checklist items before sanctioning the plan.`);
+      return;
+    }
+  }
 
   try {
     const res = await api(`/api/applications/${activeAppId}/stage-decision`, {

@@ -28,9 +28,9 @@
       .btn-reject:hover { background: #b91c1c; }
       .btn-query { background: #d97706; color: #fff; border: none; }
       .btn-query:hover { background: #b45309; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; }
-      .checklist li { font-size: .83rem; color: #334155; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
-      .checklist li::before { content: "\2610"; color: #94a3b8; font-size: 1rem; line-height: 1; flex-shrink: 0; }
+      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #166534); margin-top: 2px; flex-shrink: 0; }
       .stage-info-box { background: linear-gradient(135deg, var(--dept-light), #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
       .cpcb-tabs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
       .cpcb-btn { padding: 4px 12px; border-radius: 14px; font-size: .75rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; }
@@ -217,13 +217,31 @@
         </p>
 
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Environmental Statutory Checklist:</div>
-          <ul class="checklist">
-            <li>Environmental Management Plan PDF verified</li>
-            <li>Effluent Treatment Plant hydraulic sizing and flow scheme confirmed</li>
-            <li>Hazardous waste management and disposal facility agreement checked</li>
-            <li>Air pollution scrubbers and chimney stack dispersion height verified</li>
-          </ul>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Environmental Statutory Checklist:</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="mpcbChecklistCounter" style="font-size:.74rem;font-weight:700;color:#166534;">0 of 4 verified</span>
+              <button type="button" id="mpcbToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('mpcb', 4, this)">Select All</button>
+            </div>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item">
+              <input type="checkbox" class="mpcb-chk" onchange="updateChecklistCounter('mpcb', 4)" />
+              <span>Environmental Management Plan (EMP) PDF &amp; baseline monitoring verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="mpcb-chk" onchange="updateChecklistCounter('mpcb', 4)" />
+              <span>Effluent Treatment Plant hydraulic sizing and zero liquid discharge scheme confirmed</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="mpcb-chk" onchange="updateChecklistCounter('mpcb', 4)" />
+              <span>Hazardous waste management and common disposal facility agreement checked</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="mpcb-chk" onchange="updateChecklistCounter('mpcb', 4)" />
+              <span>Air pollution scrubbers and chimney stack dispersion height verified</span>
+            </label>
+          </div>
         </div>
 
         <div>

@@ -239,12 +239,24 @@ function openSafetyDecisionModal(id, appNo, companyName, hazardLevel) {
   document.getElementById("safetyModalCompany").textContent = companyName;
   document.getElementById("safetyModalHazard").textContent = hazardLevel;
   document.getElementById("safetyModalRemarks").value = "";
+  if (typeof resetChecklist === "function") {
+    resetChecklist("dish", 4);
+  }
   document.getElementById("safetyModal").style.display = "flex";
 }
 
 async function submitSafetyDecision(decision) {
   if (!activeAppId) return;
   const remarks = document.getElementById("safetyModalRemarks").value.trim();
+
+  if (decision === "Approved") {
+    const checkboxes = document.querySelectorAll(".dish-chk");
+    const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+    if (checkboxes.length > 0 && checked < checkboxes.length) {
+      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} industrial safety checklist items before endorsing the safety blueprint.`);
+      return;
+    }
+  }
 
   try {
     const res = await api(`/api/applications/${activeAppId}/stage-decision`, {

@@ -115,3 +115,53 @@ function escapeHtml(str) {
 if (typeof window !== "undefined") {
   window.escapeHtml = escapeHtml;
 }
+
+/**
+ * Universal Statutory Checklist Helpers for Officer Dashboards
+ */
+function updateChecklistCounter(prefix, total) {
+  const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
+  const totalCount = total || checkboxes.length || 1;
+  const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+  const counterEl = document.getElementById(`${prefix}ChecklistCounter`);
+  if (counterEl) {
+    if (checked === totalCount) {
+      counterEl.textContent = `✅ ${checked} of ${totalCount} verified (100%)`;
+      counterEl.style.color = "#15803d";
+      counterEl.style.fontWeight = "700";
+    } else {
+      counterEl.textContent = `${checked} of ${totalCount} verified`;
+      counterEl.style.color = checked > 0 ? "#2563eb" : "#b45309";
+      counterEl.style.fontWeight = "600";
+    }
+  }
+
+  const btn = document.getElementById(`${prefix}ToggleBtn`);
+  if (btn) {
+    btn.textContent = (checked === totalCount && totalCount > 0) ? "Deselect All" : "Select All";
+  }
+}
+
+function toggleAllChecklist(prefix, total, btn) {
+  const targetBtn = btn || document.getElementById(`${prefix}ToggleBtn`);
+  const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
+  const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+  checkboxes.forEach((cb) => (cb.checked = !allChecked));
+  if (targetBtn) targetBtn.textContent = !allChecked ? "Deselect All" : "Select All";
+  updateChecklistCounter(prefix, total || checkboxes.length);
+}
+
+function resetChecklist(prefix, total) {
+  const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
+  checkboxes.forEach((cb) => (cb.checked = false));
+  const btn = document.getElementById(`${prefix}ToggleBtn`);
+  if (btn) btn.textContent = "Select All";
+  updateChecklistCounter(prefix, total || checkboxes.length);
+}
+
+if (typeof window !== "undefined") {
+  window.updateChecklistCounter = updateChecklistCounter;
+  window.toggleAllChecklist = toggleAllChecklist;
+  window.resetChecklist = resetChecklist;
+}
+
