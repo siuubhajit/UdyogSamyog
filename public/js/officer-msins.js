@@ -521,9 +521,13 @@ function openFinalApprovalModal(id, appNo, companyName) {
   document.getElementById("finalApprovalModal").style.display = "flex";
 }
 
-async function submitFinalApexDecision(decision) {
+async function submitFinalApexDecision(decision, explicitRemarks = null) {
   if (!activeAppId) return;
-  const remarks = document.getElementById("finalModalRemarks").value.trim();
+  const remarks =
+    explicitRemarks !== null
+      ? explicitRemarks
+      : document.getElementById("finalModalRemarks")?.value.trim() ||
+        document.getElementById("decisionRemarks")?.value.trim();
 
   try {
     const res = await api(`/api/applications/${activeAppId}/stage-decision`, {
@@ -538,11 +542,30 @@ async function submitFinalApexDecision(decision) {
     });
 
     alert(`Success: ${res.message}`);
+    closeDecisionModal();
     closeModals();
     await loadApplications();
   } catch (err) {
     alert("Action failed: " + err.message);
   }
+}
+
+function closeDecisionModal() {
+  const m = document.getElementById("decisionModal");
+  if (m) m.style.display = "none";
+  closeModals();
+}
+
+async function submitApexFinal(decision = "Approved") {
+  const remarks =
+    document.getElementById("decisionRemarks")?.value.trim() ||
+    document.getElementById("finalModalRemarks")?.value.trim() ||
+    `Final Single-Window Statutory Clearance granted by Directorate of Industries & State Innovation Society Apex Authority.`;
+  await submitFinalApexDecision(decision, remarks);
+}
+
+async function submitApexDecision(decision) {
+  await submitApexFinal(decision);
 }
 
 let activeBanEnterpriseId = null;
@@ -779,6 +802,9 @@ window.setBanChip = setBanChip;
 window.submitBanEnterprise = submitBanEnterprise;
 window.submitBan = submitBan;
 window.closeModals = closeModals;
+window.closeDecisionModal = closeDecisionModal;
+window.submitApexFinal = submitApexFinal;
+window.submitApexDecision = submitApexDecision;
 window.resetFilters = resetFilters;
 window.runPsiCalc = runPsiCalc;
 

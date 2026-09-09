@@ -215,7 +215,6 @@ function fillSampleEnterprise() {
   }
 }
 
-// Registration OTP Dispatch with 90-Second Timer & Resend
 // Registration OTP Dispatch with 90-Second Timer & Resend Cooldown
 let isRegEmailVerified = false;
 let regOtpTimerInterval = null;
@@ -233,7 +232,6 @@ function startRegOtpCountdown() {
   const sendBtn = document.getElementById("btnSendRegOtp");
   if (resendBtn) {
     resendBtn.disabled = true;
-    resendBtn.style.opacity = "0.5";
     resendBtn.style.opacity = "0.6";
     resendBtn.style.cursor = "not-allowed";
     resendBtn.textContent = `⏳ Resend in ${regOtpCooldownRemaining}s`;
@@ -250,11 +248,6 @@ function startRegOtpCountdown() {
     }
     updateRegOtpTimerDisplay(false);
 
-    // Enable Resend button after 15 seconds cooldown
-    if (regOtpTimeRemaining <= 75 && resendBtn && resendBtn.disabled) {
-      resendBtn.disabled = false;
-      resendBtn.style.opacity = "1";
-      resendBtn.style.cursor = "pointer";
     // Active decreasing countdown on resend buttons
     if (regOtpCooldownRemaining > 0) {
       if (resendBtn) {
@@ -295,7 +288,6 @@ function startRegOtpCountdown() {
       }
       const otpStatus = document.getElementById("regOtpStatus");
       if (otpStatus && !isRegEmailVerified) {
-        otpStatus.innerHTML = `<span style="color: var(--ruby); font-weight: 700;">⚠️ OTP expired (1 min 30 sec limit). Please click "🔄 Resend OTP" to request a fresh code.</span>`;
         otpStatus.innerHTML = `<span style="color: var(--ruby); font-weight: 700;">⚠️ One-Time Password expired (1 min 30 sec limit). Please click "🔄 Resend OTP" to request a fresh code.</span>`;
       }
     }
@@ -358,9 +350,8 @@ async function handleSendRegOtp(isResend = false) {
       btn.textContent = isResend ? "Resending..." : "Sending...";
     }
     if (otpStatus) {
-      otpStatus.innerHTML = `<span style="color: var(--navy); font-weight: 600;">⏳ Connecting to Gmail SMTP & dispatching OTP to <b>${email}</b>...</span>`;
       const safeEmail = typeof escapeHtml === "function" ? escapeHtml(email) : email;
-      otpStatus.innerHTML = `<span style="color: var(--navy); font-weight: 600;">⏳ Connecting to Gmail SMTP & dispatching OTP to <b>${safeEmail}</b>...</span>`;
+      otpStatus.innerHTML = `<span style="color: var(--navy); font-weight: 600;">⏳ Connecting to Gmail SMTP & dispatching One-Time Password to <b>${safeEmail}</b>...</span>`;
     }
 
     const res = await api("/api/otp/send", {
@@ -387,17 +378,14 @@ async function handleSendRegOtp(isResend = false) {
       const safeDevOtp = typeof escapeHtml === "function" ? escapeHtml(res.devOtp) : res.devOtp;
       otpStatus.innerHTML = `
         <div class="dev-otp-pill">
-          <span><b>OTP Sent!</b> (Dev Mode: <b>${res.devOtp}</b>)</span>
-          <button type="button" class="btn outline sm" style="padding: 2px 8px; font-size: 0.72rem;" onclick="autofillRegOtp('${res.devOtp}')">Auto-fill</button>
-          <span><b>OTP Sent!</b> (Dev Mode: <b>${safeDevOtp}</b>)</span>
+          <span><b>One-Time Password Sent!</b> (Dev Mode: <b>${safeDevOtp}</b>)</span>
           <button type="button" class="btn outline sm" style="padding: 2px 8px; font-size: 0.72rem;" onclick="autofillRegOtp('${safeDevOtp}')">Auto-fill</button>
         </div>
       `;
     } else {
       otpStatus.innerHTML = `
         <div style="color: var(--emerald); font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 8px 12px;">
-          ✓ OTP dispatched via Gmail to <b>${res.recipient || email}</b>!
-          ✓ OTP dispatched via Gmail to <b>${safeRecipient}</b>!
+          ✓ One-Time Password dispatched via Gmail to <b>${safeRecipient}</b>!
           <div style="color: #065f46; font-size: 0.76rem; font-weight: normal; margin-top: 3px;">
             Please check your inbox & spam folder. Code is valid for <b>1 minute 30 seconds</b>.
           </div>
@@ -419,13 +407,12 @@ async function handleSendRegOtp(isResend = false) {
     if (otpStatus) {
       otpStatus.innerHTML = `
         <div style="color: var(--ruby); font-weight: 700; background: #fee2e2; border: 1px solid #f87171; border-radius: 6px; padding: 8px 12px; margin-top: 4px;">
-          ✕ ${errMsg}
           ✕ ${safeErrMsg}
         </div>
       `;
     }
     show("regmsg", errMsg);
-    alert("OTP Dispatch Error:\n\n" + errMsg);
+    alert("One-Time Password Dispatch Error:\n\n" + errMsg);
   }
 }
 
@@ -447,7 +434,7 @@ async function handleVerifyRegOtp() {
 
   if (!otp || otp.length < 6) {
     alert(
-      "Please enter the full 6-digit verification OTP received on your email.",
+      "Please enter the full 6-digit verification One-Time Password received on your email.",
     );
     document.getElementById("regOtpInput")?.focus();
     return;
@@ -479,21 +466,19 @@ async function handleVerifyRegOtp() {
       timerPill.innerHTML = "✓ Verified";
     }
 
-    otpStatus.innerHTML = `<span style="color: var(--emerald); font-weight: 700;">✓ Official Email Verified for Udyog Samyog Enterprise Account (${email})</span>`;
     const safeEmail = typeof escapeHtml === "function" ? escapeHtml(email) : email;
     otpStatus.innerHTML = `<span style="color: var(--emerald); font-weight: 700;">✓ Official Email Verified for Udyog Samyog Enterprise Account (${safeEmail})</span>`;
   } catch (err) {
     verifyBtn.disabled = false;
     verifyBtn.textContent = "Verify OTP ✓";
-    const errMsg = err.message || "OTP verification failed.";
+    const errMsg = err.message || "One-Time Password verification failed.";
     const safeErrMsg = typeof escapeHtml === "function" ? escapeHtml(errMsg) : errMsg;
     otpStatus.innerHTML = `
       <div style="color: var(--ruby); font-weight: 700; background: #fee2e2; border: 1px solid #f87171; border-radius: 6px; padding: 8px 12px; margin-top: 4px;">
-        ✕ ${errMsg}
         ✕ ${safeErrMsg}
       </div>
     `;
-    alert("OTP Verification Failed:\n\n" + errMsg);
+    alert("One-Time Password Verification Failed:\n\n" + errMsg);
   }
 }
 
@@ -763,8 +748,6 @@ async function handleSendForgotOtp() {
   }
 
   try {
-    btn.disabled = true;
-    btn.textContent = "Sending...";
     if (btn) {
       btn.disabled = true;
       btn.textContent = "Sending...";
@@ -774,28 +757,21 @@ async function handleSendForgotOtp() {
       body: JSON.stringify({ email }),
     });
 
-    otpGroup.style.display = "block";
-    btn.textContent = "Resend OTP";
-    btn.disabled = false;
     if (otpGroup) otpGroup.style.display = "block";
     startForgotOtpCountdown();
 
     if (res.devOtp) {
       show(
         "forgotmsg",
-        `OTP Dispatched! (Dev Mode: ${res.devOtp}) - Enter OTP below along with new password.`,
         `One-Time Password Dispatched! (Dev Mode: ${res.devOtp}) - Enter code below along with your new password.`,
         true,
       );
-      document.getElementById("forgotOtp").value = res.devOtp;
       const forgotInp = document.getElementById("forgotOtp");
       if (forgotInp) forgotInp.value = res.devOtp;
     } else {
       show("forgotmsg", res.message, true);
     }
   } catch (err) {
-    btn.disabled = false;
-    btn.textContent = "Send OTP ✉";
     if (btn) {
       btn.disabled = false;
       btn.textContent = "Send OTP ✉";
@@ -813,7 +789,6 @@ async function handleResetPasswordSubmit() {
   )?.value;
 
   if (!otp) {
-    show("forgotmsg", "Please enter the 6-digit verification OTP.");
     show("forgotmsg", "Please enter the 6-digit verification One-Time Password.");
     return;
   }
