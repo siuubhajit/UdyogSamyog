@@ -386,7 +386,10 @@
               Application: <b id="modalInspectAppNo" style="color:var(--navy);">---</b> · Enterprise: <b id="modalInspectCompany" style="color:var(--navy);">---</b> (GSTIN: <span id="modalInspectGstin">---</span>)
             </div>
           </div>
-          <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <a id="modalInspectVaultBtn" class="btn outline sm" href="#" target="_blank" style="color: var(--navy); border-color: var(--navy); font-weight: 700;">🔍 Open Full Statutory Vault &rarr;</a>
+            <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
+          </div>
         </div>
 
         <!-- Meta info bar -->
@@ -446,7 +449,10 @@
           <div id="modalApexQuickAction">
             <!-- Loaded dynamically: e.g. Grant Clearance button or status notice -->
           </div>
-          <button type="button" class="btn outline sm" onclick="closeModals()">Close Dossier</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <a id="modalInspectVaultBtnFooter" class="btn outline sm" href="#" target="_blank" style="color: var(--navy); border-color: var(--navy); font-weight: 700;">🔍 Open Full Statutory Vault &rarr;</a>
+            <button type="button" class="btn outline sm" onclick="closeModals()">Close Dossier</button>
+          </div>
         </div>
       </div>
     </div>

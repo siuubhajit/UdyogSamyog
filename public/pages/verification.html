@@ -67,6 +67,7 @@
         <!-- Main Workspace -->
         <main class="main">
           <!-- Application Header Card -->
+          <!-- Application Header Card: Complete Applying Industry Profile -->
           <div class="panel" style="margin-bottom: 24px">
             <div
               style="
@@ -79,7 +80,7 @@
             >
               <div>
                 <div class="page-pretitle">
-                  Single Window Application Dossier
+                  Single Window Application Dossier &middot; Enterprise Vault
                 </div>
                 <h1
                   style="
@@ -88,6 +89,7 @@
                     display: flex;
                     align-items: center;
                     gap: 10px;
+                    flex-wrap: wrap;
                   "
                 >
                   <span id="headerAppNo">Loading...</span>
@@ -95,7 +97,7 @@
                     >In Progress</span
                   >
                   <span id="headerRiskBadge" class="risk-tag risk-orange"
-                    >Orange Risk</span
+                    >Orange Risk Tier</span
                   >
                 </h1>
                 <p
@@ -117,7 +119,7 @@
                   id="quickAppSelect"
                   onchange="switchApplication(this.value)"
                   style="
-                    min-width: 220px;
+                    min-width: 240px;
                     margin-top: 0;
                     padding: 8px 12px;
                     font-size: 0.85rem;
@@ -128,14 +130,42 @@
               </div>
             </div>
 
-            <!-- Essential Industrial Metrics Bar -->
+            <!-- Applying Enterprise Master Profile & Authorized Signatory Strip -->
+            <div class="industry-info-strip">
+              <div class="industry-info-item">
+                <span class="industry-info-label">👤 Authorized Signatory</span>
+                <span class="industry-info-value" id="headerContactPerson">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">✉️ Official Email</span>
+                <span class="industry-info-value" id="headerEmail">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">📞 Contact Telephone</span>
+                <span class="industry-info-value" id="headerPhone">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">🏭 Plant Site Address</span>
+                <span class="industry-info-value" id="headerLocation">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">📅 Application Filing Date</span>
+                <span class="industry-info-value" id="headerFilingDate">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">⏱️ Statutory Clearance Phase</span>
+                <span class="industry-info-value" id="headerCurrentStage">---</span>
+              </div>
+            </div>
+
+            <!-- Essential Industrial & Environmental Parameters Bar -->
             <div
               style="
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
                 gap: 12px;
-                margin-top: 20px;
-                padding-top: 18px;
+                margin-top: 16px;
+                padding-top: 16px;
                 border-top: 1px solid var(--line);
               "
             >
@@ -153,7 +183,7 @@
                 </div>
               </div>
               <div>
-                <span class="input-hint">Employment</span>
+                <span class="input-hint">Direct Employment</span>
                 <div
                   style="
                     font-weight: 800;
@@ -166,7 +196,7 @@
                 </div>
               </div>
               <div>
-                <span class="input-hint">Land Area</span>
+                <span class="input-hint">Industrial Land Plot</span>
                 <div
                   style="
                     font-weight: 800;
@@ -205,7 +235,7 @@
                 </div>
               </div>
               <div>
-                <span class="input-hint">Hazardous Material</span>
+                <span class="input-hint">Hazardous Classification</span>
                 <div
                   style="
                     font-weight: 800;
@@ -218,7 +248,7 @@
                 </div>
               </div>
               <div>
-                <span class="input-hint">MSME Tier</span>
+                <span class="input-hint">MSME Enterprise Tier</span>
                 <div
                   style="
                     font-weight: 800;
@@ -235,55 +265,83 @@
 
           <!-- Dossier Split Workspace: Left Document Vault vs Right Scrutiny Actions -->
           <div class="dossier-layout">
-            <!-- LEFT COLUMN: Embedded Document Vault & Inline Inspector -->
+            <!-- LEFT COLUMN: Statutory Folder Directory, Document Explorer & PDF Inspector -->
             <div>
               <!-- Departmental Vault Scrutiny Badge & Jurisdiction Banner -->
-              <div id="vaultScopeBanner" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span id="vaultScopeIcon" style="font-size: 1.4rem;">🔒</span>
+              <div id="vaultScopeBanner" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span id="vaultScopeIcon" style="font-size: 1.6rem;">🏛️</span>
                   <div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span style="font-weight: 800; font-size: 0.95rem; color: var(--navy);" id="vaultScopeTitle">Department Scrutiny Vault</span>
-                      <span id="vaultScopeBadge" class="badge blue">Department Vault</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span style="font-weight: 800; font-size: 1.05rem; color: var(--navy);" id="vaultScopeTitle">Apex Multi-Department Scrutiny Vault</span>
+                      <span id="vaultScopeBadge" class="badge blue">Apex Authority · All Statutory Vaults</span>
                     </div>
-                    <div style="font-size: 0.76rem; color: var(--ink-light); margin-top: 2px;" id="vaultScopeSubtitle">
-                      Access restricted to documents and blueprints under your departmental jurisdiction.
+                    <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 3px;" id="vaultScopeSubtitle">
+                      Consolidated statutory oversight across Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, and Fire Services.
                     </div>
                   </div>
-                </div>
-                <!-- Filter Pills for Apex Officer (State Innovation Society) -->
-                <div id="apexDeptFilters" style="display: none; gap: 6px; flex-wrap: wrap;">
-                  <!-- Injected via JavaScript for Apex Officer -->
                 </div>
               </div>
 
-              <div class="doc-viewer-container">
+              <!-- 1. STATUTORY FOLDERS NAVIGATION DIRECTORY -->
+              <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+                    <span>📁</span> <span>Statutory Document Folders</span>
+                  </div>
+                  <span id="vaultFolderSectionSubtitle" style="font-size: 0.75rem; color: var(--ink-light);">Click any folder to inspect blueprints</span>
+                </div>
+                <div class="vault-folder-nav" id="vaultFolderNav">
+                  <!-- Generated dynamically via renderVaultFolders() -->
+                </div>
+              </div>
+
+              <!-- 2. ACTIVE FOLDER EXPLORER PANEL -->
+              <div class="vault-folder-explorer" id="vaultFolderExplorer">
+                <div class="vault-folder-header">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span id="activeFolderIcon" style="font-size: 1.3rem;">📂</span>
+                      <h3 style="margin: 0; font-size: 0.98rem; color: var(--navy);" id="activeFolderTitle">All Technical Blueprints & Dossiers</h3>
+                      <span id="activeFolderCountBadge" class="badge blue">0 Documents</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--ink-light); margin-top: 3px;" id="activeFolderDesc">
+                      Unified statutory repository containing all architectural blueprints, environmental engineering plans, and enterprise proofs.
+                    </div>
+                  </div>
+                </div>
+                <div id="vaultFileList">
+                  <!-- File cards generated dynamically -->
+                </div>
+              </div>
+
+              <!-- 3. ENHANCED PDF & BLUEPRINT INSPECTOR CANVAS -->
+              <div class="doc-viewer-container" id="docViewerContainer">
                 <div class="doc-viewer-header">
                   <div class="doc-viewer-title">
-                    <span>📄</span>
-                    <span id="activeDocTitle"
-                      >Select a submitted document to inspect</span
-                    >
+                    <span id="activeDocIcon">📄</span>
+                    <span id="activeDocTitle">Select a submitted document to inspect</span>
                   </div>
                   <div class="doc-viewer-actions">
-                    <span id="activeDocBadge" class="badge gray">Pending</span>
+                    <span id="activeDocBadge" class="badge gray">Pending Scrutiny</span>
+                    <button type="button" class="btn outline sm" style="color: #ffffff; border-color: #475569;" onclick="reloadDocPreview()" title="Reload PDF Canvas">🔄 Reload</button>
                     <a
                       id="btnDocExternal"
                       class="btn outline sm"
-                      style="color: #ffffff; border-color: #475569"
+                      style="color: #ffffff; border-color: #475569; font-weight: 600;"
                       href="#"
                       target="_blank"
-                      title="Open Full Screen"
-                      >↗ Open</a
+                      title="Open Full Screen in New Tab"
+                      >↗ Open Full Tab</a
                     >
                     <a
                       id="btnDocDownload"
                       class="btn outline sm"
-                      style="color: #ffffff; border-color: #475569"
+                      style="color: #ffffff; border-color: #475569;"
                       href="#"
                       download
-                      title="Download Attachment"
-                      >⬇ Save</a
+                      title="Download Attachment File"
+                      >⬇ Download</a
                     >
                   </div>
                 </div>
@@ -294,28 +352,34 @@
                     id="docFrame"
                     class="doc-frame"
                     src="about:blank"
+                    title="Statutory Blueprint Viewer"
                   ></iframe>
                   <div
                     id="docEmptyNotice"
                     class="doc-empty-state"
                     style="display: none"
                   >
-                    <h3>No Documents Uploaded Yet</h3>
-                    <p>
-                      The applicant has not yet uploaded files to this dossier.
+                    <div style="font-size: 2.2rem; margin-bottom: 8px;">📁</div>
+                    <h3 style="margin-bottom: 6px;">No Documents in Active Vault Scope</h3>
+                    <p style="color: #94a3b8; font-size: 0.82rem;">
+                      Please select a document from the folder list above to inspect.
                     </p>
                   </div>
                 </div>
 
-                <!-- Document Tabs List -->
-                <div class="doc-selector-list" id="docTabsList">
-                  <!-- Injected via JavaScript -->
+                <!-- Document Helper & Fallback Bar -->
+                <div id="docViewerHelper" class="vault-helper-bar">
+                  <span id="docViewerHelperText">ℹ️ High-Resolution Statutory Blueprint Engine Active</span>
+                  <a id="docViewerHelperLink" href="#" target="_blank" style="color: #93c5fd; font-weight: 600; text-decoration: underline;">Open in Dedicated Tab ↗</a>
                 </div>
               </div>
 
-              <!-- Document Verification Scrutiny Box -->
-              <div class="panel" style="margin-top: 18px">
-                <h3 style="margin-bottom: 8px">Document Scrutiny Decision</h3>
+              <!-- 4. DOCUMENT SCRUTINY DECISION CONSOLE -->
+              <div class="panel" style="margin-top: 18px" id="docScrutinyBox">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <h3 style="margin: 0; font-size: 1rem; color: var(--navy);" id="docScrutinyHeading">Document Scrutiny Decision</h3>
+                  <span class="badge blue" id="scrutinyActiveDocName">No Document Selected</span>
+                </div>
                 <p
                   style="
                     font-size: 0.82rem;
@@ -323,18 +387,18 @@
                     margin-bottom: 12px;
                   "
                 >
-                  Verify that the active document complies with Maharashtra
-                  statutory standards.
+                  Verify that the active document complies with Maharashtra statutory standards, setback clearances, and engineering specifications.
                 </p>
-                <label
+                <label style="font-weight: 600; font-size: 0.82rem; color: var(--navy); display: block;"
                   >Officer Scrutiny Remark
                   <input
                     type="text"
                     id="docScrutinyRemark"
                     placeholder="e.g. Setbacks and road access verified per Industrial Development Corporation norms"
+                    style="margin-top: 4px;"
                   />
                 </label>
-                <div style="display: flex; gap: 10px; margin-top: 12px">
+                <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
                   <button
                     class="btn emerald"
                     onclick="verifyActiveDocument('Verified')"
@@ -606,13 +670,80 @@
       let currentDossier = null;
       let activeDocId = null;
       let currentUser = null;
+      let activeFolderKey = "all";
+
+      const STATUTORY_FOLDERS = [
+        {
+          key: "all",
+          name: "All Technical Blueprints & Dossiers",
+          shortName: "All Dossiers",
+          icon: "📂",
+          badgeClass: "badge blue",
+          title: "Master Enterprise Dossier & Technical Blueprints Repository",
+          desc: "Unified statutory repository containing all architectural blueprints, environmental engineering plans, occupational safety schemes, and enterprise proofs deposited by the applicant."
+        },
+        {
+          key: "general",
+          name: "General Statutory Supporting Documents",
+          shortName: "General Supporting",
+          icon: "📁",
+          badgeClass: "badge gray",
+          title: "General Statutory Supporting Documents Vault",
+          desc: "Constitutional and title records including Land Allotment Deed, Detailed Project Feasibility Report (DPR), Incorporation Certificate, and Utility Sanction Letters. Required prior to final single-window clearance."
+        },
+        {
+          key: "mpcb",
+          name: "Maharashtra Pollution Control Board",
+          shortName: "Pollution Control Board",
+          icon: "🌿",
+          badgeClass: "badge green",
+          title: "Maharashtra Pollution Control Board Environmental Vault",
+          desc: "Statutory Environmental Management Plans, Effluent Treatment schemes, stack emission control diagrams, and Water Balance schematics under Water & Air Pollution Control Acts."
+        },
+        {
+          key: "midc",
+          name: "Maharashtra Industrial Development Corporation",
+          shortName: "Industrial Development Corporation",
+          icon: "🏗️",
+          badgeClass: "badge blue",
+          title: "Maharashtra Industrial Development Corporation Civil & Planning Vault",
+          desc: "Civil site boundary surveys, master architectural layout drawings, Floor Space Index computations, and regional infrastructure connection layouts."
+        },
+        {
+          key: "dish",
+          name: "Directorate of Industrial Safety & Health",
+          shortName: "Industrial Safety & Health",
+          icon: "⚙️",
+          badgeClass: "badge saffron",
+          title: "Directorate of Industrial Safety & Health Factory Safety Vault",
+          desc: "Factory floor safety drawings, hazardous chemical containment zones, machinery guarding mechanisms, and occupational health protection blueprints under The Factories Act."
+        },
+        {
+          key: "fire",
+          name: "Directorate of Maharashtra Fire Services",
+          shortName: "Fire Services",
+          icon: "🚒",
+          badgeClass: "badge red",
+          title: "Directorate of Maharashtra Fire Services Vault",
+          desc: "Fire hydrant ring network plans, static fire water tank specifications, riser schematics, and emergency evacuation egress layouts under Maharashtra Fire Prevention & Life Safety Act."
+        }
+      ];
+
+      const DEPT_BADGES = {
+        general: { name: "General Statutory Supporting Documents", icon: "📁", color: "#475569", bg: "#f1f5f9" },
+        mpcb: { name: "Maharashtra Pollution Control Board", icon: "🌿", color: "#166534", bg: "#dcfce7" },
+        midc: { name: "Maharashtra Industrial Development Corporation", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
+        dish: { name: "Directorate of Industrial Safety & Health", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
+        fire: { name: "Directorate of Maharashtra Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
+        other: { name: "General Statutory Supporting Documents", icon: "📁", color: "#475569", bg: "#f1f5f9" }
+      };
 
       function updateVaultScopeBanner() {
         const title = document.getElementById("vaultScopeTitle");
         const badge = document.getElementById("vaultScopeBadge");
         const subtitle = document.getElementById("vaultScopeSubtitle");
         const icon = document.getElementById("vaultScopeIcon");
-        const apexFilters = document.getElementById("apexDeptFilters");
+        const folderSubtitle = document.getElementById("vaultFolderSectionSubtitle");
 
         if (!currentUser) return;
 
@@ -625,13 +756,14 @@
           else if (currentUser.isApex) queueLink.href = "officer-dashboard-msins.html";
         }
 
-        if (currentUser.isApex) {
+        if (currentUser.isApex || currentUser.deptCode === "msins" || currentUser.role === "super_admin") {
           icon.textContent = "🏛️";
           title.textContent = "Apex Multi-Department Scrutiny Vault";
           badge.textContent = "Apex Authority · All Statutory Vaults";
           badge.className = "badge blue";
-          subtitle.textContent = "Consolidated statutory oversight across Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, and Fire Services.";
-          if (apexFilters) apexFilters.style.display = "flex";
+          subtitle.textContent = "Consolidated statutory oversight across Maharashtra Pollution Control Board, Maharashtra Industrial Development Corporation, Directorate of Industrial Safety & Health, and Directorate of Maharashtra Fire Services.";
+          if (folderSubtitle) folderSubtitle.textContent = "Consolidated access across all departmental statutory folders";
+          activeFolderKey = "all";
         } else {
           const dept = currentUser.deptCode || "midc";
           const info = {
@@ -639,31 +771,36 @@
               icon: "🌿",
               title: "Pollution Control Board Environmental Vault",
               badge: "Environmental Vault · Statutory Scrutiny",
-              subtitle: "Restricted strictly to Environmental Management Plans, Effluent Treatment schemes, and Air Emission designs under Pollution Control Board jurisdiction.",
+              subtitle: "Restricted strictly to Environmental Management Plans, Effluent Treatment schemes, and Air Emission designs under Maharashtra Pollution Control Board jurisdiction.",
+              folderSubtitle: "Restricted strictly to Maharashtra Pollution Control Board statutory blueprint folder",
             },
             midc: {
               icon: "🏗️",
               title: "Industrial Development Corporation Civil Vault",
               badge: "Civil & Infrastructure Vault",
-              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under Industrial Development Corporation jurisdiction.",
+              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under Maharashtra Industrial Development Corporation jurisdiction.",
+              folderSubtitle: "Restricted strictly to Maharashtra Industrial Development Corporation statutory blueprint folder",
             },
             dish: {
               icon: "⚙️",
               title: "Directorate of Industrial Safety & Health Factory Safety Vault",
               badge: "Industrial Safety & Health Vault",
-              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under Industrial Safety & Health jurisdiction.",
+              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under Directorate of Industrial Safety & Health jurisdiction.",
+              folderSubtitle: "Restricted strictly to Directorate of Industrial Safety & Health statutory blueprint folder",
             },
             fire: {
               icon: "🚒",
               title: "Directorate of Maharashtra Fire Services Vault",
               badge: "Fire Services Vault · Life Safety Clearance",
-              subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Fire Services jurisdiction.",
+              subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Directorate of Maharashtra Fire Services jurisdiction.",
+              folderSubtitle: "Restricted strictly to Directorate of Maharashtra Fire Services statutory blueprint folder",
             },
           }[dept] || {
             icon: "🔒",
             title: "Department Scrutiny Vault",
             badge: "Department Vault",
             subtitle: "Restricted strictly to documents under your departmental jurisdiction.",
+            folderSubtitle: "Restricted strictly to your department's statutory blueprint folder",
           };
 
           icon.textContent = info.icon;
@@ -671,8 +808,18 @@
           badge.textContent = info.badge;
           badge.className = "badge orange";
           subtitle.textContent = info.subtitle;
-          if (apexFilters) apexFilters.style.display = "none";
+          if (folderSubtitle) folderSubtitle.textContent = info.folderSubtitle;
+          activeFolderKey = dept;
         }
+      }
+
+      function getAvailableFolders() {
+        if (!currentUser || currentUser.isApex || currentUser.deptCode === "msins" || currentUser.role === "super_admin") {
+          return STATUTORY_FOLDERS;
+        }
+        const dept = currentUser.deptCode || "midc";
+        const matched = STATUTORY_FOLDERS.filter((f) => f.key === dept);
+        return matched.length > 0 ? matched : STATUTORY_FOLDERS;
       }
 
       async function init() {
@@ -719,21 +866,335 @@
         location = `verification.html?id=${id}`;
       }
 
-      async function loadDossier(id) {
+      function getDocDepartment(d) {
+        if (!d) return "general";
+        const plan = (d.plan_type || "").toLowerCase();
+        if (plan === "supporting_doc") return "general";
+        if (plan === "environmental_plan") return "mpcb";
+        if (plan === "civil_plan") return "midc";
+        if (plan === "factory_safety_plan") return "dish";
+        if (plan === "fire_safety_plan") return "fire";
+
+        const dept = (d.department || "").toLowerCase();
+        if (dept === "general" || dept === "msins") return "general";
+        if (dept === "mpcb") return "mpcb";
+        if (dept === "midc") return "midc";
+        if (dept === "dish") return "dish";
+        if (dept === "fire") return "fire";
+
+        const text = `${d.document_type || ""} ${d.original_name || ""}`.toLowerCase();
+        if (
+          text.includes("environment") ||
+          text.includes("effluent") ||
+          text.includes("etp") ||
+          text.includes("air emission") ||
+          text.includes("water balance") ||
+          text.includes("pollution")
+        ) {
+          return "mpcb";
+        }
+        if (
+          text.includes("civil") ||
+          text.includes("site layout") ||
+          text.includes("building") ||
+          text.includes("fsi") ||
+          text.includes("setback")
+        ) {
+          return "midc";
+        }
+        if (
+          text.includes("factory") ||
+          text.includes("safety layout") ||
+          text.includes("machinery") ||
+          text.includes("occupational")
+        ) {
+          return "dish";
+        }
+        if (
+          text.includes("fire") ||
+          text.includes("hydrant") ||
+          text.includes("evacuation") ||
+          text.includes("sprinkler")
+        ) {
+          return "fire";
+        }
+
+        return "general";
+      }
+
+      function renderVaultFolders() {
+        const container = document.getElementById("vaultFolderNav");
+        if (!container || !currentDossier) return;
+
+        const docs = currentDossier.documents || [];
+        const availableFolders = getAvailableFolders();
+
+        // Ensure activeFolderKey is one of the available folders
+        if (!availableFolders.some((f) => f.key === activeFolderKey)) {
+          activeFolderKey = availableFolders[0].key;
+        }
+
+        container.innerHTML = availableFolders.map((f) => {
+          let folderDocs = docs;
+          if (f.key !== "all") {
+            folderDocs = docs.filter((d) => getDocDepartment(d) === f.key);
+          }
+          const count = folderDocs.length;
+          const verifiedCount = folderDocs.filter((d) => d.verification_status === "Verified").length;
+          const deficientCount = folderDocs.filter((d) => d.verification_status === "Deficient").length;
+
+          let statusPill = "";
+          if (count === 0) {
+            statusPill = `<span class="badge gray" style="font-size: 0.65rem; padding: 2px 6px;">Empty</span>`;
+          } else if (deficientCount > 0) {
+            statusPill = `<span class="badge red" style="font-size: 0.65rem; padding: 2px 6px;">⚠️ ${deficientCount} Deficient</span>`;
+          } else if (verifiedCount === count) {
+            statusPill = `<span class="badge green" style="font-size: 0.65rem; padding: 2px 6px;">✓ All Verified</span>`;
+          } else {
+            statusPill = `<span class="badge orange" style="font-size: 0.65rem; padding: 2px 6px;">⏳ ${count - verifiedCount} Pending</span>`;
+          }
+
+          const isActive = activeFolderKey === f.key;
+
+          return `
+            <div class="vault-folder-card ${isActive ? "active" : ""}" onclick="openVaultFolder('${f.key}')">
+              <div class="vault-folder-top">
+                <span class="vault-folder-icon">${f.icon}</span>
+                ${statusPill}
+              </div>
+              <div class="vault-folder-name">${f.shortName}</div>
+              <div class="vault-folder-meta">
+                <span>${count} ${count === 1 ? "File" : "Files"}</span>
+                <span style="font-weight: 700; color: ${isActive ? "var(--navy)" : "#94a3b8"};">${isActive ? "Active 📂" : "Open &rarr;"}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function openVaultFolder(key) {
+        const availableFolders = getAvailableFolders();
+        const validFolder = availableFolders.find((f) => f.key === key);
+        activeFolderKey = validFolder ? validFolder.key : availableFolders[0].key;
+
+        renderVaultFolders();
+        renderFolderExplorer();
+
+        // If current active document is not in this folder, pick the first document in this folder
+        const docs = currentDossier ? (currentDossier.documents || []) : [];
+        const folderDocs = activeFolderKey === "all" ? docs : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
+
+        if (folderDocs.length > 0) {
+          const isDocInFolder = folderDocs.some((d) => d.id === activeDocId);
+          if (!isDocInFolder) {
+            selectDocument(folderDocs[0].id);
+          }
+        } else {
+          showEmptyDocumentViewer();
+        }
+      }
+
+      function renderFolderExplorer() {
+        const availableFolders = getAvailableFolders();
+        const folder = availableFolders.find((f) => f.key === activeFolderKey) || availableFolders[0];
+        const docs = currentDossier ? (currentDossier.documents || []) : [];
+        const folderDocs = activeFolderKey === "all" ? docs : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
+
+        document.getElementById("activeFolderIcon").textContent = folder.icon;
+        document.getElementById("activeFolderTitle").textContent = folder.name;
+        document.getElementById("activeFolderDesc").textContent = folder.desc;
+        document.getElementById("activeFolderCountBadge").textContent = `${folderDocs.length} ${folderDocs.length === 1 ? "Document" : "Documents"}`;
+
+        const list = document.getElementById("vaultFileList");
+        if (folderDocs.length === 0) {
+          list.innerHTML = `
+            <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 28px 16px; text-align: center;">
+              <div style="font-size: 2.2rem; margin-bottom: 6px;">${folder.icon}</div>
+              <h4 style="color: var(--navy); margin-bottom: 4px; font-size: 0.95rem;">No Blueprints Uploaded in this Category</h4>
+              <p style="font-size: 0.8rem; color: var(--ink-light); margin: 0; max-width: 480px; margin-left: auto; margin-right: auto;">
+                The applying enterprise has not deposited statutory plans or records under <b>${folder.name}</b> yet.
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = folderDocs.map((doc) => {
+          const dept = getDocDepartment(doc);
+          const badge = DEPT_BADGES[dept] || DEPT_BADGES.general;
+          const isVerified = doc.verification_status === "Verified";
+          const isDeficient = doc.verification_status === "Deficient";
+          const statusBadge = isVerified
+            ? `<span class="badge green">✓ Verified</span>`
+            : isDeficient
+              ? `<span class="badge red">⚠️ Deficient</span>`
+              : `<span class="badge orange">⏳ Pending Scrutiny</span>`;
+          const isSelected = doc.id === activeDocId;
+
+          return `
+            <div class="vault-file-card ${isSelected ? "active" : ""}" id="fileCard_${doc.id}">
+              <div class="vault-file-info" onclick="selectDocument(${doc.id})" style="cursor: pointer;">
+                <div class="vault-file-title">
+                  <span>📄</span>
+                  <span style="word-break: break-all;">${escapeHtml(doc.original_name)}</span>
+                  ${statusBadge}
+                </div>
+                <div class="vault-file-sub">
+                  <span style="background: ${badge.bg}; color: ${badge.color}; font-weight: 700; padding: 1px 6px; border-radius: 3px; font-size: 0.7rem;">
+                    ${badge.icon} ${badge.name}
+                  </span>
+                  <span><b>Category:</b> ${escapeHtml(doc.document_type || "Mandatory Blueprint")}</span>
+                  <span><b>Size:</b> ${formatBytes(doc.size)}</span>
+                  <span><b>Uploaded:</b> ${doc.created_at ? new Date(doc.created_at).toLocaleDateString() : "Submitted"}</span>
+                </div>
+                ${
+                  doc.officer_remarks
+                    ? `<div style="font-size: 0.75rem; color: #334155; margin-top: 6px; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--navy);">
+                        <b>Scrutiny Remark:</b> ${escapeHtml(doc.officer_remarks)}
+                       </div>`
+                    : ""
+                }
+              </div>
+              <div class="vault-file-actions">
+                <button class="btn sm ${isSelected ? "navy" : "outline"}" onclick="selectDocument(${doc.id})">
+                  👁️ Inspect in Viewer
+                </button>
+                <a class="btn outline sm" href="/api/documents/${doc.id}/view" target="_blank" title="Open Full Screen">
+                  ↗ Open Full Tab
+                </a>
+                <a class="btn outline sm" href="/api/documents/${doc.id}" download title="Download Attachment">
+                  ⬇ Download
+                </a>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function selectDocument(docId) {
+        activeDocId = docId;
+        const docs = currentDossier ? (currentDossier.documents || []) : [];
+        const doc = docs.find((d) => d.id === docId);
+        if (!doc) return;
+
+        // If non-Apex officer, ensure doc belongs to their department
+        if (currentUser && !currentUser.isApex && currentUser.deptCode && currentUser.deptCode !== "msins") {
+          const docDept = getDocDepartment(doc);
+          if (docDept !== currentUser.deptCode) {
+            showEmptyDocumentViewer();
+            return;
+          }
+        }
+
+        // Update active file card highlighting
+        document.querySelectorAll(".vault-file-card").forEach((c) => c.classList.remove("active"));
+        const activeCard = document.getElementById(`fileCard_${docId}`);
+        if (activeCard) activeCard.classList.add("active");
+
+        const dept = getDocDepartment(doc);
+        const badge = DEPT_BADGES[dept] || DEPT_BADGES.general;
+
+        // Update Viewer Header
+        const titleEl = document.getElementById("activeDocTitle");
+        titleEl.innerHTML = `
+          <span style="background:${badge.bg}; color:${badge.color}; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700; margin-right:6px;">
+            ${badge.icon} ${badge.name}
+          </span>
+          <span><b>${escapeHtml(doc.original_name)}</b> (${formatBytes(doc.size)})</span>
+        `;
+
+        const statusBadge = document.getElementById("activeDocBadge");
+        const isVerified = doc.verification_status === "Verified";
+        const isDeficient = doc.verification_status === "Deficient";
+        statusBadge.textContent = doc.verification_status || "Pending Scrutiny";
+        statusBadge.className = `badge ${isVerified ? "green" : isDeficient ? "red" : "orange"}`;
+
+        // Action links
+        document.getElementById("btnDocExternal").href = `/api/documents/${doc.id}/view`;
+        document.getElementById("btnDocDownload").href = `/api/documents/${doc.id}`;
+
+        // Canvas iframe
+        const frame = document.getElementById("docFrame");
+        const emptyNotice = document.getElementById("docEmptyNotice");
+        frame.style.display = "block";
+        emptyNotice.style.display = "none";
+        frame.src = `/api/documents/${doc.id}/view#toolbar=1&navpanes=0&view=FitH`;
+
+        // Helper bar
+        document.getElementById("docViewerHelperText").innerHTML = `
+          <span>Viewing: <b>${escapeHtml(doc.original_name)}</b> · Technical Blueprint Canvas Active</span>
+        `;
+        document.getElementById("docViewerHelperLink").href = `/api/documents/${doc.id}/view`;
+
+        // Scrutiny decision box
+        document.getElementById("scrutinyActiveDocName").textContent = doc.original_name;
+        document.getElementById("docScrutinyRemark").value = doc.officer_remarks || "";
+      }
+
+      function showEmptyDocumentViewer() {
+        activeDocId = null;
+        const frame = document.getElementById("docFrame");
+        const emptyNotice = document.getElementById("docEmptyNotice");
+        frame.style.display = "none";
+        frame.src = "about:blank";
+        emptyNotice.style.display = "block";
+        document.getElementById("activeDocTitle").textContent = "No document selected";
+        document.getElementById("activeDocBadge").textContent = "No Document";
+        document.getElementById("activeDocBadge").className = "badge gray";
+        document.getElementById("btnDocExternal").href = "#";
+        document.getElementById("btnDocDownload").href = "#";
+        document.getElementById("docViewerHelperText").textContent = "No active document in viewer canvas";
+        document.getElementById("docViewerHelperLink").href = "#";
+        document.getElementById("scrutinyActiveDocName").textContent = "No Document Selected";
+        document.getElementById("docScrutinyRemark").value = "";
+      }
+
+      function reloadDocPreview() {
+        if (!activeDocId) return;
+        const frame = document.getElementById("docFrame");
+        frame.src = `/api/documents/${activeDocId}/view?t=${Date.now()}#toolbar=1&navpanes=0&view=FitH`;
+      }
+
+      async function loadDossier(id, autoSelect = true) {
         try {
           const d = await api(`/api/applications/${id}`);
           currentDossier = d;
 
           // Header Info
           document.getElementById("headerAppNo").textContent = d.application_no;
-          document.getElementById("headerCompanyName").textContent =
-            d.company_name;
-          document.getElementById("headerRegNo").textContent =
-            d.registration_no || "GSTIN-PENDING";
-          document.getElementById("headerSector").textContent =
-            d.industry_category || "General Manufacturing";
-          document.getElementById("headerDistrict").textContent =
-            `${d.district || "Pune"} (${d.location || ""})`;
+          document.getElementById("headerCompanyName").textContent = d.company_name;
+          document.getElementById("headerRegNo").textContent = d.registration_no || "GSTIN-PENDING";
+          document.getElementById("headerSector").textContent = d.industry_category || "General Manufacturing";
+          document.getElementById("headerDistrict").textContent = `${d.district || "Pune"} (${d.location || ""})`;
+
+          // Applying Enterprise Profile & Authorized Signatory Strip
+          if (document.getElementById("headerContactPerson")) {
+            document.getElementById("headerContactPerson").textContent = d.contact_person || "Authorized Signatory";
+          }
+          if (document.getElementById("headerEmail")) {
+            document.getElementById("headerEmail").textContent = d.applicant_email || d.email || "---";
+          }
+          if (document.getElementById("headerPhone")) {
+            document.getElementById("headerPhone").textContent = d.applicant_phone || d.phone || "---";
+          }
+          if (document.getElementById("headerLocation")) {
+            document.getElementById("headerLocation").textContent = `${d.location || "Industrial Zone"}, ${d.district || "Maharashtra"}`;
+          }
+          if (document.getElementById("headerFilingDate")) {
+            document.getElementById("headerFilingDate").textContent = d.created_at
+              ? new Date(d.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+              : "Recorded";
+          }
+          if (document.getElementById("headerCurrentStage")) {
+            const stageNameMap = {
+              mpcb: "Phase 1: Maharashtra Pollution Control Board Review",
+              parallel: "Phase 2: Simultaneous Departmental Scrutiny",
+              msins: "Phase 3: Consolidated Apex Approval (Maharashtra State Innovation Society)",
+              approved: "Single-Window Statutory Clearance Issued",
+              rejected: "Application Rejected"
+            };
+            document.getElementById("headerCurrentStage").textContent = stageNameMap[d.current_stage] || d.current_stage || "Statutory Scrutiny";
+          }
 
           // Status & Risk Badges
           const statusBadge = document.getElementById("headerStatusBadge");
@@ -763,25 +1224,34 @@
           riskBadge.className = `risk-tag ${d.risk_tier === "Red" ? "risk-red" : d.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
 
           // Industrial Metrics
-          document.getElementById("paramCost").textContent = d.project_cost
-            ? `₹${d.project_cost} Cr`
-            : "---";
-          document.getElementById("paramEmp").textContent =
-            d.employment_potential ? `${d.employment_potential} Pers.` : "---";
-          document.getElementById("paramLand").textContent =
-            `${d.land_size} Acres`;
-          document.getElementById("paramWater").textContent =
-            `${d.water_use} KL/day`;
-          document.getElementById("paramPower").textContent =
-            `${d.electricity} kVA`;
-          document.getElementById("paramHazard").textContent = d.hazardous
-            ? "Yes (Hazardous Waste Handling Authorization)"
-            : "Non-Hazardous";
-          document.getElementById("paramMsme").textContent =
-            d.msme_category || "Small";
+          document.getElementById("paramCost").textContent = d.project_cost ? `₹${d.project_cost} Cr` : "---";
+          document.getElementById("paramEmp").textContent = d.employment_potential ? `${d.employment_potential} Persons` : "---";
+          document.getElementById("paramLand").textContent = `${d.land_size} Acres`;
+          document.getElementById("paramWater").textContent = `${d.water_use} KL/day`;
+          document.getElementById("paramPower").textContent = `${d.electricity} kVA`;
+          document.getElementById("paramHazard").textContent = d.hazardLevel || (d.hazardous ? "Chemical Hazard (High Risk)" : "Non-Hazardous / Low Risk");
+          document.getElementById("paramMsme").textContent = d.msme_category || "Small";
 
-          // Documents Rendering
-          renderDocuments(d.documents || []);
+          // Statutory Folders & Explorer
+          renderVaultFolders();
+          renderFolderExplorer();
+
+          const availableFolders = getAvailableFolders();
+          if (!availableFolders.some((f) => f.key === activeFolderKey)) {
+            activeFolderKey = availableFolders[0].key;
+          }
+
+          const docs = d.documents || [];
+          const currentFolderDocs = activeFolderKey === "all"
+            ? docs
+            : docs.filter((doc) => getDocDepartment(doc) === activeFolderKey);
+
+          if (autoSelect && currentFolderDocs.length > 0) {
+            const hasDoc = currentFolderDocs.some((x) => x.id === activeDocId);
+            selectDocument(hasDoc ? activeDocId : currentFolderDocs[0].id);
+          } else if (currentFolderDocs.length === 0) {
+            showEmptyDocumentViewer();
+          }
 
           // Clearances Rendering
           renderClearances(d.clearances || []);
@@ -803,161 +1273,6 @@
         }
       }
 
-      let currentDeptFilter = "all";
-
-      function setDocFilter(dept) {
-        currentDeptFilter = dept;
-        if (currentDossier) {
-          renderDocuments(currentDossier.documents || []);
-        }
-      }
-
-      function getDocDepartment(d) {
-        if (!d) return "other";
-        if (d.department) return d.department;
-        const plan = d.plan_type || "";
-        if (plan === "environmental_plan") return "mpcb";
-        if (plan === "civil_plan") return "midc";
-        if (plan === "factory_safety_plan") return "dish";
-        if (plan === "fire_safety_plan") return "fire";
-        const text = `${d.document_type || ""} ${d.original_name || ""}`.toLowerCase();
-        if (text.includes("environment") || text.includes("effluent") || text.includes("etp") || text.includes("water") || text.includes("air") || text.includes("mpcb")) return "mpcb";
-        if (text.includes("civil") || text.includes("site") || text.includes("layout") || text.includes("building") || text.includes("midc")) return "midc";
-        if (text.includes("safety") || text.includes("factory") || text.includes("machinery") || text.includes("hazard") || text.includes("dish")) return "dish";
-        if (text.includes("fire") || text.includes("hydrant") || text.includes("evacuation") || text.includes("sprinkler")) return "fire";
-        return "other";
-      }
-
-      const DEPT_BADGES = {
-        mpcb: { name: "Pollution Control Board", icon: "🌿", color: "#166534", bg: "#dcfce7" },
-        midc: { name: "Industrial Development Corporation", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
-        dish: { name: "Industrial Safety & Health", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
-        fire: { name: "Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
-        other: { name: "General Supporting Vault", icon: "📄", color: "#475569", bg: "#f1f5f9" },
-      };
-
-      function renderDocuments(allDocs) {
-        const tabsContainer = document.getElementById("docTabsList");
-        const docFrame = document.getElementById("docFrame");
-        const docEmpty = document.getElementById("docEmptyNotice");
-        const apexFilters = document.getElementById("apexDeptFilters");
-
-        // Populate filter pills for State Innovation Society Apex Officer
-        if (currentUser && currentUser.isApex && apexFilters) {
-          const counts = { all: allDocs.length, mpcb: 0, midc: 0, dish: 0, fire: 0 };
-          allDocs.forEach((d) => {
-            const dept = getDocDepartment(d);
-            if (counts[dept] !== undefined) counts[dept]++;
-          });
-
-          apexFilters.innerHTML = `
-            <button class="btn sm ${currentDeptFilter === "all" ? "navy" : "outline"}" onclick="setDocFilter('all')" style="font-size: 0.72rem; padding: 3px 8px;">All Dossiers (${counts.all})</button>
-            <button class="btn sm ${currentDeptFilter === "mpcb" ? "emerald" : "outline"}" onclick="setDocFilter('mpcb')" style="font-size: 0.72rem; padding: 3px 8px;">🌿 Pollution Control (${counts.mpcb})</button>
-            <button class="btn sm ${currentDeptFilter === "midc" ? "blue" : "outline"}" onclick="setDocFilter('midc')" style="font-size: 0.72rem; padding: 3px 8px;">🏗️ Industrial Dev (${counts.midc})</button>
-            <button class="btn sm ${currentDeptFilter === "dish" ? "saffron" : "outline"}" onclick="setDocFilter('dish')" style="font-size: 0.72rem; padding: 3px 8px;">⚙️ Industrial Safety (${counts.dish})</button>
-            <button class="btn sm ${currentDeptFilter === "fire" ? "rust" : "outline"}" onclick="setDocFilter('fire')" style="font-size: 0.72rem; padding: 3px 8px;">🚒 Fire Services (${counts.fire})</button>
-          `;
-        }
-
-        // Apply departmental isolation
-        let filteredDocs = allDocs;
-        if (!currentUser || !currentUser.isApex) {
-          const dept = currentUser ? currentUser.deptCode : null;
-          if (dept) {
-            filteredDocs = allDocs.filter((d) => getDocDepartment(d) === dept);
-          }
-        } else if (currentDeptFilter !== "all") {
-          filteredDocs = allDocs.filter((d) => getDocDepartment(d) === currentDeptFilter);
-        }
-
-        if (filteredDocs.length === 0) {
-          docFrame.style.display = "none";
-          docEmpty.style.display = "block";
-          const deptLabel = !currentUser.isApex
-            ? DEPT_BADGES[currentUser.deptCode]?.name || "Your Department"
-            : currentDeptFilter.toUpperCase();
-          docEmpty.innerHTML = `
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">📁</div>
-            <h3 style="margin-bottom: 6px;">No Documents in Active Vault Scope</h3>
-            <p style="color: var(--ink-light); font-size: 0.82rem;">
-              No plans or blueprints uploaded for <b>${deptLabel}</b> in this application dossier.
-            </p>
-          `;
-          tabsContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.78rem; padding: 6px;">No documents available in this vault.</span>`;
-          document.getElementById("activeDocTitle").textContent = "No document available";
-          activeDocId = null;
-          return;
-        }
-
-        docFrame.style.display = "block";
-        docEmpty.style.display = "none";
-
-        // Generate tabs
-        tabsContainer.innerHTML = filteredDocs
-          .map((doc, idx) => {
-            const dept = getDocDepartment(doc);
-            const badge = DEPT_BADGES[dept] || DEPT_BADGES.other;
-            return `
-            <button class="doc-selector-tab ${idx === 0 ? "active" : ""}" id="docTab_${doc.id}" onclick="selectDocument(${doc.id})">
-              <span style="font-size: 1.15rem;">${badge.icon}</span>
-              <div style="flex: 1; text-align: left; overflow: hidden; min-width: 0;">
-                <div style="font-weight: 700; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${doc.original_name}</div>
-                <div style="font-size: 0.68rem; color: #64748b; margin-top: 1px;">
-                  <span style="background: ${badge.bg}; color: ${badge.color}; font-weight: 700; padding: 1px 4px; border-radius: 3px; font-size: 0.62rem;">${badge.name}</span>
-                  <span>${doc.document_type || "Plan"}</span>
-                </div>
-              </div>
-              <span class="badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}" style="padding: 2px 6px; font-size: 0.65rem;">
-                ${doc.verification_status || "Pending"}
-              </span>
-            </button>
-          `;
-          })
-          .join("");
-
-        // Select first document by default if activeDocId is not in filteredDocs
-        const hasCurrent = filteredDocs.some((d) => d.id === activeDocId);
-        selectDocument(hasCurrent ? activeDocId : filteredDocs[0].id);
-      }
-
-      function selectDocument(docId) {
-        activeDocId = docId;
-        const docs = currentDossier ? (currentDossier.documents || []) : [];
-        const doc = docs.find((d) => d.id === docId);
-        if (!doc) return;
-
-        // Update active tab styles
-        document
-          .querySelectorAll(".doc-selector-tab")
-          .forEach((t) => t.classList.remove("active"));
-        const activeTab = document.getElementById(`docTab_${docId}`);
-        if (activeTab) activeTab.classList.add("active");
-
-        const dept = getDocDepartment(doc);
-        const badge = DEPT_BADGES[dept] || DEPT_BADGES.other;
-
-        // Update viewer header
-        document.getElementById("activeDocTitle").innerHTML =
-          `<span style="background:${badge.bg}; color:${badge.color}; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700; margin-right:6px;">${badge.icon} ${badge.name}</span> <span>${doc.document_type || "Document"}: <b>${doc.original_name}</b> (${formatBytes(doc.size)})</span>`;
-
-        const statusBadge = document.getElementById("activeDocBadge");
-        statusBadge.textContent = doc.verification_status || "Pending";
-        statusBadge.className = `badge ${doc.verification_status === "Verified" ? "green" : doc.verification_status === "Deficient" ? "red" : "gray"}`;
-
-        document.getElementById("btnDocExternal").href =
-          `/api/documents/${doc.id}/view`;
-        document.getElementById("btnDocDownload").href =
-          `/api/documents/${doc.id}`;
-
-        // Point iframe to inline view endpoint
-        const frame = document.getElementById("docFrame");
-        frame.src = `/api/documents/${doc.id}/view`;
-
-        // Scrutiny input remark
-        document.getElementById("docScrutinyRemark").value =
-          doc.officer_remarks || "";
-      }
-
       async function verifyActiveDocument(status) {
         if (!activeDocId) return show("docMsg", "Select a document first.");
         const remarks = document
@@ -971,7 +1286,11 @@
           });
 
           show("docMsg", `Document marked as ${status}.`, true);
-          loadDossier(currentAppId);
+          const savedDocId = activeDocId;
+          await loadDossier(currentAppId, false);
+          if (savedDocId) {
+            selectDocument(savedDocId);
+          }
         } catch (err) {
           show("docMsg", err.message || "Failed to update document status");
         }

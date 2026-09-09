@@ -389,6 +389,11 @@ async function inspectApexDossier(id) {
     document.getElementById("modalInspectStage").textContent =
       data.current_stage || "mpcb";
 
+    const vaultBtn = document.getElementById("modalInspectVaultBtn");
+    if (vaultBtn) vaultBtn.href = `/pages/verification.html?id=${id}`;
+    const vaultBtnFooter = document.getElementById("modalInspectVaultBtnFooter");
+    if (vaultBtnFooter) vaultBtnFooter.href = `/pages/verification.html?id=${id}`;
+
     const allDocs = data.documents || [];
     const stages = data.stageStatuses || {};
 

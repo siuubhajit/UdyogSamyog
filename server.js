@@ -244,6 +244,7 @@ function determinePlanType(docType, explicitType) {
 function getDocumentDepartment(doc) {
   if (!doc) return null;
   const planType = doc.plan_type || "";
+  if (planType === "supporting_doc") return "general";
   if (planType === "environmental_plan") return "mpcb";
   if (planType === "civil_plan") return "midc";
   if (planType === "factory_safety_plan") return "dish";
@@ -252,6 +253,20 @@ function getDocumentDepartment(doc) {
   const lowerType = String(doc.document_type || "").toLowerCase();
   const lowerName = String(doc.original_name || "").toLowerCase();
   const text = `${lowerType} ${lowerName}`;
+
+  if (
+    text.includes("supporting") ||
+    text.includes("dpr") ||
+    text.includes("feasibility") ||
+    text.includes("incorporation") ||
+    text.includes("title deed") ||
+    text.includes("allotment") ||
+    text.includes("gstin") ||
+    text.includes("pan card") ||
+    text.includes("constitutional")
+  ) {
+    return "general";
+  }
 
   if (
     text.includes("environment") ||
@@ -273,8 +288,7 @@ function getDocumentDepartment(doc) {
     text.includes("midc") ||
     text.includes("fsi") ||
     text.includes("far") ||
-    text.includes("setback") ||
-    text.includes("land")
+    text.includes("setback")
   ) {
     return "midc";
   }
@@ -298,7 +312,7 @@ function getDocumentDepartment(doc) {
   ) {
     return "fire";
   }
-  return null;
+  return "general";
 }
 
 // Seed Default Accounts & Sample Demo Data for Maharashtra State Innovation Society & Departments
@@ -2481,7 +2495,10 @@ app.get("/api/applications/:id", auth, (req, res) => {
       if (!isApex) {
         const officerDept = req.session.user.deptCode;
         documents = documents.filter(
-          (d) => (d.department || getDocumentDepartment(d)) === officerDept,
+          (d) => {
+            const dept = d.department || getDocumentDepartment(d);
+            return dept === officerDept;
+          },
         );
         plans = {
           environmental: officerDept === "mpcb" ? allPlans.environmental : null,
@@ -2686,7 +2703,10 @@ app.get("/api/applications/:id/documents", auth, (req, res) => {
       if (!isApex) {
         const officerDept = req.session.user.deptCode;
         docs = docs.filter(
-          (d) => (d.department || getDocumentDepartment(d)) === officerDept,
+          (d) => {
+            const dept = d.department || getDocumentDepartment(d);
+            return dept === officerDept;
+          },
         );
       }
     }
@@ -2790,7 +2810,7 @@ app.get("/api/documents/:id", auth, (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    // Official access check: non-Apex officials can only download their own department's documents
+    // Official access check: non-Apex officials can only download their own department's documents or supporting documents
     if (req.session.user.role === "official") {
       const isApex =
         req.session.user.isApex ||
