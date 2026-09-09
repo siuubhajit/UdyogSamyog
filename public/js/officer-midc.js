@@ -25,16 +25,26 @@ async function loadApplications() {
   }
 }
 
+function getStageDecision(a, dept) {
+  if (!a) return null;
+  try {
+    const data = typeof a.stage_statuses === "string" ? JSON.parse(a.stage_statuses || "{}") : (a.stage_statuses || {});
+    return data[dept]?.decision || null;
+  } catch (_) {
+    return null;
+  }
+}
+
 function renderKPIs() {
   const pendingCivil = allApplications.filter(
     (a) =>
       (a.current_stage === "parallel_scrutiny" || a.current_stage === "midc") &&
-      !a.stage_statuses?.includes('"midc":{"decision":"Approved"'),
+      getStageDecision(a, "midc") !== "Approved",
   ).length;
 
   const civilApproved = allApplications.filter(
     (a) =>
-      a.stage_statuses?.includes('"midc":{"decision":"Approved"') ||
+      getStageDecision(a, "midc") === "Approved" ||
       a.status === "Approved",
   ).length;
 
@@ -66,7 +76,7 @@ function renderApplicationsTable() {
 
   let filtered = allApplications.filter((a) => {
     const isParallelActive = a.current_stage === "parallel_scrutiny";
-    const wasMidcProcessed = a.stage_statuses?.includes('"midc"');
+    const wasMidcProcessed = !!getStageDecision(a, "midc");
     return isParallelActive || wasMidcProcessed || a.status === "Approved";
   });
 

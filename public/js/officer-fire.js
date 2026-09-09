@@ -24,16 +24,26 @@ async function loadApplications() {
   }
 }
 
+function getStageDecision(a, dept) {
+  if (!a) return null;
+  try {
+    const data = typeof a.stage_statuses === "string" ? JSON.parse(a.stage_statuses || "{}") : (a.stage_statuses || {});
+    return data[dept]?.decision || null;
+  } catch (_) {
+    return null;
+  }
+}
+
 function renderKPIs() {
   const pendingFire = allApplications.filter(
     (a) =>
       (a.current_stage === "parallel_scrutiny" || a.current_stage === "fire") &&
-      !a.stage_statuses?.includes('"fire":{"decision":"Approved"'),
+      getStageDecision(a, "fire") !== "Approved",
   ).length;
 
   const fireApproved = allApplications.filter(
     (a) =>
-      a.stage_statuses?.includes('"fire":{"decision":"Approved"') ||
+      getStageDecision(a, "fire") === "Approved" ||
       a.status === "Approved",
   ).length;
 
@@ -57,7 +67,7 @@ function renderApplicationsTable() {
 
   let filtered = allApplications.filter((a) => {
     const isParallelActive = a.current_stage === "parallel_scrutiny";
-    const wasFireProcessed = a.stage_statuses?.includes('"fire"');
+    const wasFireProcessed = !!getStageDecision(a, "fire");
     return isParallelActive || wasFireProcessed || a.status === "Approved";
   });
 

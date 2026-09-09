@@ -24,11 +24,21 @@ async function loadApplications() {
   }
 }
 
+function getStageDecision(a, dept) {
+  if (!a) return null;
+  try {
+    const data = typeof a.stage_statuses === "string" ? JSON.parse(a.stage_statuses || "{}") : (a.stage_statuses || {});
+    return data[dept]?.decision || null;
+  } catch (_) {
+    return null;
+  }
+}
+
 function renderKPIs() {
   const pendingSafety = allApplications.filter(
     (a) =>
       (a.current_stage === "parallel_scrutiny" || a.current_stage === "dish") &&
-      !a.stage_statuses?.includes('"dish":{"decision":"Approved"'),
+      getStageDecision(a, "dish") !== "Approved",
   ).length;
 
   const chemicalHazard = allApplications.filter(
@@ -38,7 +48,7 @@ function renderKPIs() {
 
   const safetyApproved = allApplications.filter(
     (a) =>
-      a.stage_statuses?.includes('"dish":{"decision":"Approved"') ||
+      getStageDecision(a, "dish") === "Approved" ||
       a.status === "Approved",
   ).length;
 
@@ -65,7 +75,7 @@ function renderApplicationsTable() {
 
   let filtered = allApplications.filter((a) => {
     const isParallelActive = a.current_stage === "parallel_scrutiny";
-    const wasDishProcessed = a.stage_statuses?.includes('"dish"');
+    const wasDishProcessed = !!getStageDecision(a, "dish");
     return isParallelActive || wasDishProcessed || a.status === "Approved";
   });
 

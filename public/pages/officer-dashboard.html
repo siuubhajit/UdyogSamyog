@@ -70,7 +70,7 @@
             <span class="sidebar-icon">&#127970;</span> Enterprise Registry &amp; Ban
           </a>
           <a href="analytics.html">
-            <span class="sidebar-icon">&#128202;</span> SLA Intelligence
+            <span class="sidebar-icon">&#128202;</span> Service Level Intelligence
           </a>
           <div class="sidebar-footer">
             <b style="color:#ffffff">Maharashtra Single Window Act</b><br/>
@@ -125,7 +125,7 @@
                   <thead>
                     <tr>
                       <th>Application No.</th><th>Enterprise / Unit</th><th>Sector &amp; MSME</th>
-                      <th>District</th><th>Risk Tier</th><th>SLA / Days</th><th>Status</th><th>Action</th>
+                      <th>District</th><th>Risk Tier</th><th>Service Guarantee / Days</th><th>Status</th><th>Action</th>
                     </tr>
                   </thead>
                   <tbody id="rows">
@@ -333,7 +333,7 @@
           const left = sla - elapsed;
           let slaBadge = "<span style='font-size:.76rem;font-weight:600;color:var(--emerald)'>Day " + elapsed + "/" + sla + " (" + left + "d left)</span>";
           if (left <= 2 && left >= 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--saffron)'>⚠️ Due in " + left + "d</span>";
-          else if (left < 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--ruby)'>🚨 SLA Breached (" + Math.abs(left) + "d overdue)</span>";
+          else if (left < 0) slaBadge = "<span style='font-size:.76rem;font-weight:700;color:var(--ruby)'>🚨 Service Guarantee Breached (" + Math.abs(left) + "d overdue)</span>";
           const riskClass = app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green";
           const badgeClass = app.status === "Approved" ? "green" : (app.status === "Flagged" || app.status === "Rejected") ? "red" : "orange";
           const canAct = (isApex || app.current_stage === deptCode) && app.status !== "Approved" && app.status !== "Rejected";

@@ -17,12 +17,22 @@ async function initMpcbPortal() {
 
 async function loadApplications() {
   try {
-    const apps = await api("/api/applications/pending");
+    const apps = await api("/api/applications");
     allApplications = apps;
     renderKPIs();
     renderApplicationsTable();
   } catch (err) {
     console.error("Failed to load Environmental applications:", err);
+  }
+}
+
+function getStageDecision(a, dept) {
+  if (!a) return null;
+  try {
+    const data = typeof a.stage_statuses === "string" ? JSON.parse(a.stage_statuses || "{}") : (a.stage_statuses || {});
+    return data[dept]?.decision || null;
+  } catch (_) {
+    return null;
   }
 }
 
@@ -35,7 +45,7 @@ function renderKPIs() {
   ).length;
   const cteCleared = allApplications.filter(
     (a) =>
-      a.stage_statuses?.includes('"mpcb":{"decision":"Approved"') ||
+      getStageDecision(a, "mpcb") === "Approved" ||
       a.status === "Approved",
   ).length;
 
@@ -70,7 +80,7 @@ function renderApplicationsTable() {
 
   let filtered = allApplications.filter((a) => {
     const isMpcbActive = a.current_stage === "mpcb";
-    const wasMpcbProcessed = a.stage_statuses?.includes('"mpcb"');
+    const wasMpcbProcessed = !!getStageDecision(a, "mpcb");
     return isMpcbActive || wasMpcbProcessed || a.status === "Approved";
   });
 

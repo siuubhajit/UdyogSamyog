@@ -275,7 +275,7 @@ function renderApplicationsTable() {
   }
 
   if (riskFilter !== "all") {
-    filtered = filtered.filter((a) => (a.risk_category || "Orange") === riskFilter);
+    filtered = filtered.filter((a) => (a.risk_tier || a.risk_category || "Orange") === riskFilter);
   }
 
   if (districtFilter !== "all") {
@@ -306,7 +306,7 @@ function renderApplicationsTable() {
       const isReadyForFinal =
         (mpcbOk && midcOk && dishOk && fireOk) || a.current_stage === "msins";
       const isApproved = a.status === "Approved";
-      const risk = a.risk_category || "Orange";
+      const risk = a.risk_tier || a.risk_category || "Orange";
       const riskBadgeClass = risk === "Green" ? "green" : risk === "Red" ? "red" : "yellow";
 
       return `
