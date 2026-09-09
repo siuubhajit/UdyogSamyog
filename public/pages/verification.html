@@ -36,7 +36,7 @@
                 style="font-size: 0.7rem; color: var(--ink-light)"
                 data-user-dept
               >
-                Industries & MSInS
+                Industries &amp; State Innovation Society
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@
                     </div>
                   </div>
                 </div>
-                <!-- Filter Pills for Apex Officer (MSInS) -->
+                <!-- Filter Pills for Apex Officer (State Innovation Society) -->
                 <div id="apexDeptFilters" style="display: none; gap: 6px; flex-wrap: wrap;">
                   <!-- Injected via JavaScript for Apex Officer -->
                 </div>
@@ -331,7 +331,7 @@
                   <input
                     type="text"
                     id="docScrutinyRemark"
-                    placeholder="e.g. Setbacks and road access verified per MIDC norms"
+                    placeholder="e.g. Setbacks and road access verified per Industrial Development Corporation norms"
                   />
                 </label>
                 <div style="display: flex; gap: 10px; margin-top: 12px">
@@ -486,7 +486,7 @@
                     margin-bottom: 10px;
                   "
                 >
-                  Coordinate simultaneous inspection with MPCB, DISH, and Fire
+                  Coordinate simultaneous inspection with Pollution Control Board, Directorate of Industrial Safety &amp; Health, and Fire
                   Services to avoid repetitive site visits.
                 </p>
 
@@ -499,25 +499,25 @@
                     >Department / Agency
                     <select id="inspDept">
                       <option
-                        value="Combined Joint Committee (MPCB + DISH + Fire)"
+                        value="Combined Joint Committee (Pollution Control + Industrial Safety + Fire)"
                       >
-                        Joint Committee (MPCB + DISH + Fire)
+                        Joint Committee (Pollution Control + Industrial Safety + Fire)
                       </option>
                       <option
-                        value="Directorate of Industrial Safety & Health (DISH)"
+                        value="Directorate of Industrial Safety & Health"
                       >
-                        DISH (Factory Safety)
+                        Directorate of Industrial Safety &amp; Health
                       </option>
                       <option
-                        value="Maharashtra Pollution Control Board (MPCB)"
+                        value="Maharashtra Pollution Control Board"
                       >
-                        MPCB (Environmental)
+                        Maharashtra Pollution Control Board
                       </option>
                       <option value="Maharashtra Fire Services">
                         Maharashtra Fire Services
                       </option>
-                      <option value="MIDC Civil Engineering Wing">
-                        MIDC Civil & Infrastructure
+                      <option value="Industrial Development Corporation Engineering Wing">
+                        Industrial Development Corporation Engineering Wing
                       </option>
                     </select>
                   </label>
@@ -628,35 +628,35 @@
         if (currentUser.isApex) {
           icon.textContent = "🏛️";
           title.textContent = "Apex Multi-Department Scrutiny Vault";
-          badge.textContent = "MSInS Apex Authority · All Statutory Vaults";
+          badge.textContent = "Apex Authority · All Statutory Vaults";
           badge.className = "badge blue";
-          subtitle.textContent = "Consolidated statutory oversight across MPCB (Pollution Control), MIDC (Civil & Infra), DISH (Factory Safety), and Fire Services.";
+          subtitle.textContent = "Consolidated statutory oversight across Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, and Fire Services.";
           if (apexFilters) apexFilters.style.display = "flex";
         } else {
           const dept = currentUser.deptCode || "midc";
           const info = {
             mpcb: {
               icon: "🌿",
-              title: "MPCB (Maharashtra Pollution Control Board) Environmental Vault",
-              badge: "MPCB Vault · Environmental Scrutiny",
-              subtitle: "Restricted strictly to Environmental Management Plans, ETP/STP schemes, and Air Emission designs under MPCB jurisdiction.",
+              title: "Pollution Control Board Environmental Vault",
+              badge: "Environmental Vault · Statutory Scrutiny",
+              subtitle: "Restricted strictly to Environmental Management Plans, Effluent Treatment schemes, and Air Emission designs under Pollution Control Board jurisdiction.",
             },
             midc: {
               icon: "🏗️",
-              title: "MIDC (Maharashtra Industrial Development Corp) Civil Vault",
-              badge: "MIDC Vault · Civil & Infrastructure",
-              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under MIDC jurisdiction.",
+              title: "Industrial Development Corporation Civil Vault",
+              badge: "Civil & Infrastructure Vault",
+              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under Industrial Development Corporation jurisdiction.",
             },
             dish: {
               icon: "⚙️",
-              title: "DISH (Directorate of Industrial Safety & Health) Factory Safety Vault",
-              badge: "DISH Vault · Factory Safety",
-              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under DISH jurisdiction.",
+              title: "Directorate of Industrial Safety & Health Factory Safety Vault",
+              badge: "Industrial Safety & Health Vault",
+              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under Industrial Safety & Health jurisdiction.",
             },
             fire: {
               icon: "🚒",
               title: "Directorate of Maharashtra Fire Services Vault",
-              badge: "Fire Services Vault · Life Safety NOC",
+              badge: "Fire Services Vault · Life Safety Clearance",
               subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Fire Services jurisdiction.",
             },
           }[dept] || {
@@ -757,7 +757,7 @@
           document.getElementById("paramPower").textContent =
             `${d.electricity} kVA`;
           document.getElementById("paramHazard").textContent = d.hazardous
-            ? "Yes (MPCB HWA)"
+            ? "Yes (Hazardous Waste Handling Authorization)"
             : "Non-Hazardous";
           document.getElementById("paramMsme").textContent =
             d.msme_category || "Small";
@@ -811,10 +811,10 @@
       }
 
       const DEPT_BADGES = {
-        mpcb: { name: "MPCB (Pollution Board)", icon: "🌿", color: "#166534", bg: "#dcfce7" },
-        midc: { name: "MIDC (Civil & Infra)", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
-        dish: { name: "DISH (Factory Safety)", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
-        fire: { name: "Fire Services (Life Safety)", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
+        mpcb: { name: "Pollution Control Board", icon: "🌿", color: "#166534", bg: "#dcfce7" },
+        midc: { name: "Industrial Development Corporation", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
+        dish: { name: "Industrial Safety & Health", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
+        fire: { name: "Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
         other: { name: "General Supporting Vault", icon: "📄", color: "#475569", bg: "#f1f5f9" },
       };
 
@@ -824,7 +824,7 @@
         const docEmpty = document.getElementById("docEmptyNotice");
         const apexFilters = document.getElementById("apexDeptFilters");
 
-        // Populate filter pills for MSInS Apex Officer
+        // Populate filter pills for State Innovation Society Apex Officer
         if (currentUser && currentUser.isApex && apexFilters) {
           const counts = { all: allDocs.length, mpcb: 0, midc: 0, dish: 0, fire: 0 };
           allDocs.forEach((d) => {
@@ -834,9 +834,9 @@
 
           apexFilters.innerHTML = `
             <button class="btn sm ${currentDeptFilter === "all" ? "navy" : "outline"}" onclick="setDocFilter('all')" style="font-size: 0.72rem; padding: 3px 8px;">All Dossiers (${counts.all})</button>
-            <button class="btn sm ${currentDeptFilter === "mpcb" ? "emerald" : "outline"}" onclick="setDocFilter('mpcb')" style="font-size: 0.72rem; padding: 3px 8px;">🌿 MPCB (${counts.mpcb})</button>
-            <button class="btn sm ${currentDeptFilter === "midc" ? "blue" : "outline"}" onclick="setDocFilter('midc')" style="font-size: 0.72rem; padding: 3px 8px;">🏗️ MIDC (${counts.midc})</button>
-            <button class="btn sm ${currentDeptFilter === "dish" ? "saffron" : "outline"}" onclick="setDocFilter('dish')" style="font-size: 0.72rem; padding: 3px 8px;">⚙️ DISH (${counts.dish})</button>
+            <button class="btn sm ${currentDeptFilter === "mpcb" ? "emerald" : "outline"}" onclick="setDocFilter('mpcb')" style="font-size: 0.72rem; padding: 3px 8px;">🌿 Pollution Control (${counts.mpcb})</button>
+            <button class="btn sm ${currentDeptFilter === "midc" ? "blue" : "outline"}" onclick="setDocFilter('midc')" style="font-size: 0.72rem; padding: 3px 8px;">🏗️ Industrial Dev (${counts.midc})</button>
+            <button class="btn sm ${currentDeptFilter === "dish" ? "saffron" : "outline"}" onclick="setDocFilter('dish')" style="font-size: 0.72rem; padding: 3px 8px;">⚙️ Industrial Safety (${counts.dish})</button>
             <button class="btn sm ${currentDeptFilter === "fire" ? "rust" : "outline"}" onclick="setDocFilter('fire')" style="font-size: 0.72rem; padding: 3px 8px;">🚒 Fire Services (${counts.fire})</button>
           `;
         }
@@ -1116,31 +1116,31 @@
 
       const DEPT_INFO = {
         midc: {
-          title: "MIDC · Civil & Infrastructure Scrutiny",
+          title: "Industrial Development Corporation · Civil Scrutiny",
           icon: "🏗️",
-          badge: "MIDC · Maharashtra Industrial Development Corp",
-          desc: "Evaluate site master plan, building setbacks, FSI/FAR (Floor Space Index) compliance, and road/drainage infrastructure per MRTP Act 1966.",
-          subtext: "Civil Engineering Wing · MIDC (Govt. of Maharashtra)",
+          badge: "Maharashtra Industrial Development Corporation",
+          desc: "Evaluate site master plan, building setbacks, Floor Space Index compliance, and road/drainage infrastructure per regional planning norms.",
+          subtext: "Civil Engineering Wing · Industrial Development Corporation",
         },
         mpcb: {
-          title: "MPCB · Environmental Scrutiny & CTE",
+          title: "Pollution Control Board · Environmental Scrutiny",
           icon: "🌱",
-          badge: "MPCB · Maharashtra Pollution Control Board",
-          desc: "Evaluate Consent to Establish (CTE), trade effluent & sewage treatment (ETP/STP), and stack emissions per Water & Air Pollution Control Acts.",
-          subtext: "Maharashtra Pollution Control Board (Govt. of Maharashtra)",
+          badge: "Maharashtra Pollution Control Board",
+          desc: "Evaluate Consent to Establish, trade effluent & sewage treatment schemes, and stack emissions per Water & Air Pollution Control Acts.",
+          subtext: "Pollution Control Board (Govt. of Maharashtra)",
         },
         fire: {
           title: "Fire Services · Life Safety Scrutiny",
           icon: "🚒",
           badge: "Directorate of Maharashtra Fire Services",
-          desc: "Evaluate hydrant loops, static water reservoir demands, sprinkler systems, and life safety evacuation egress per Maharashtra Fire Prevention Act 2006.",
+          desc: "Evaluate hydrant loops, static water reservoir demands, sprinkler systems, and life safety evacuation egress per Maharashtra Fire Prevention Act.",
           subtext: "Directorate of Maharashtra Fire Services (Govt. of Maharashtra)",
         },
         dish: {
-          title: "DISH · Factory Safety Scrutiny",
+          title: "Industrial Safety & Health · Factory Safety Scrutiny",
           icon: "⚙️",
-          badge: "DISH · Directorate of Industrial Safety & Health",
-          desc: "Evaluate factory layout blueprint, machinery hazard zones, worker welfare facilities, and chemical safety safeguards under The Factories Act, 1948.",
+          badge: "Directorate of Industrial Safety & Health",
+          desc: "Evaluate factory layout blueprint, machinery hazard zones, worker welfare facilities, and chemical safety safeguards under The Factories Act.",
           subtext: "Directorate of Industrial Safety & Health (Labour Dept, Govt. of Maharashtra)",
         },
       };
@@ -1159,10 +1159,10 @@
         if (currentUser.isApex) {
           cardIcon.textContent = "🏛️";
           cardTitle.textContent = "Consolidated Departmental Scrutiny Matrix";
-          roleBadge.textContent = "Apex Authority · MSInS";
+          roleBadge.textContent = "Apex Authority · State Innovation Society";
           roleBadge.className = "badge blue";
           cardDesc.textContent =
-            "All departmental clearances (MIDC Civil, MPCB Environment, Fire Services, DISH Safety) streamline into this apex dashboard. Review each department's status below before issuing the final statutory NOC.";
+            "All departmental clearances (Industrial Development Corporation Civil, Pollution Control Board Environment, Fire Services, Industrial Safety & Health) streamline into this apex dashboard. Review each department's status below before issuing the final statutory clearance.";
 
           const depts = ["midc", "mpcb", "fire", "dish"];
           container.innerHTML = `
@@ -1196,8 +1196,8 @@
                       <div style="display: flex; gap: 6px;">
                         ${
                           !isApproved
-                            ? `<button class="btn emerald sm" onclick="submitDeptMilestone('${key}', 'Approved', 'Cleared by Apex MSInS Officer')">✓ Clear Milestone</button>`
-                            : `<button class="btn rust sm" onclick="submitDeptMilestone('${key}', 'Deficient', 'Flagged by Apex MSInS Officer')">⚠️ Flag Deficient</button>`
+                            ? `<button class="btn emerald sm" onclick="submitDeptMilestone('${key}', 'Approved', 'Cleared by Apex Lead Officer')">✓ Clear Milestone</button>`
+                            : `<button class="btn rust sm" onclick="submitDeptMilestone('${key}', 'Deficient', 'Flagged by Apex Lead Officer')">⚠️ Flag Deficient</button>`
                         }
                       </div>
                     </div>
@@ -1206,7 +1206,7 @@
                 .join("")}
             </div>
             <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 10px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px;">
-              💡 <i>Apex Authority Tip:</i> You have statutory oversight to override or validate any department's milestone before issuing the final Single-Window NOC.
+              💡 <i>Apex Authority Tip:</i> You have statutory oversight to override or validate any department's milestone before issuing the final Single-Window Clearance Certificate.
             </div>
           `;
         } else {
@@ -1261,7 +1261,7 @@
             </div>
 
             <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 12px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--navy);">
-              🚀 <b>Streamlined Approval Workflow:</b> Your scrutiny clearance is directly updated in the state dossier and streamlined to the <b>Department Officer (MSInS / Industries)</b> at <code>officer@udyog.gov.in</code> for final consolidated single-window approval.
+              🚀 <b>Streamlined Approval Workflow:</b> Your scrutiny clearance is directly updated in the state dossier and streamlined to the <b>Lead Approving Officer (State Innovation Society / Industries)</b> at <code>officer@udyog.gov.in</code> for final consolidated single-window approval.
             </div>
           `;
         }
@@ -1300,7 +1300,7 @@
         if (!container || !currentUser) return;
 
         if (currentUser.isApex) {
-          badge.textContent = "Apex Director · MSInS";
+          badge.textContent = "Apex Director · State Innovation Society";
           badge.className = "badge blue";
 
           const depts = ["midc", "mpcb", "fire", "dish"];
@@ -1318,7 +1318,7 @@
               ${
                 approvedCount === 4
                   ? `<div style="background: #ecfdf5; border: 1px solid #10b981; color: #065f46; font-size: 0.8rem; padding: 8px 12px; border-radius: 6px; font-weight: 600;">
-                      ✓ All 4 Department Clearances (MIDC Civil, MPCB Environment, Fire Safety, DISH Safety) have been granted. Ready for Statutory Single-Window Approval NOC.
+                      ✓ All 4 Department Clearances (Industrial Development Corporation Civil, Pollution Control Board Environment, Fire Safety, Industrial Safety) have been granted. Ready for Statutory Single-Window Approval Sanction.
                      </div>`
                   : `<div style="background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; font-size: 0.78rem; padding: 8px 12px; border-radius: 6px;">
                       ⏳ ${4 - approvedCount} departmental clearance(s) are still pending. As Apex Authority, you may grant final clearance or await departmental signoffs.
@@ -1331,7 +1331,7 @@
                 class="btn emerald"
                 onclick="setApplicationStatus('Approved')"
               >
-                ✓ Grant Consolidated Clearance (Issue NOC)
+                ✓ Grant Consolidated Clearance (Issue Sanction)
               </button>
               <button
                 class="btn danger"
@@ -1356,7 +1356,7 @@
               <div style="font-size: 1.8rem; margin-bottom: 6px;">🔒</div>
               <div style="font-weight: 700; color: var(--navy); font-size: 0.95rem;">Consolidated Final Approval Reserved</div>
               <p style="font-size: 0.8rem; color: var(--ink-light); margin: 6px 0 12px 0;">
-                Final Single-Window Statutory Clearance and NOC issuance is strictly authorized for the <b>Department Officer (MSInS / Industries) - Apex Authority</b> (<a href="mailto:officer@udyog.gov.in" style="color:var(--navy); font-weight:600;">officer@udyog.gov.in</a>).
+                Final Single-Window Statutory Clearance and Sanction issuance is strictly authorized for the <b>Lead Approving Officer (State Innovation Society / Industries) - Apex Authority</b> (<a href="mailto:officer@udyog.gov.in" style="color:var(--navy); font-weight:600;">officer@udyog.gov.in</a>).
               </p>
               <div style="display: inline-block; background: #e2e8f0; color: var(--ink); font-size: 0.76rem; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
                 Active Session: ${currentUser.contactPerson || currentUser.email} (${currentUser.department || "Department Officer"})

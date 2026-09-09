@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Maharashtra Fire Services NOC | Udyog Samyog - Govt. of Maharashtra</title>
+    <title>Maharashtra Fire Services Clearance | Udyog Samyog - Govt. of Maharashtra</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
       :root {
@@ -64,7 +64,7 @@
         <aside class="sidebar">
           <div class="sidebar-header">Fire Operations</div>
           <a href="javascript:void(0)" class="active" onclick="switchTab('queue')">
-            <span class="sidebar-icon">&#128203;</span> Fire NOC Queue
+            <span class="sidebar-icon">&#128203;</span> Fire Clearance Queue
           </a>
           <a href="javascript:void(0)" onclick="switchTab('calculator')">
             <span class="sidebar-icon">&#128295;</span> Static Tank &amp; Hydrant Sizing
@@ -76,8 +76,8 @@
             <span class="sidebar-icon">&#128202;</span> SLA Intelligence
           </a>
           <div class="sidebar-footer">
-            <b style="color:#ffffff">Maharashtra Fire Prevention Act 2006</b><br/>
-            Phase 2 Scrutiny: Inspect hydrant risers, static water storage, fire tender turning radius, and issue Provisional Fire NOC.
+            <b style="color:#ffffff">Maharashtra Fire Prevention Act</b><br/>
+            Phase 2 Scrutiny: Inspect hydrant risers, static water storage, fire tender turning radius, and issue Provisional Fire Clearance.
           </div>
         </aside>
 
@@ -86,18 +86,18 @@
           <div id="sectionQueue">
             <div class="page-header">
               <div class="page-pretitle">Directorate of Maharashtra Fire Services &middot; Phase 2 Simultaneous Scrutiny</div>
-              <h1 class="page-title">Provisional Fire NOC Scrutiny Queue</h1>
-              <p class="page-subtitle">Evaluate hydrant layouts, static water storage, sprinkler systems, and fire tender turning clearances concurrently with MIDC and DISH.</p>
+              <h1 class="page-title">Provisional Fire Clearance Scrutiny Queue</h1>
+              <p class="page-subtitle">Evaluate hydrant layouts, static water storage, sprinkler systems, and fire tender turning clearances concurrently with Industrial Development Corporation and Industrial Safety &amp; Health.</p>
             </div>
 
             <div class="stage-info-box">
               <b style="color:var(--dept-color);font-size:.95rem">&#128658; Fire Services Officer &middot; Phase 2 Simultaneous Pipeline</b>
-              <div style="margin-top:4px;color:var(--ink-light)">Applications arrive here after MPCB (Maharashtra Pollution Control Board) environmental clearance. Review the applicant's <b>Fire Safety &amp; Evacuation Plan PDF</b>. Your determination progresses concurrently alongside MIDC (Maharashtra Industrial Development Corp) Civil and DISH (Directorate of Industrial Safety &amp; Health) Factory Safety towards MSInS (Maharashtra State Innovation Society) Apex final clearance.</div>
+              <div style="margin-top:4px;color:var(--ink-light)">Applications arrive here after Maharashtra Pollution Control Board environmental clearance. Review the applicant's <b>Fire Safety &amp; Evacuation Plan PDF</b>. Your determination progresses concurrently alongside Maharashtra Industrial Development Corporation Civil and Directorate of Industrial Safety &amp; Health Factory Safety towards State Innovation Society Apex final clearance.</div>
             </div>
 
             <div class="grid">
-              <div class="card card-kpi saffron"><span class="card-label">Fire NOCs Pending</span><span class="card-value" id="kpiPendingFire">0</span><span class="card-sub">Awaiting Decision</span></div>
-              <div class="card card-kpi emerald"><span class="card-label">Fire NOCs Issued</span><span class="card-value" id="kpiApprovedFire">0</span><span class="card-sub">Provisional Sanction</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Clearances Pending</span><span class="card-value" id="kpiPendingFire">0</span><span class="card-sub">Awaiting Decision</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Clearances Issued</span><span class="card-value" id="kpiApprovedFire">0</span><span class="card-sub">Provisional Sanction</span></div>
               <div class="card card-kpi"><span class="card-label">Total Inward Dossiers</span><span class="card-value" id="kpiTotalDossiers">0</span><span class="card-sub">All Applications</span></div>
             </div>
 
@@ -203,7 +203,7 @@
     <!-- FIRE DECISION MODAL -->
     <div id="fireModal" class="modal modal-overlay">
       <div class="modal-card" style="max-width:580px">
-        <h2 style="color:var(--dept-color);">&#128658; Provisional Fire NOC Determination</h2>
+        <h2 style="color:var(--dept-color);">&#128658; Provisional Fire Clearance Determination</h2>
         <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">
           Issue provisional fire safety clearance under Maharashtra Fire Act for <b id="fireModalAppNo">---</b> (<span id="fireModalCompany">---</span>).
         </p>
@@ -212,7 +212,7 @@
           <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Fire Services Compliance Checklist:</div>
           <ul class="checklist">
             <li>Fire hydrant &amp; riser system layout verified</li>
-            <li>Static water storage demand compliant with NBC Part 4</li>
+            <li>Static water storage demand compliant with National Building Code</li>
             <li>Main and diesel standby pump ratings verified</li>
             <li>6m unobstructed all-round perimeter access confirmed</li>
           </ul>
@@ -220,22 +220,22 @@
 
         <div>
           <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
-            Official Fire Review Remarks &middot; NOC Terms:
+            Official Fire Review Remarks &middot; Clearance Terms:
           </label>
           <textarea id="fireModalRemarks" rows="3"
-            placeholder="Record hydrant inspection conditions, static tank requirements, or fire NOC terms..."
+            placeholder="Record hydrant inspection conditions, static tank requirements, or fire clearance terms..."
             style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
         </div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
           <button class="btn" style="background:#16a34a; color:#fff;" onclick="submitFireDecision('Approved')">
-            &#10003; Issue Provisional Fire NOC
+            &#10003; Issue Provisional Fire Clearance
           </button>
           <button class="btn" style="background:#d97706; color:#fff;" onclick="submitFireDecision('Query')">
             &#10067; Raise Query
           </button>
           <button class="btn" style="background:#dc2626; color:#fff;" onclick="submitFireDecision('Rejected')">
-            &#10005; Reject NOC
+            &#10005; Reject Clearance
           </button>
           <button class="btn outline sm" onclick="closeModals()">Cancel</button>
         </div>

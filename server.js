@@ -312,7 +312,7 @@ function seedInitialData() {
       role: "official",
       hash: hashApex,
       company: "Maharashtra State Innovation Society",
-      dept: "Industries Department & MSInS (Apex Authority)",
+      dept: "Industries Department & State Innovation Society (Apex Authority)",
       person: "Shri R. K. Patil (Single Window Apex Officer)",
       district: "Mumbai City",
       phone: "022-22025112",
@@ -323,8 +323,8 @@ function seedInitialData() {
       email: "midc.officer@udyog.gov.in",
       role: "official",
       hash: hashMidc,
-      company: "Maharashtra Industrial Development Corporation (MIDC)",
-      dept: "MIDC Civil & Infrastructure",
+      company: "Maharashtra Industrial Development Corporation",
+      dept: "Civil & Infrastructure Engineering",
       person: "Er. Nilesh T. Kadam (Executive Engineer - Civil)",
       district: "Pune",
       phone: "020-25501234",
@@ -335,8 +335,8 @@ function seedInitialData() {
       email: "mpcb.officer@udyog.gov.in",
       role: "official",
       hash: hashMpcb,
-      company: "Maharashtra Pollution Control Board (MPCB)",
-      dept: "MPCB (Environmental)",
+      company: "Maharashtra Pollution Control Board",
+      dept: "Environmental Clearance Wing",
       person: "Dr. S. M. Deshmukh (Sub-Regional Officer - Environmental)",
       district: "Pune",
       phone: "020-25811627",
@@ -348,7 +348,7 @@ function seedInitialData() {
       role: "official",
       hash: hashFire,
       company: "Directorate of Maharashtra Fire Services",
-      dept: "Maharashtra Fire Services",
+      dept: "Directorate of Maharashtra Fire Services",
       person: "Chief Fire Officer S. V. More",
       district: "Pune",
       phone: "020-26451101",
@@ -359,8 +359,8 @@ function seedInitialData() {
       email: "dish.officer@udyog.gov.in",
       role: "official",
       hash: hashDish,
-      company: "Directorate of Industrial Safety & Health (DISH)",
-      dept: "DISH (Factory Safety)",
+      company: "Directorate of Industrial Safety & Health",
+      dept: "Factory Safety Inspection Wing",
       person: "Er. V. A. Shinde (Joint Director of Industrial Safety)",
       district: "Pune",
       phone: "020-24458899",
@@ -440,32 +440,32 @@ function seedInitialData() {
   if (appCount === 0 && applicantId) {
     const defaultClearances = JSON.stringify([
       {
-        name: "MIDC Land Allotment & Building Plan",
-        dept: "MIDC",
+        name: "Industrial Development Corporation Land Allotment & Building Plan",
+        dept: "Maharashtra Industrial Development Corporation",
         status: "Approved",
         taskDept: "midc",
       },
       {
-        name: "Consent to Establish (CTE - Orange)",
-        dept: "MPCB",
+        name: "Consent to Establish (Orange Category)",
+        dept: "Maharashtra Pollution Control Board",
         status: "Under Review",
         taskDept: "mpcb",
       },
       {
-        name: "Provisional Fire NOC",
-        dept: "Maharashtra Fire Services",
+        name: "Provisional Life Safety Clearance Certificate",
+        dept: "Directorate of Maharashtra Fire Services",
         status: "Under Review",
         taskDept: "fire",
       },
       {
         name: "Factory License & Safety Approval",
-        dept: "Directorate of Industrial Safety & Health (DISH)",
+        dept: "Directorate of Industrial Safety & Health",
         status: "In Progress",
         taskDept: "dish",
       },
       {
-        name: "High Tension (HT) Power Sanction",
-        dept: "MSEDCL",
+        name: "High Tension Power Sanction",
+        dept: "Maharashtra State Electricity Distribution Company",
         status: "Approved",
         taskDept: "msedcl",
       },
@@ -473,17 +473,17 @@ function seedInitialData() {
 
     const parallelStatus = JSON.stringify({
       midc: {
-        name: "MIDC Civil & Infrastructure",
-        clearance: "MIDC Land Allotment & Building Plan",
+        name: "Civil & Infrastructure Engineering",
+        clearance: "Industrial Development Corporation Land Allotment & Building Plan",
         status: "Approved",
         remarks:
-          "Plot No. B-42 Chakan MIDC Phase II validated. Building construction blueprints cleared.",
+          "Plot No. B-42 Chakan Phase II validated. Building construction blueprints cleared.",
         officer: "Er. Nilesh T. Kadam",
         updated: new Date().toISOString(),
       },
       mpcb: {
-        name: "MPCB (Environmental)",
-        clearance: "Consent to Establish (CTE - Orange)",
+        name: "Environmental Clearance Wing",
+        clearance: "Consent to Establish (Orange Category)",
         status: "Under Review",
         remarks:
           "Water conservation scheme & effluent treatment plan under verification.",
@@ -491,15 +491,15 @@ function seedInitialData() {
         updated: new Date().toISOString(),
       },
       fire: {
-        name: "Maharashtra Fire Services",
-        clearance: "Provisional Fire NOC",
+        name: "Directorate of Maharashtra Fire Services",
+        clearance: "Provisional Life Safety Clearance Certificate",
         status: "Under Review",
         remarks: "Hydrant network and fire tender turning radius verified.",
         officer: "Chief Fire Officer S. V. More",
         updated: new Date().toISOString(),
       },
       dish: {
-        name: "DISH (Factory Safety)",
+        name: "Factory Safety Inspection Wing",
         clearance: "Factory License & Safety Approval",
         status: "In Progress",
         remarks:
@@ -508,8 +508,8 @@ function seedInitialData() {
         updated: new Date().toISOString(),
       },
       msedcl: {
-        name: "MSEDCL Power Sanction",
-        clearance: "HT Power Sanction (450 kVA)",
+        name: "State Electricity Distribution Power Sanction",
+        clearance: "High Tension Power Sanction (450 kVA)",
         status: "Approved",
         remarks: "Load demand 450 kVA sanctioned at 11 kV feeder.",
         officer: "Superintending Engineer",
@@ -520,7 +520,7 @@ function seedInitialData() {
     const seedStageStatuses = JSON.stringify({
       mpcb: {
         decision: "Approved",
-        remarks: "Environmental Impact Assessment cleared. Effluent Treatment Plan verified. CTE (Consent to Establish) granted under Orange Category.",
+        remarks: "Environmental Impact Assessment cleared. Effluent Treatment Plan verified. Consent to Establish granted under Orange Category.",
         officer: "Dr. S. M. Deshmukh",
         decided_at: new Date(Date.now() - 2 * 86400000).toISOString(),
       },
@@ -535,7 +535,7 @@ function seedInitialData() {
         project_cost, employment_potential, msme_category, risk_tier, status,
         clearances_json, parallel_status_json, current_stage, stage_statuses, created_at
       ) VALUES (
-        ?, 'MH/MSInS/2026/00142', 'Sahyadri Precision Engineering Pvt Ltd', '27AABCS1429B1Z8', 'Light Engineering',
+        ?, 'MH/UDYOG/2026/00142', 'Sahyadri Precision Engineering Pvt Ltd', '27AABCS1429B1Z8', 'Light Engineering',
         3.5, 25.0, 450.0, 0, 'Plot B-42, Chakan Industrial Area Phase II, Khed', 'Pune',
         14.5, 120, 'Small', 'Orange', 'In Progress', ?, ?, 'parallel_scrutiny', ?, datetime('now', '-3 days')
       )
@@ -554,7 +554,7 @@ function seedInitialData() {
       return { storedName, size: Buffer.byteLength(content) };
     }
 
-    const envFile = seedDummyPdf("Environmental Management & ETP Scheme", "Chakan_Environmental_Plan.pdf");
+    const envFile = seedDummyPdf("Environmental Management & Effluent Treatment Scheme", "Chakan_Environmental_Plan.pdf");
     const civilFile = seedDummyPdf("Industrial Site Master Layout Plan", "Chakan_Site_Layout_Plan.pdf");
     const safetyFile = seedDummyPdf("Factory Safety & Machinery Layout Blueprint", "Chakan_Factory_Safety_Plan.pdf");
     const fireFile = seedDummyPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
@@ -564,10 +564,10 @@ function seedInitialData() {
       VALUES (?, ?, ?, ?, ?, 'application/pdf', ?, ?, ?, ?, ?)
     `);
 
-    insertDocStmt.run(appId1, applicantId, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', envFile.storedName, envFile.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan', 'mpcb');
-    insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan', 'midc');
-    insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan', 'dish');
-    insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan', 'fire');
+    insertDocStmt.run(appId1, applicantId, 'Environmental Management Plan', 'Chakan_Environmental_Management_Effluent_Plan.pdf', envFile.storedName, envFile.size, 'Verified', 'Pollution Control Board Consent to Establish granted under Orange Category', 'environmental_plan', 'mpcb');
+    insertDocStmt.run(appId1, applicantId, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', civilFile.storedName, civilFile.size, 'Verified', 'Meets setback standards and Industrial Development Corporation roadway alignment', 'civil_plan', 'midc');
+    insertDocStmt.run(appId1, applicantId, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', safetyFile.storedName, safetyFile.size, 'Pending', 'Machine guarding layouts and secondary containment under Directorate of Industrial Safety & Health scrutiny', 'factory_safety_plan', 'dish');
+    insertDocStmt.run(appId1, applicantId, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', fireFile.storedName, fireFile.size, 'Pending', 'Static water tank & pump pressure specs under Directorate of Fire Services scrutiny', 'fire_safety_plan', 'fire');
 
     // Add query and scheduled inspection
     const officerRow = db
@@ -577,14 +577,14 @@ function seedInitialData() {
       db.prepare(
         `
         INSERT INTO queries (application_id, officer_id, message, applicant_reply, status, created_at, resolved_at)
-        VALUES (?, ?, 'Please specify the exact designated hazardous waste storage shed coordinates according to MPCB Schedule II.', 'Updated the layout blueprint with marked secondary containment and certified storage shed.', 'Resolved', datetime('now', '-2 days'), datetime('now', '-1 day'))
+        VALUES (?, ?, 'Please specify the exact designated hazardous waste storage shed coordinates according to Pollution Control Board Schedule II.', 'Updated the layout blueprint with marked secondary containment and certified storage shed.', 'Resolved', datetime('now', '-2 days'), datetime('now', '-1 day'))
       `,
       ).run(appId1, officerRow.id);
 
       db.prepare(
         `
         INSERT INTO inspections (application_id, officer_id, department, scheduled_date, inspector_name, status, notes)
-        VALUES (?, ?, 'Directorate of Industrial Safety & Health (DISH)', date('now', '+3 days'), 'Er. V. A. Shinde (Joint Director of Safety)', 'Scheduled', 'Combined joint inspection with Fire Services for machine guarding and egress clearance.')
+        VALUES (?, ?, 'Directorate of Industrial Safety & Health', date('now', '+3 days'), 'Er. V. A. Shinde (Joint Director of Safety)', 'Scheduled', 'Combined joint inspection with Directorate of Fire Services for machine guarding and egress clearance.')
       `,
       ).run(appId1, officerRow.id);
     }
@@ -613,20 +613,20 @@ function seedInitialData() {
     `);
 
     if (!hasEnv) {
-      const f = seedPdf("Environmental Management & ETP Scheme", "Chakan_Environmental_Plan.pdf");
-      insertDocStmt.run(app1.id, app1.user_id, 'Environmental Management Plan', 'Chakan_Environmental_Management_ETP_Plan.pdf', f.storedName, f.size, 'Verified', 'MPCB Consent to Establish (CTE) granted under Orange Category', 'environmental_plan', 'mpcb');
+      const f = seedPdf("Environmental Management & Effluent Treatment Scheme", "Chakan_Environmental_Plan.pdf");
+      insertDocStmt.run(app1.id, app1.user_id, 'Environmental Management Plan', 'Chakan_Environmental_Management_Effluent_Plan.pdf', f.storedName, f.size, 'Verified', 'Pollution Control Board Consent to Establish granted under Orange Category', 'environmental_plan', 'mpcb');
     }
     if (!hasCivil) {
       const f = seedPdf("Industrial Site Master Layout Plan", "Chakan_Site_Layout_Plan.pdf");
-      insertDocStmt.run(app1.id, app1.user_id, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', f.storedName, f.size, 'Verified', 'Meets setback standards and MIDC roadway alignment', 'civil_plan', 'midc');
+      insertDocStmt.run(app1.id, app1.user_id, 'Site Layout Plan', 'Chakan_Industrial_Site_Plan_Rev2.pdf', f.storedName, f.size, 'Verified', 'Meets setback standards and Industrial Development Corporation roadway alignment', 'civil_plan', 'midc');
     }
     if (!hasSafety) {
       const f = seedPdf("Factory Safety & Machinery Layout Blueprint", "Chakan_Factory_Safety_Plan.pdf");
-      insertDocStmt.run(app1.id, app1.user_id, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', f.storedName, f.size, 'Pending', 'Machine guarding layouts and secondary containment under DISH scrutiny', 'factory_safety_plan', 'dish');
+      insertDocStmt.run(app1.id, app1.user_id, 'Factory Safety Blueprint', 'Chakan_Factory_Safety_Hazard_Control.pdf', f.storedName, f.size, 'Pending', 'Machine guarding layouts and secondary containment under Directorate of Industrial Safety & Health scrutiny', 'factory_safety_plan', 'dish');
     }
     if (!hasFire) {
       const f = seedPdf("Fire Hydrant & Evacuation Layout Plan", "Chakan_Fire_Safety_Plan.pdf");
-      insertDocStmt.run(app1.id, app1.user_id, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', f.storedName, f.size, 'Pending', 'Static water tank & pump pressure specs under Fire Services scrutiny', 'fire_safety_plan', 'fire');
+      insertDocStmt.run(app1.id, app1.user_id, 'Fire Protection & Evacuation Plan', 'Chakan_Fire_Hydrant_Evacuation_Plan.pdf', f.storedName, f.size, 'Pending', 'Static water tank & pump pressure specs under Directorate of Fire Services scrutiny', 'fire_safety_plan', 'fire');
     }
   }
 }
@@ -712,7 +712,7 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
           <p style="font-size: 12px; color: #dc2626; font-weight: bold; margin: 8px 0 0 0;">Valid for 1 minute 30 seconds (90 seconds). Do not share this OTP with anyone.</p>
         </div>
         <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-          This is an automated dispatch from the Directorate of Industries and Maharashtra State Innovation Society (MSInS).
+          This is an automated dispatch from the Directorate of Industries and Maharashtra State Innovation Society.
         </p>
       </div>
       <div style="background: #f1f5f9; padding: 12px 24px; text-align: center; font-size: 11px; color: #94a3b8;">
@@ -811,7 +811,7 @@ function apexOfficial(req, res, next) {
   ) {
     return res.status(403).json({
       error:
-        "Access restricted to Department Officer (MSInS / Industries) - Apex Authority.",
+        "Access restricted to Department Officer (State Innovation Society / Industries) - Apex Authority.",
     });
   }
   next();
@@ -826,7 +826,7 @@ function evaluateRegulatoryChecklist(data) {
   const cost = parseFloat(data.projectCost || 0);
   const category = data.industryCategory || "Light Engineering";
 
-  // 1. Determine MSME Classification under MSMED Act 2020
+  // 1. Determine Enterprise Classification under Micro, Small and Medium Enterprises Development Act 2020
   let msme = "Micro";
   if (cost > 50) msme = "Large";
   else if (cost > 10) msme = "Medium";
@@ -855,9 +855,9 @@ function evaluateRegulatoryChecklist(data) {
   // 3. Clearances Required
   const clearances = [
     {
-      name: "MIDC Building Plan & Land Use Approval (Maharashtra Industrial Development Corporation)",
-      dept: "MIDC (Maharashtra Industrial Development Corporation)",
-      statutoryAct: "Maharashtra Regional and Town Planning (MRTP) Act, 1966",
+      name: "Industrial Development Corporation Building Plan & Land Use Approval",
+      dept: "Maharashtra Industrial Development Corporation",
+      statutoryAct: "Maharashtra Regional and Town Planning Act, 1966",
       status: "In Progress",
       taskDept: "midc",
       docs: [
@@ -867,19 +867,19 @@ function evaluateRegulatoryChecklist(data) {
       ],
     },
     {
-      name: `MPCB Consent to Establish (CTE - ${riskTier} Category · Maharashtra Pollution Control Board)`,
-      dept: "MPCB (Maharashtra Pollution Control Board)",
-      statutoryAct: "Water (P&CP) Act 1974 & Air (P&CP) Act 1981",
+      name: `Pollution Control Board Consent to Establish (${riskTier} Category)`,
+      dept: "Maharashtra Pollution Control Board",
+      statutoryAct: "Water (Prevention & Control of Pollution) Act 1974 & Air (Prevention & Control of Pollution) Act 1981",
       status: "Under Review",
       taskDept: "mpcb",
       docs: [
-        "Water Balance Chart & Effluent Treatment Scheme (ETP)",
+        "Water Balance Chart & Effluent Treatment Scheme",
         "Manufacturing Process Flowsheet",
         "Ambient Air & Noise Mitigation Plan",
       ],
     },
     {
-      name: "Provisional Fire Safety NOC (Directorate of Maharashtra Fire Services)",
+      name: "Provisional Fire Safety Clearance Certificate (Directorate of Maharashtra Fire Services)",
       dept: "Maharashtra Fire Services Directorate",
       statutoryAct: "Maharashtra Fire Prevention and Life Safety Measures Act, 2006",
       status: "Under Review",
@@ -890,8 +890,8 @@ function evaluateRegulatoryChecklist(data) {
       ],
     },
     {
-      name: "Factory Registration & Plant Safety Approval (DISH - Directorate of Industrial Safety & Health)",
-      dept: "DISH (Directorate of Industrial Safety & Health)",
+      name: "Factory Registration & Plant Safety Approval (Directorate of Industrial Safety & Health)",
+      dept: "Directorate of Industrial Safety & Health",
       statutoryAct: "Factories Act, 1948",
       status: "In Progress",
       taskDept: "dish",
@@ -903,9 +903,9 @@ function evaluateRegulatoryChecklist(data) {
     {
       name:
         power > 500
-          ? "High Tension (HT) Industrial Power Sanction (MSEDCL)"
-          : "Low Tension (LT) Industrial Power Sanction (MSEDCL)",
-      dept: "MSEDCL (Maharashtra State Electricity Distribution Co. / Mahavitaran)",
+          ? "High Tension Industrial Power Sanction (State Electricity Distribution)"
+          : "Low Tension Industrial Power Sanction (State Electricity Distribution)",
+      dept: "Maharashtra State Electricity Distribution Company",
       statutoryAct: "Electricity Act, 2003",
       status: "In Progress",
       taskDept: "msedcl",
@@ -918,19 +918,19 @@ function evaluateRegulatoryChecklist(data) {
 
   if (isHazardous) {
     clearances.push({
-      name: "Hazardous Waste Authorization (HWA)",
+      name: "Hazardous Waste Management Authorization",
       dept: "Maharashtra Pollution Control Board",
       statutoryAct: "Hazardous and Other Wastes Management Rules, 2016",
       status: "Pending",
       taskDept: "mpcb",
-      docs: ["Hazardous Waste Manifest & Disposal Agreement with MEPL/CHWTSDF"],
+      docs: ["Hazardous Waste Manifest & Disposal Agreement with Treatment Facility"],
     });
   }
 
   if (water > 50) {
     clearances.push({
-      name: "Maharashtra Ground Water Authority (MGWA) Water Extraction NOC",
-      dept: "Water Resources Department, GoM",
+      name: "Maharashtra Ground Water Authority Water Extraction Clearance Certificate",
+      dept: "Water Resources Department, Government of Maharashtra",
       statutoryAct: "Maharashtra Ground Water Development and Management Act",
       status: "Pending",
       taskDept: "wrd",
@@ -941,16 +941,16 @@ function evaluateRegulatoryChecklist(data) {
   // 4. Eligible Maharashtra Government Incentive Schemes
   const schemes = [
     {
-      title: "Package Scheme of Incentives (PSI - 2019/2024)",
+      title: "Package Scheme of Incentives (2019/2024)",
       dept: "Directorate of Industries, Maharashtra",
       benefits:
         "Up to 40%-80% Capital Subsidy on Fixed Capital Investment, Stamp Duty & Registration Exemption",
       eligibility:
-        "Applicable for MSMEs and Large units established in Maharashtra industrial zones",
+        "Applicable for Micro, Small and Medium Enterprises and Large units established in Maharashtra industrial zones",
     },
     {
-      title: "MSInS Startup Innovation Voucher & Seed Grant",
-      dept: "Maharashtra State Innovation Society (MSInS)",
+      title: "State Innovation Society Startup Innovation Voucher & Seed Grant",
+      dept: "Maharashtra State Innovation Society",
       benefits:
         "Up to ₹15 Lakhs financial grant for innovative prototyping and commercialization",
       eligibility:
@@ -958,10 +958,10 @@ function evaluateRegulatoryChecklist(data) {
     },
     {
       title: "Industrial Electricity Duty & Green Power Waiver",
-      dept: "Energy Department, Govt of Maharashtra",
+      dept: "Energy Department, Government of Maharashtra",
       benefits:
         "100% waiver of Electricity Duty for 7 to 10 years based on taluka categorization",
-      eligibility: "New industrial units taking power sanction from MSEDCL",
+      eligibility: "New industrial units taking power sanction from State Electricity Distribution Company",
     },
     {
       title: "Interest Subvention on Working Capital",
@@ -1863,7 +1863,7 @@ app.post("/api/applications", auth, (req, res) => {
       .get(req.session.user.id);
     if (user && user.is_banned) {
       return res.status(403).json({
-        error: `Your enterprise account has been blacklisted and banned from future statutory clearances by order of Directorate of Industries & MSInS. Reason: ${user.ban_reason || "Statutory non-compliance"}.`,
+        error: `Your enterprise account has been blacklisted and banned from future statutory clearances by order of Directorate of Industries & State Innovation Society. Reason: ${user.ban_reason || "Statutory non-compliance"}.`,
       });
     }
 
@@ -1894,9 +1894,9 @@ app.post("/api/applications", auth, (req, res) => {
     });
 
     const seq = String(Date.now()).slice(-5);
-    const appNo = `MH/MSInS/2026/${seq}`;
+    const appNo = `MH/UDYOG/2026/${seq}`;
 
-    // Phase 1: MPCB Environmental Review first; Phase 2: MIDC, DISH, Fire parallel; Phase 3: MSInS Apex
+    // Phase 1: Environmental Review first; Phase 2: Simultaneous Scrutiny; Phase 3: Apex Approval
     const parallelStatus = {
       mpcb: {
         status:
@@ -1905,7 +1905,7 @@ app.post("/api/applications", auth, (req, res) => {
             : "Under Scrutiny",
         phase: 1,
         remarks:
-          "Phase 1: Environmental Plan & Effluent Scheme pending review by Environment Officer (MPCB)",
+          "Phase 1: Environmental Plan & Effluent Scheme pending review by Environment Officer (Pollution Control Board)",
         updated: new Date().toISOString(),
       },
       midc: {
@@ -2558,18 +2558,18 @@ app.patch("/api/documents/:id/verify", auth, official, (req, res) => {
 
 // =================================================================
 // 3-PHASE STATUTORY PIPELINE DECISION ENGINE
-// Phase 1: MPCB Environmental Review first
-// Phase 2: Simultaneous Departmental Scrutiny (MIDC, DISH, Fire)
-// Phase 3: Final Consolidated Clearance by MSInS Apex Officer
+// Phase 1: Environmental Review first
+// Phase 2: Simultaneous Departmental Scrutiny (Civil Infrastructure, Factory Safety, Fire Services)
+// Phase 3: Final Consolidated Clearance by State Innovation Society Apex Officer
 // =================================================================
 const PIPELINE_STAGES = ["mpcb", "parallel_scrutiny", "msins"];
 const STAGE_LABELS = {
-  mpcb: "Maharashtra Pollution Control Board (MPCB) · Environmental Review",
-  midc: "MIDC (Maharashtra Industrial Development Corporation) · Civil & Infrastructure",
-  dish: "DISH (Directorate of Industrial Safety & Health) · Factory Safety",
-  fire: "Directorate of Maharashtra Fire Services · Life Safety NOC",
-  parallel_scrutiny: "Simultaneous Departmental Scrutiny (MIDC Civil, DISH Safety, Fire Services)",
-  msins: "Department Officer - MSInS Apex Authority (Maharashtra State Innovation Society / Industries Dept)",
+  mpcb: "Maharashtra Pollution Control Board · Environmental Review",
+  midc: "Maharashtra Industrial Development Corporation · Civil & Infrastructure",
+  dish: "Directorate of Industrial Safety & Health · Factory Safety",
+  fire: "Directorate of Maharashtra Fire Services · Life Safety Clearance Certificate",
+  parallel_scrutiny: "Simultaneous Departmental Scrutiny (Civil Infrastructure, Factory Safety, Fire Services)",
+  msins: "Department Officer - Apex Authority (Maharashtra State Innovation Society / Industries Department)",
 };
 
 app.post(
@@ -2614,14 +2614,21 @@ app.post(
       if (currentStage === "mpcb") {
         if (officerDept !== "mpcb" && (!isApex || targetDept !== "mpcb")) {
           return res.status(403).json({
-            error: "This application is in Phase 1 (Environmental Review). It must be approved by the Environment Officer (MPCB) before other departments can review.",
+            error: "This application is in Phase 1 (Environmental Review). It must be approved by the Environment Officer (Pollution Control Board) before other departments can review.",
           });
         }
         activeDept = "mpcb";
       } else if (currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage)) {
         if (!["midc", "dish", "fire"].includes(officerDept) && (!isApex || !["midc", "dish", "fire"].includes(targetDept))) {
+          const deptNames = {
+            mpcb: "Maharashtra Pollution Control Board",
+            midc: "Maharashtra Industrial Development Corporation",
+            dish: "Directorate of Industrial Safety & Health",
+            fire: "Directorate of Fire Services",
+            msins: "Maharashtra State Innovation Society",
+          };
           return res.status(403).json({
-            error: `Access Denied: You belong to ${(officerDept || "").toUpperCase()} and are not authorized for Phase 2 simultaneous scrutiny.`,
+            error: `Access Denied: You belong to ${deptNames[officerDept] || officerDept} and are not authorized for Phase 2 simultaneous scrutiny.`,
           });
         }
         if (!activeDept || !["midc", "dish", "fire"].includes(activeDept)) {
@@ -2630,7 +2637,7 @@ app.post(
       } else if (currentStage === "msins") {
         if (!isApex && officerDept !== "msins") {
           return res.status(403).json({
-            error: "Access Denied: Final Single-Window Clearance is strictly reserved for the Department Officer (MSInS / Industries Apex Authority).",
+            error: "Access Denied: Final Single-Window Clearance is strictly reserved for the Department Officer (State Innovation Society / Industries Apex Authority).",
           });
         }
         activeDept = "msins";
@@ -2768,7 +2775,7 @@ app.post(
         if (parallelStatus.dish) parallelStatus.dish.status = "Under Scrutiny";
         if (parallelStatus.fire) parallelStatus.fire.status = "Under Scrutiny";
         stageMsg =
-          "Phase 1 Environmental clearance granted by MPCB. Application forwarded simultaneously to MIDC Civil, DISH Factory Safety, and Fire Services.";
+          "Phase 1 Environmental clearance granted by Maharashtra Pollution Control Board. Application forwarded simultaneously to Industrial Development Corporation Civil, Directorate of Industrial Safety & Health, and Directorate of Fire Services.";
       } else if (currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage)) {
         // Check if all 3 parallel departments have approved
         const midcApproved = stageStatuses.midc?.decision === "Approved";
@@ -2781,13 +2788,13 @@ app.post(
             parallelStatus.msins.status = "Pending Final Apex Clearance";
           }
           stageMsg =
-            "All confirming departmental clearances (MIDC Civil, DISH Factory Safety, Fire Services) secured! Dossier forwarded to Department Officer (MSInS Apex) for final clearance.";
+            "All confirming departmental clearances (Industrial Development Corporation Civil, Directorate of Industrial Safety & Health, Directorate of Fire Services) secured! Dossier forwarded to Department Officer (State Innovation Society Apex Authority) for final clearance.";
         } else {
           nextStage = "parallel_scrutiny";
           const pending = [];
-          if (!midcApproved) pending.push("MIDC Civil");
-          if (!dishApproved) pending.push("DISH Safety");
-          if (!fireApproved) pending.push("Fire Services");
+          if (!midcApproved) pending.push("Industrial Development Corporation Civil");
+          if (!dishApproved) pending.push("Directorate of Industrial Safety & Health");
+          if (!fireApproved) pending.push("Directorate of Fire Services");
           stageMsg = `Approved by ${STAGE_LABELS[activeDept] || activeDept}. Awaiting simultaneous clearance from: ${pending.join(", ")}.`;
         }
       } else if (currentStage === "msins") {
@@ -2796,7 +2803,7 @@ app.post(
         newOverallStatus = "Approved";
         if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
         stageMsg =
-          "Final Single-Window Statutory Clearance granted by MSInS Apex Authority. Application is officially Approved.";
+          "Final Single-Window Statutory Clearance granted by State Innovation Society Apex Authority. Application is officially Approved.";
       }
 
       db.prepare(
@@ -2854,7 +2861,7 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
       {
         code: "mpcb",
         phase: 1,
-        label: "MPCB (Environmental Clearance)",
+        label: "Pollution Control Board (Environmental Clearance)",
         status: stageStatuses.mpcb
           ? stageStatuses.mpcb.decision
           : curr === "mpcb"
@@ -2867,7 +2874,7 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
       {
         code: "midc",
         phase: 2,
-        label: "MIDC (Civil & Infrastructure)",
+        label: "Industrial Development Corporation (Civil & Infrastructure)",
         status: stageStatuses.midc
           ? stageStatuses.midc.decision
           : curr === "mpcb"
@@ -2882,7 +2889,7 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
       {
         code: "dish",
         phase: 2,
-        label: "DISH (Factory Safety)",
+        label: "Directorate of Industrial Safety & Health (Factory Safety)",
         status: stageStatuses.dish
           ? stageStatuses.dish.decision
           : curr === "mpcb"
@@ -2897,7 +2904,7 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
       {
         code: "fire",
         phase: 2,
-        label: "Maharashtra Fire Services",
+        label: "Directorate of Fire Services",
         status: stageStatuses.fire
           ? stageStatuses.fire.decision
           : curr === "mpcb"
@@ -2912,7 +2919,7 @@ app.get("/api/applications/:id/pipeline", auth, (req, res) => {
       {
         code: "msins",
         phase: 3,
-        label: "MSInS Apex Officer (Final Approval)",
+        label: "State Innovation Society Apex Officer (Final Approval)",
         status: stageStatuses.msins
           ? stageStatuses.msins.decision
           : curr === "msins"
@@ -2980,7 +2987,7 @@ app.patch(
       const activePhaseStage = appRow.current_stage || "mpcb";
       if (["midc", "dish", "fire"].includes(deptCode) && activePhaseStage === "mpcb") {
         return res.status(403).json({
-          error: "This application is in Phase 1 (Environmental Review). It must be approved by MPCB before Phase 2 departments can issue clearances.",
+          error: "This application is in Phase 1 (Environmental Review). It must be approved by Maharashtra Pollution Control Board before Phase 2 departments can issue clearances.",
         });
       }
       if (deptCode === "mpcb" && activePhaseStage !== "mpcb") {
@@ -2990,7 +2997,7 @@ app.patch(
       }
       if (deptCode === "msins" && activePhaseStage !== "msins") {
         return res.status(403).json({
-          error: "MSInS Final Clearance can only be issued after Phase 1 and Phase 2 departmental reviews are complete.",
+          error: "State Innovation Society Final Clearance can only be issued after Phase 1 and Phase 2 departmental reviews are complete.",
         });
       }
 
@@ -3125,14 +3132,14 @@ app.patch("/api/applications/:id/status", auth, official, (req, res) => {
     const { status, remarks, department, parallelStatus } = req.body;
     const appId = req.params.id;
 
-    // Final Approval or Rejection of the entire dossier is strictly reserved for MSInS Apex Officer
+    // Final Approval or Rejection of the entire dossier is strictly reserved for State Innovation Society Apex Officer
     if (
       (status === "Approved" || status === "Rejected") &&
       !req.session.user.isApex
     ) {
       return res.status(403).json({
         error:
-          "Consolidated Single-Window Final Approval and NOC issuance is strictly reserved for the Department Officer (MSInS / Industries) - Apex Authority.",
+          "Consolidated Single-Window Final Approval and Clearance Certificate issuance is strictly reserved for the Department Officer (State Innovation Society / Industries) - Apex Authority.",
       });
     }
 
@@ -3150,9 +3157,9 @@ app.patch("/api/applications/:id/status", auth, official, (req, res) => {
           decision: "Approved",
           remarks:
             remarks ||
-            "Consolidated Single-Window Statutory Clearance & NOC issued by Directorate of Industries & MSInS (Apex Authority).",
+            "Consolidated Single-Window Statutory Clearance & Certificate issued by Directorate of Industries & State Innovation Society (Apex Authority).",
           officer: req.session.user.contactPerson || req.session.user.email,
-          officer_dept: "Directorate of Industries & MSInS",
+          officer_dept: "Directorate of Industries & State Innovation Society",
           decided_at: new Date().toISOString(),
         };
       }
@@ -3413,7 +3420,7 @@ app.get("/api/applications/:id/inspections", auth, (req, res) => {
   }
 });
 
-// Digital Clearance Certificate & Verifiable NOC
+// Digital Clearance Certificate
 app.get("/api/applications/:id/certificate", auth, (req, res) => {
   try {
     const a = db
@@ -3441,7 +3448,7 @@ app.get("/api/applications/:id/certificate", auth, (req, res) => {
       });
     }
 
-    const certNo = `NOC/MH/IND/${a.id}/${new Date(a.created_at).getFullYear()}`;
+    const certNo = `CERT/MH/IND/${a.id}/${new Date(a.created_at).getFullYear()}`;
     const certHash = crypto
       .createHash("sha256")
       .update(`${a.application_no}-${a.company_name}-APPROVED-MAHARASHTRA`)
@@ -3459,7 +3466,7 @@ app.get("/api/applications/:id/certificate", auth, (req, res) => {
       industryCategory: a.industry_category,
       riskTier: a.risk_tier,
       status: a.status,
-      issuedBy: "Government of Maharashtra - Directorate of Industries & MSInS",
+      issuedBy: "Government of Maharashtra - Directorate of Industries & State Innovation Society",
       issuedDate: new Date().toISOString().split("T")[0],
       validUntil: `${new Date().getFullYear() + 5}-03-31`,
       verificationHash: certHash,
@@ -3549,31 +3556,31 @@ app.get("/api/analytics/summary", auth, official, (req, res) => {
       },
       departmentClearanceTimes: [
         {
-          department: "MIDC Land & Building Plan",
+          department: "Industrial Development Corporation Land & Building Plan",
           avgDays: 5.2,
           slaTarget: 7,
           complianceRate: "94%",
         },
         {
-          department: "MPCB Environmental Consent",
+          department: "Pollution Control Board Environmental Consent",
           avgDays: 12.8,
           slaTarget: 15,
           complianceRate: "88%",
         },
         {
-          department: "Maharashtra Fire Services NOC",
+          department: "Directorate of Fire Services Clearance",
           avgDays: 6.5,
           slaTarget: 7,
           complianceRate: "91%",
         },
         {
-          department: "DISH Factory & Safety Clearance",
+          department: "Directorate of Industrial Safety & Health Clearance",
           avgDays: 7.9,
           slaTarget: 10,
           complianceRate: "92%",
         },
         {
-          department: "MSEDCL Industrial Power Connection",
+          department: "State Electricity Distribution Power Connection",
           avgDays: 4.1,
           slaTarget: 5,
           complianceRate: "96%",
@@ -3596,7 +3603,7 @@ app.get("/api/analytics/summary", auth, official, (req, res) => {
           dropOffRate: "7%",
         },
         {
-          stage: "Final Integrated NOC Issuance",
+          stage: "Final Integrated Clearance Certificate Issuance",
           avgTime: "1.1 Days",
           dropOffRate: "1%",
         },
@@ -3618,12 +3625,11 @@ app.get("/api/analytics/summary", auth, official, (req, res) => {
           : [
               { risk_tier: "Green", count: 24 },
               { risk_tier: "Orange", count: 18 },
-              { risk_tier: "Red", count: 8 },
+              { risk_tier: "Red", count: 6 },
             ],
     });
   } catch (err) {
-    console.error("Analytics error:", err);
-    res.status(500).json({ error: "Failed to aggregate analytics" });
+    res.status(500).json({ error: "Failed to load analytics summary" });
   }
 });
 
@@ -3632,26 +3638,34 @@ app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "public/pages/login.html")),
 );
 
+// Export app for test suites
+module.exports = app;
+
 // Start server if run directly
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`====================================================`);
-    console.log(`UDYOG SAMYOG - Maharashtra Single Window Industrial Portal`);
-    console.log(`Server live on http://localhost:${PORT}`);
+    console.log(`================================================================================`);
+    console.log(`🏛️  UDYOG SAMYOG - Maharashtra Single Window Industrial Portal`);
+    console.log(`🚀 Server live on http://localhost:${PORT}`);
+    console.log(`--------------------------------------------------------------------------------`);
     console.log(
-      `1. MSInS Apex Officer: officer@udyog.gov.in / Officer@123# (Final Approver)`,
-    );
-    console.log(`2. MIDC Civil: midc.officer@udyog.gov.in / Midc@123#`);
-    console.log(`3. MPCB Environment: mpcb.officer@udyog.gov.in / Mpcb@123#`);
-    console.log(`4. Fire Services: fire.officer@udyog.gov.in / Fire@123#`);
-    console.log(
-      `5. DISH Factory Safety: dish.officer@udyog.gov.in / Dish@123#`,
+      `1. Maharashtra State Innovation Society (Apex Approver): officer@udyog.gov.in / Officer@123#`,
     );
     console.log(
-      `6. Demo Applicant: entrepreneur@mahindra-auto.in / Applicant@123#`,
+      `2. Maharashtra Industrial Development Corporation (Civil Infrastructure): midc.officer@udyog.gov.in / Midc@123#`,
     );
-    console.log(`====================================================`);
+    console.log(
+      `3. Maharashtra Pollution Control Board (Environmental Review): mpcb.officer@udyog.gov.in / Mpcb@123#`,
+    );
+    console.log(
+      `4. Directorate of Maharashtra Fire Services (Life Safety): fire.officer@udyog.gov.in / Fire@123#`,
+    );
+    console.log(
+      `5. Directorate of Industrial Safety & Health (Factory Safety): dish.officer@udyog.gov.in / Dish@123#`,
+    );
+    console.log(
+      `6. Enterprise Applicant (Industrial Unit Applicant): entrepreneur@mahindra-auto.in / Applicant@123#`,
+    );
+    console.log(`================================================================================`);
   });
 }
-
-module.exports = app;

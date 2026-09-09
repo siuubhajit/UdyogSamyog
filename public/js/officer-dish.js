@@ -1,5 +1,5 @@
 /**
- * DISH Officer Controller - Directorate of Industrial Safety & Health
+ * Factory Safety Officer Controller - Directorate of Industrial Safety & Health
  * Phase 2: Simultaneous Factory Safety Blueprint Scrutiny & Hazard Assessment
  */
 
@@ -20,7 +20,7 @@ async function loadApplications() {
     renderKPIs();
     renderApplicationsTable();
   } catch (err) {
-    console.error("Failed to load DISH applications:", err);
+    console.error("Failed to load Factory Safety applications:", err);
   }
 }
 
@@ -119,7 +119,7 @@ function renderApplicationsTable() {
       } else if (isAwaitingSafety) {
         statusBadge = `<span class="badge yellow" style="font-weight:700">Phase 2: Simultaneous Review Active</span>`;
       } else if (a.current_stage === "mpcb") {
-        statusBadge = `<span class="badge gray">Queued (Awaiting MPCB)</span>`;
+        statusBadge = `<span class="badge gray">Queued (Awaiting Environmental Clearance)</span>`;
       } else {
         statusBadge = `<span class="badge blue">Processed (${a.status})</span>`;
       }
@@ -244,7 +244,7 @@ async function submitSafetyDecision(decision) {
         targetDept: "dish",
         remarks:
           remarks ||
-          `DISH Factory Safety Blueprint approved under Factories Act 1948.`,
+          `Factory Safety Blueprint approved under Factories Act 1948.`,
       }),
     });
 

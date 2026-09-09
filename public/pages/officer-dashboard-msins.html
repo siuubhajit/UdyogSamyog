@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MSInS Apex Directorate | Udyog Samyog - Govt. of Maharashtra</title>
+    <title>State Innovation Society Apex Directorate | Udyog Samyog - Govt. of Maharashtra</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
       :root {
@@ -46,7 +46,7 @@
           <div class="brand-emblem">&#127963;</div>
           <div class="brand-text">
             <div class="brand-title">&#2313;&#2342;&#2381;&#2351;&#2379;&#2327; &#2360;&#2306;&#2351;&#2379;&#2327; | UDYOG SAMYOG</div>
-            <div class="brand-tag">Directorate of Industries &amp; MSInS &middot; Apex Authority Console</div>
+            <div class="brand-tag">Directorate of Industries &amp; State Innovation Society &middot; Apex Authority Console</div>
           </div>
         </div>
         <div class="topbar-actions">
@@ -54,10 +54,10 @@
             <div class="user-pill-avatar" data-user-initial>A</div>
             <div>
               <div style="font-weight:700;line-height:1.2" data-user-name>Apex Authority</div>
-              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>MSInS · Maharashtra State Innovation Society</div>
+              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>Apex Authority · State Innovation Society</div>
             </div>
           </div>
-          <span class="dept-badge">&#9733; MSInS APEX APPROVER</span>
+          <span class="dept-badge">&#9733; APEX APPROVER AUTHORITY</span>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -72,7 +72,7 @@
             <span class="sidebar-icon">&#127970;</span> Enterprise Registry &amp; Ban
           </a>
           <a href="javascript:void(0)" id="navPsi" onclick="switchView('psi')">
-            <span class="sidebar-icon">&#128176;</span> PSI Incentives Sanction
+            <span class="sidebar-icon">&#128176;</span> Incentive Schemes Sanction
           </a>
           <a href="verification.html">
             <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
@@ -82,7 +82,7 @@
           </a>
           <div class="sidebar-footer">
             <b style="color:#ffffff">Maharashtra Single Window Act</b><br/>
-            MSInS Apex statutory power to synthesize confirming clearances (MPCB, MIDC, DISH, Fire) and issue the final consolidated sanction.
+            Apex statutory power to synthesize confirming clearances (Pollution Control, Industrial Development, Safety, Fire) and issue the final consolidated sanction.
           </div>
         </aside>
 
@@ -92,13 +92,13 @@
             <div class="page-header">
               <div class="page-pretitle">Government of Maharashtra &middot; Directorate of Industries</div>
               <h1 class="page-title">Consolidated Single-Window Approval Queue</h1>
-              <p class="page-subtitle">Master state console monitoring all departmental stages (Phase 1: MPCB Environmental &rarr; Phase 2: MIDC Civil, DISH Factory Safety, Fire Services) and granting final statutory clearance.</p>
+              <p class="page-subtitle">Master state console monitoring all departmental stages (Phase 1: Environmental &rarr; Phase 2: Civil, Factory Safety, Fire Services) and granting final statutory clearance.</p>
             </div>
 
             <div class="stage-info-box">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
                 <div>
-                  <b style="color:var(--dept-color);font-size:.95rem">&#127963; MSInS (Maharashtra State Innovation Society) Apex Approver Authority</b>
+                  <b style="color:var(--dept-color);font-size:.95rem">&#127963; Maharashtra State Innovation Society &middot; Apex Approver Authority</b>
                   <div style="margin-top:4px;color:var(--ink-light)">You have full state oversight. You can grant <b>Final Single-Window Clearance Certificates</b> once departmental clearances are satisfied, or intervene when statutory SLAs are breached.</div>
                 </div>
                 <span class="badge green" style="padding:6px 12px;font-size:.8rem">&#10003; Full Statutory Jurisdiction</span>
@@ -107,9 +107,9 @@
 
             <div class="grid">
               <div class="card card-kpi"><span class="card-label">State Dossiers Total</span><span class="card-value" id="kpiTotal">0</span><span class="card-sub">All Districts</span></div>
-              <div class="card card-kpi saffron"><span class="card-label">Awaiting Final Apex NOC</span><span class="card-value" id="kpiPendingApex">0</span><span class="card-sub">Phase 3 Action Ready</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Awaiting Final Apex Clearance</span><span class="card-value" id="kpiPendingApex">0</span><span class="card-sub">Phase 3 Action Ready</span></div>
               <div class="card card-kpi ruby"><span class="card-label">Simultaneous Review</span><span class="card-value" id="kpiParallelReview">0</span><span class="card-sub">Phase 2 Parallel</span></div>
-              <div class="card card-kpi emerald"><span class="card-label">Licensed Enterprises</span><span class="card-value" id="kpiApprovedApex">0</span><span class="card-sub">Final NOC Issued</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Licensed Enterprises</span><span class="card-value" id="kpiApprovedApex">0</span><span class="card-sub">Final Clearance Issued</span></div>
             </div>
 
             <!-- COMPANY NAME SEARCH & LICENSE STATUS CONSOLE -->
@@ -141,7 +141,7 @@
                 <option value="all">Status: All</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Flagged">Flagged / Queries</option>
-                <option value="Approved">Approved (Final NOC)</option>
+                <option value="Approved">Approved (Final Clearance)</option>
                 <option value="Rejected">Rejected</option>
               </select>
               <select id="filterRisk">
@@ -190,7 +190,7 @@
             <div class="page-header">
               <div class="page-pretitle">Statutory Governance</div>
               <h1 class="page-title">Maharashtra Enterprise Registry &amp; Blacklist</h1>
-              <p class="page-subtitle">Statutory power of the MSInS Apex Authority to blacklist non-compliant enterprises and enforce statutory suspensions.</p>
+              <p class="page-subtitle">Statutory power of the Apex Authority to blacklist non-compliant enterprises and enforce statutory suspensions.</p>
             </div>
 
             <div class="panel" style="margin-bottom:20px;background:#fff;border-left:5px solid var(--navy)">
@@ -220,11 +220,11 @@
             </div>
           </div>
 
-          <!-- PSI INCENTIVES SANCTION MODULE -->
+          <!-- INCENTIVES SANCTION MODULE -->
           <div id="psiSection" style="display:none">
             <div class="page-header">
               <div class="page-pretitle">Financial Subsidies &middot; Directorate of Industries</div>
-              <h1 class="page-title">Package Scheme of Incentives (PSI 2019/2024) Sanction Tool</h1>
+              <h1 class="page-title">Package Scheme of Incentives Sanction Tool</h1>
               <p class="page-subtitle">Compute and sanction capital investment subsidies, stamp duty exemptions, and electricity duty waivers for approved units.</p>
             </div>
 
@@ -232,7 +232,7 @@
               <div class="card card-kpi emerald"><span class="card-label">Eligible Subsidy Band</span><span class="card-value">40% &ndash; 80%</span><span class="card-sub">On Fixed Capital Investment</span></div>
               <div class="card card-kpi saffron"><span class="card-label">Stamp Duty Exemption</span><span class="card-value">100%</span><span class="card-sub">In Zones B, C, D, D+</span></div>
               <div class="card card-kpi"><span class="card-label">Electricity Duty Waiver</span><span class="card-value">7 &ndash; 10 Yrs</span><span class="card-sub">Industrial Feeder Lines</span></div>
-              <div class="card card-kpi gold"><span class="card-label">MSInS Innovation Grant</span><span class="card-value">&#8377;15 Lakhs</span><span class="card-sub">Seed Voucher Scheme</span></div>
+              <div class="card card-kpi gold"><span class="card-label">State Innovation Grant</span><span class="card-value">&#8377;15 Lakhs</span><span class="card-sub">Seed Voucher Scheme</span></div>
             </div>
 
             <div class="psi-calc-box">
@@ -273,8 +273,8 @@
     <!-- APEX DECISION MODAL -->
     <div id="decisionModal" class="modal-overlay" style="display:none">
       <div class="modal-card" style="max-width:640px">
-        <h2 id="decisionModalTitle" style="color:var(--navy)">&#127963; MSInS Apex Decision &middot; Final Statutory Clearance</h2>
-        <p id="decisionModalSubtitle" style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Issue Consolidated Single-Window NOC or forward instructions.</p>
+        <h2 id="decisionModalTitle" style="color:var(--navy)">&#127963; Apex Authority Decision &middot; Final Statutory Clearance</h2>
+        <p id="decisionModalSubtitle" style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Issue Consolidated Single-Window Clearance or forward instructions.</p>
         
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 14px;margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;font-size:.85rem">
@@ -296,7 +296,7 @@
         </div>
 
         <div class="decision-btn-row">
-          <button class="btn btn-approve" onclick="submitApexFinal('Approved')">&#10003; Grant Consolidated Final Approval &amp; Issue NOC</button>
+          <button class="btn btn-approve" onclick="submitApexFinal('Approved')">&#10003; Grant Consolidated Final Approval &amp; Issue Clearance</button>
           <button class="btn btn-reject" onclick="submitApexDecision('Rejected')">&#10005; Reject Dossier</button>
           <button class="btn btn-query" onclick="submitApexDecision('Query')">&#10067; Raise Apex Query</button>
           <button class="btn outline sm" onclick="closeDecisionModal()">Cancel</button>
@@ -322,9 +322,9 @@
         </label>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
           <span style="font-size:.72rem;color:var(--ink-muted)">Quick grounds:</span>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Hazardous effluent discharge in violation of MPCB Schedule II')">Effluent Breach</button>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Unauthorized construction without MIDC building permit')">Civil Breach</button>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Non-compliance with DISH factory machinery safety standards')">Safety Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Hazardous effluent discharge in violation of Pollution Control standards')">Effluent Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Unauthorized construction without Industrial Development building permit')">Civil Breach</button>
+          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Non-compliance with factory machinery safety standards')">Safety Breach</button>
           <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Fraudulent misrepresentation of statutory documents')">Document Fraud</button>
         </div>
         <div class="modal-actions" style="margin-top:16px">
@@ -371,9 +371,9 @@
     <!-- FINAL SINGLE-WINDOW APPROVAL MODAL -->
     <div id="finalApprovalModal" class="modal-overlay" style="display:none">
       <div class="modal-card" style="max-width:540px;">
-        <h2 style="color:#15803d;">🏆 Grant Final Single-Window Clearance &amp; Master NOC</h2>
+        <h2 style="color:#15803d;">🏆 Grant Final Single-Window Clearance &amp; Sanction</h2>
         <p style="font-size:0.85rem; color:var(--ink-light); margin-bottom:14px;">
-          As Department Officer (MSInS / Industries Apex Authority), grant the consolidated statutory sanction for Application <b id="finalModalAppNo">---</b> (<span id="finalModalCompany">---</span>).
+          As Lead Approving Officer (State Innovation Society / Industries Apex Authority), grant the consolidated statutory sanction for Application <b id="finalModalAppNo">---</b> (<span id="finalModalCompany">---</span>).
         </p>
         <label style="font-weight:700; color:var(--navy); font-size:0.85rem; display:block; margin-bottom:6px;">
           Official Single-Window Sanction Order / Conditions:

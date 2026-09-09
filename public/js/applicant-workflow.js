@@ -68,14 +68,14 @@ function renderWorkflowCard(data) {
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.2rem;">🌿</span>
-              <h3 style="margin:0; font-size:1.05rem; color:#1e293b;">Phase 1: MPCB (Maharashtra Pollution Control Board) · Environmental Clearance & CTE</h3>
+              <h3 style="margin:0; font-size:1.05rem; color:#1e293b;">Phase 1: Maharashtra Pollution Control Board · Environmental Clearance</h3>
               <span class="badge ${mpcbApproved ? 'green' : 'yellow'}">
                 ${mpcbApproved ? '✓ Cleared by Environment Officer' : 'Phase 1 Under Active Scrutiny'}
               </span>
             </div>
-            <div style="font-size:0.75rem; color:#0f766e; font-weight:600; margin-top:2px;">CTE = Consent to Establish under Water &amp; Air Pollution Control Acts</div>
+            <div style="font-size:0.75rem; color:#0f766e; font-weight:600; margin-top:2px;">Statutory Environmental Clearance under Water &amp; Air Pollution Control Acts</div>
             <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
-              Statutory review: Environmental Management Plan, Effluent Treatment Scheme (ETP), and Air Emission mitigation.
+              Statutory review: Environmental Management Plan, Effluent Treatment Scheme, and Air Emission mitigation.
             </p>
             ${mpcb.remarks ? `<div style="font-size:0.82rem; color:#0f766e; background:#f0fdfa; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Officer Remarks:</b> "${mpcb.remarks}"</div>` : ''}
           </div>
@@ -95,30 +95,30 @@ function renderWorkflowCard(data) {
             </h3>
           </div>
           <span class="badge ${isParallelActive ? 'yellow' : mpcbApproved ? 'blue' : 'gray'}">
-            ${isParallelActive ? 'Active Simultaneous Review' : mpcbApproved ? 'Phase 2 Completed' : 'Queued (Awaiting MPCB)'}
+            ${isParallelActive ? 'Active Simultaneous Review' : mpcbApproved ? 'Phase 2 Completed' : 'Queued (Awaiting Environmental Clearance)'}
           </span>
         </div>
         <p style="font-size:0.82rem; color:var(--ink-light); margin-bottom:14px;">
-          Once MPCB Environmental Clearance is secured, Civil, Factory Safety, and Fire departments evaluate your blueprints simultaneously:
+          Once Environmental Clearance is secured, Civil, Factory Safety, and Fire departments evaluate your blueprints simultaneously:
         </p>
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
-          <!-- 1. MIDC Civil -->
+          <!-- 1. Civil Infrastructure -->
           <div style="background:#ffffff; border:1px solid ${midcApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <b style="color:var(--navy);">📐 MIDC Civil & Infra</b>
+              <b style="color:var(--navy);">📐 Industrial Development Corporation · Civil Infrastructure</b>
               <span class="badge ${midcApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${midcApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
             <div style="font-size:0.72rem; color:#1e40af; font-weight:600; margin-top:2px;">Maharashtra Industrial Development Corporation</div>
-            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Floor Space Index (FSI/FAR), building setbacks & vehicle driveway access under MRTP Act.</div>
+            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Floor Space Index, building setbacks & vehicle driveway access under Regional and Town Planning standards.</div>
             ${midc.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${midc.remarks}"</div>` : ''}
             ${civilDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${civilDoc.id}/view" target="_blank">📄 View Civil Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
           </div>
 
-          <!-- 2. DISH Factory Safety -->
+          <!-- 2. Factory Safety -->
           <div style="background:#ffffff; border:1px solid ${dishApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <b style="color:var(--navy);">🛡️ DISH Factory Safety</b>
+              <b style="color:var(--navy);">🛡️ Directorate of Industrial Safety & Health · Factory Safety</b>
               <span class="badge ${dishApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${dishApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
             <div style="font-size:0.72rem; color:#9a3412; font-weight:600; margin-top:2px;">Directorate of Industrial Safety & Health</div>
@@ -131,31 +131,31 @@ function renderWorkflowCard(data) {
           <!-- 3. Fire Services -->
           <div style="background:#ffffff; border:1px solid ${fireApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <b style="color:var(--navy);">🚒 Fire Services Directorate</b>
+              <b style="color:var(--navy);">🚒 Directorate of Maharashtra Fire Services</b>
               <span class="badge ${fireApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${fireApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
             <div style="font-size:0.72rem; color:#991b1b; font-weight:600; margin-top:2px;">Directorate of Maharashtra Fire Services</div>
-            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Static water storage (100–250 kL), 2280+ LPM pump rating & peripheral tender access for Fire NOC.</div>
+            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Static water storage (100–250 kL), 2280+ LPM pump rating & peripheral tender access for Life Safety Clearance.</div>
             ${fire.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${fire.remarks}"</div>` : ''}
             ${fireDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${fireDoc.id}/view" target="_blank">📄 View Fire Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
           </div>
         </div>
       </div>
 
-      <!-- Phase 3: Final Single-Window Clearance (MSInS Apex) -->
+      <!-- Phase 3: Final Single-Window Clearance (Apex Authority) -->
       <div style="background:${msinsApproved ? '#f0fdf4' : '#eff6ff'}; border:1.5px solid ${msinsApproved ? '#86efac' : '#bfdbfe'}; border-radius:8px; padding:16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.2rem;">🏆</span>
               <h3 style="margin:0; font-size:1.05rem; color:var(--navy);">
-                Phase 3: Department Officer (MSInS Apex) · Consolidated Sanction
+                Phase 3: Department Officer (State Innovation Society Apex) · Consolidated Sanction
               </h3>
               <span class="badge ${msinsApproved ? 'green' : isApexActive ? 'yellow' : 'gray'}">
                 ${msinsApproved ? '★ Sanctioned & Cleared' : isApexActive ? 'Final Apex Decision Pending' : 'Awaiting Confirming Clearances'}
               </span>
             </div>
-            <div style="font-size:0.75rem; color:#1e3a8a; font-weight:600; margin-top:2px;">MSInS = Maharashtra State Innovation Society (Department of Industries, Govt. of Maharashtra)</div>
+            <div style="font-size:0.75rem; color:#1e3a8a; font-weight:600; margin-top:2px;">Maharashtra State Innovation Society (Department of Industries, Government of Maharashtra)</div>
             <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
               Consolidates all departmental clearances into an official Government of Maharashtra Single-Window Master Permit with digital verification QR code &amp; cryptographic hash.
             </p>
@@ -173,19 +173,6 @@ function renderWorkflowCard(data) {
             `}
           </div>
         </div>
-      </div>
-
-      <!-- Abbreviations & Statutory Glossary Reference Strip -->
-      <div style="margin-top:14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:10px 14px; font-size:0.76rem; color:#475569;">
-        <b>💡 Department Abbreviations Guide:</b>
-        <span style="margin-left:8px;"><b>MPCB:</b> Maharashtra Pollution Control Board</span> &middot;
-        <span style="margin-left:8px;"><b>MIDC:</b> Maharashtra Industrial Development Corporation</span> &middot;
-        <span style="margin-left:8px;"><b>DISH:</b> Directorate of Industrial Safety &amp; Health</span> &middot;
-        <span style="margin-left:8px;"><b>MSInS:</b> Maharashtra State Innovation Society</span> &middot;
-        <span style="margin-left:8px;"><b>CTE:</b> Consent to Establish</span> &middot;
-        <span style="margin-left:8px;"><b>ETP:</b> Effluent Treatment Plant</span> &middot;
-        <span style="margin-left:8px;"><b>FSI/FAR:</b> Floor Space Index / Floor Area Ratio</span> &middot;
-        <span style="margin-left:8px;"><b>NOC:</b> No-Objection Certificate</span>
       </div>
     </div>
   `;

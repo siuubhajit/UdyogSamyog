@@ -1,6 +1,6 @@
 /**
- * MPCB Officer Controller - Maharashtra Pollution Control Board
- * Phase 1: Environmental Clearance & Consent to Establish (CTE)
+ * Environmental Officer Controller - Maharashtra Pollution Control Board
+ * Phase 1: Environmental Clearance & Consent to Establish
  */
 
 let allApplications = [];
@@ -17,12 +17,12 @@ async function initMpcbPortal() {
 
 async function loadApplications() {
   try {
-    const apps = await api("/api/applications");
+    const apps = await api("/api/applications/pending");
     allApplications = apps;
     renderKPIs();
     renderApplicationsTable();
   } catch (err) {
-    console.error("Failed to load MPCB applications:", err);
+    console.error("Failed to load Environmental applications:", err);
   }
 }
 
@@ -117,9 +117,9 @@ function renderApplicationsTable() {
 
       let statusBadge = "";
       if (mpcbDecision === "Approved") {
-        statusBadge = `<span class="badge green">CTE Cleared (Phase 1 Approved)</span>`;
+        statusBadge = `<span class="badge green">Consent to Establish Cleared (Phase 1 Approved)</span>`;
       } else if (isPhase1Pending) {
-        statusBadge = `<span class="badge yellow" style="font-weight:700">Phase 1: Awaiting MPCB Clearance</span>`;
+        statusBadge = `<span class="badge yellow" style="font-weight:700">Phase 1: Awaiting Environmental Clearance</span>`;
       } else if (a.status === "Rejected") {
         statusBadge = `<span class="badge red">Deficient / Rejected</span>`;
       } else {
@@ -153,7 +153,7 @@ function renderApplicationsTable() {
             ${
               isPhase1Pending
                 ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openCteDecisionModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
-                     🌿 Grant CTE / Decision
+                     🌿 Grant Consent to Establish / Decision
                    </button>`
                 : `<a href="verification.html?id=${a.id}" class="btn sm" style="font-size:0.75rem; background:#f1f5f9; color:#334155;">
                      View Full History
@@ -202,7 +202,7 @@ async function inspectMpcbDossier(id) {
         <div style="display:flex; justify-content:space-between; align-items:center; background:#ecfdf5; border:1px solid #a7f3d0; padding:12px 16px; border-radius:6px; margin-bottom:12px;">
           <div>
             <div style="font-weight:700; color:#065f46;">📄 ${envPlan.original_name}</div>
-            <div style="font-size:0.78rem; color:#047857;">Uploaded Statutory Environmental Management & ETP Plan (${formatBytes(envPlan.size)})</div>
+            <div style="font-size:0.78rem; color:#047857;">Uploaded Statutory Environmental Management & Effluent Treatment Plan (${formatBytes(envPlan.size)})</div>
           </div>
           <a class="btn sm" style="background:#059669; color:#fff;" href="/api/documents/${envPlan.id}/view" target="_blank">
             ↗ Open Environmental Plan PDF
@@ -241,7 +241,7 @@ async function submitMpcbDecision(decision) {
     return;
   }
   if (decision === "Rejected" && !remarks) {
-    alert("Please provide statutory grounds for environmental CTE refusal.");
+    alert("Please provide statutory grounds for environmental Consent to Establish refusal.");
     return;
   }
 
@@ -252,7 +252,7 @@ async function submitMpcbDecision(decision) {
         decision,
         remarks:
           remarks ||
-          `MPCB Consent to Establish (CTE) granted under Water & Air Acts.`,
+          `Consent to Establish granted under Water & Air Pollution Control Acts.`,
       }),
     });
 
@@ -269,7 +269,7 @@ function runMpcbCalc() {
     parseFloat(document.getElementById("calcWaterUse")?.value) || 10;
   const so2 = parseFloat(document.getElementById("calcSo2Rate")?.value) || 5;
 
-  // ETP capacity recommendation (80% of industrial water consumption + 20% surge capacity)
+  // Effluent treatment capacity recommendation (80% of industrial water consumption + 20% surge capacity)
   const etpCapacity = Math.ceil(water * 0.8 * 1.2);
 
   // Statutory Stack Height Formula: H = 14 * (Q_SO2)^0.3

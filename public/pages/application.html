@@ -87,7 +87,7 @@
               🚫 ENTERPRISE BLACKLISTED & STATUTORILY BANNED
             </div>
             <div id="banReasonText" style="font-size: 0.88rem">
-              By order of Directorate of Industries & MSInS (Apex Authority),
+              By order of Directorate of Industries & State Innovation Society (Apex Authority),
               your enterprise account has been barred from receiving future
               licenses, statutory clearances, and submitting new applications.
             </div>
@@ -145,7 +145,7 @@
                   placeholder="e.g. 27AABCS1429B1Z8"
                   required
                 />
-                <div class="input-hint">15-character GSTIN or Udyam MSME Number.</div>
+                <div class="input-hint">15-character GSTIN or Enterprise Registration Number.</div>
               </label>
             </div>
 
@@ -172,7 +172,7 @@
                   </option>
                 </select>
                 <div class="input-hint">
-                  Governs MPCB categorization and fire risk standard.
+                  Governs environmental categorization and fire risk standard.
                 </div>
               </label>
 
@@ -187,8 +187,7 @@
                   required
                 />
                 <div class="input-hint">
-                  Determines MSME category and Package Scheme of Incentives
-                  (PSI).
+                  Determines enterprise category and Package Scheme of Incentives.
                 </div>
               </label>
             </div>
@@ -198,15 +197,15 @@
                 >District in Maharashtra
                 <select id="district" name="district">
                   <option value="Pune">
-                    Pune (MIDC Chakan / Talegaon / Ranjangaon / Hinjawadi)
+                    Pune (Chakan / Talegaon / Ranjangaon / Hinjawadi Industrial Area)
                   </option>
                   <option value="Thane">
-                    Thane / Navi Mumbai (TTC / Rabale)
+                    Thane / Navi Mumbai (Industrial Area / Rabale)
                   </option>
                   <option value="Chhatrapati Sambhajinagar">
-                    Chhatrapati Sambhajinagar (Shendra / Bidkin DMIC)
+                    Chhatrapati Sambhajinagar (Shendra / Bidkin Industrial Area)
                   </option>
-                  <option value="Nagpur">Nagpur (MIHAN / Butibori MIDC)</option>
+                  <option value="Nagpur">Nagpur (MIHAN / Butibori Industrial Area)</option>
                   <option value="Nashik">
                     Nashik (Ambad / Satpur / Sinnar)
                   </option>
@@ -214,9 +213,9 @@
                     Raigad (Taloja / Roha / Patalganga)
                   </option>
                   <option value="Kolhapur">
-                    Kolhapur (Shiroli / Kagal MIDC)
+                    Kolhapur (Shiroli / Kagal Industrial Area)
                   </option>
-                  <option value="Solapur">Solapur (Chincholi MIDC)</option>
+                  <option value="Solapur">Solapur (Chincholi Industrial Area)</option>
                   <option value="Mumbai Suburban">Mumbai Suburban</option>
                 </select>
               </label>
@@ -242,7 +241,7 @@
                 <input
                   id="location"
                   name="location"
-                  placeholder="Plot No., MIDC Phase, Village / Taluka"
+                  placeholder="Plot No., Industrial Zone Phase, Village / Taluka"
                   value="Plot B-18, Phase II Industrial Zone, Chakan"
                   required
                 />
@@ -276,7 +275,7 @@
                   required
                 />
                 <div class="input-hint">
-                  &gt;50 KL/day requires Groundwater Authority & ETP NOC.
+                  &gt;50 KL/day requires Groundwater Authority & Effluent Treatment Scheme Clearance.
                 </div>
               </label>
 
@@ -335,17 +334,17 @@
               </label>
 
               <label style="margin-top: 14px; display: block;">
-                <b>DISH Factory Safety &middot; Hazard Classification Level:</b>
+                <b>Directorate of Industrial Safety &amp; Health &middot; Hazard Classification Level:</b>
                 <select id="hazardLevel" name="hazardLevel" style="margin-top: 6px; font-weight: 600;">
-                  <option value="Chemical Hazard (Flammables, Solvents, Toxicants)">Chemical Hazard (Flammables, Solvents, Toxicants &amp; MAH)</option>
+                  <option value="Chemical Hazard (Flammables, Solvents, Toxicants)">Chemical Hazard (Flammables, Solvents, Toxicants &amp; Major Accident Hazards)</option>
                   <option value="Thermal Hazard (High Pressure Boilers & Furnaces)">Thermal Hazard (High Pressure Boilers, Furnaces &amp; Heat)</option>
                   <option value="Metallurgical Hazard (Heavy Foundry & Smelting)">Metallurgical Hazard (Heavy Foundry, Molten Metal &amp; Casting)</option>
                   <option value="Mechanical Hazard (Heavy Power Presses & Machinery)">Mechanical Hazard (Heavy Power Presses &amp; Automated Lines)</option>
-                  <option value="Electrical Hazard (High Voltage HT Substation)">Electrical Hazard (High Voltage HT Substation &amp; Switchgear)</option>
+                  <option value="Electrical Hazard (High Voltage HT Substation)">Electrical Hazard (High Voltage Substation &amp; Switchgear)</option>
                   <option value="Low Risk / General Light Manufacturing" selected>Low Risk / General Light Manufacturing &amp; Assembly</option>
                 </select>
                 <div class="input-hint">
-                  Statutory hazard tier scrutinized by Directorate of Industrial Safety &amp; Health (DISH) in Phase 2.
+                  Statutory hazard tier scrutinized by Directorate of Industrial Safety &amp; Health in Phase 2.
                 </div>
               </label>
             </div>
@@ -381,7 +380,7 @@
                 "
               >
                 Calculated live based on Maharashtra Industrial Regulations,
-                MPCB Environment classification, and DISH Factory rules:
+                Pollution Control Board environmental classification, and Industrial Safety &amp; Health factory rules:
               </p>
               <div id="clearancesList" class="parallel-grid">
                 <!-- Populated via JavaScript -->
@@ -462,31 +461,31 @@
                   >Document Category &amp; Statutory Plan Type
                   <select name="documentType" id="docTypeSelect" onchange="updatePlanType(this)">
                     <optgroup label="Mandatory Statutory Plan Blueprints (PDF Format)">
-                      <option value="Environmental Management & ETP Plan" data-plantype="environmental_plan" selected>
-                        🌿 Environmental Plan (PDF) &rarr; MPCB (Maharashtra Pollution Control Board · Phase 1)
+                      <option value="Environmental Management & Effluent Treatment Scheme" data-plantype="environmental_plan" selected>
+                        🌿 Environmental Plan (PDF) &rarr; Maharashtra Pollution Control Board (Phase 1)
                       </option>
                       <option value="Civil Infrastructure & Building Layout Plan" data-plantype="civil_plan">
-                        📐 Civil Plan (PDF) &rarr; MIDC (Maharashtra Industrial Development Corp · Phase 2)
+                        📐 Civil Plan (PDF) &rarr; Maharashtra Industrial Development Corporation (Phase 2)
                       </option>
                       <option value="Factory Safety & Hazardous Materials Blueprint" data-plantype="factory_safety_plan">
-                        🛡️ Factory Safety Blueprint (PDF) &rarr; DISH (Directorate of Industrial Safety &amp; Health · Phase 2)
+                        🛡️ Factory Safety Blueprint (PDF) &rarr; Directorate of Industrial Safety &amp; Health (Phase 2)
                       </option>
                       <option value="Fire Hydrant & Evacuation Layout Plan" data-plantype="fire_safety_plan">
-                        🚒 Fire Safety Plan (PDF) &rarr; Fire Services (Directorate of Maharashtra Fire Services · Phase 2)
+                        🚒 Fire Safety Plan (PDF) &rarr; Directorate of Maharashtra Fire Services (Phase 2)
                       </option>
                     </optgroup>
                     <optgroup label="General Statutory Supporting Documents">
-                      <option value="Land Title Deed / MIDC Allotment" data-plantype="">
-                        Land Title Deed / MIDC Allotment Letter
+                      <option value="Land Title Deed / Industrial Allotment" data-plantype="">
+                        Land Title Deed / Industrial Allotment Letter
                       </option>
                       <option value="Plant & Machinery List" data-plantype="">
                         Plant &amp; Machinery Power Rating List
                       </option>
-                      <option value="Project Detailed Report (DPR)" data-plantype="">
-                        Detailed Project Feasibility Report (DPR)
+                      <option value="Detailed Project Feasibility Report" data-plantype="">
+                        Detailed Project Feasibility Report
                       </option>
-                      <option value="Incorporation & PAN / GSTIN" data-plantype="">
-                        Company PAN, GSTIN &amp; Identity Proof
+                      <option value="Tax Registration & Identity Proof" data-plantype="">
+                        Company Registration &amp; Identity Proof
                       </option>
                     </optgroup>
                   </select>
@@ -595,45 +594,45 @@
         // Clearances calculation
         const clearances = [
           {
-            name: "MIDC / Town Planning Building Layout Approval",
-            dept: "MIDC",
+            name: "Industrial Development Corporation / Town Planning Building Layout Approval",
+            dept: "Industrial Development Corporation",
             desc: "Building bylaws & road setback compliance",
           },
           {
-            name: `MPCB Consent to Establish (CTE - ${risk} Category)`,
-            dept: "MPCB",
+            name: `Pollution Control Board Consent to Establish (${risk} Category)`,
+            dept: "Pollution Control Board",
             desc: "Effluent, emission & solid waste consent",
           },
           {
-            name: "Provisional Fire Safety NOC",
+            name: "Provisional Fire Safety Clearance Certificate",
             dept: "Fire Services",
             desc: "Fire fighting systems & emergency egress",
           },
           {
             name: "Factory License & Machine Guarding Approval",
-            dept: "DISH",
+            dept: "Industrial Safety & Health",
             desc: "Worker safety & machinery clearances",
           },
           {
             name:
               power > 500
-                ? "High Tension (HT) Power Sanction"
-                : "Low Tension (LT) Power Sanction",
-            dept: "MSEDCL",
+                ? "High Tension Power Load Sanction"
+                : "Low Tension Power Load Sanction",
+            dept: "State Electricity Distribution",
             desc: "Load sanction and transformer space",
           },
         ];
 
         if (isHazard) {
           clearances.push({
-            name: "Hazardous Waste Authorization (HWA)",
-            dept: "MPCB",
-            desc: "Hazardous chemicals storage & TSDF disposal",
+            name: "Hazardous Waste Handling Authorization",
+            dept: "Pollution Control Board",
+            desc: "Hazardous chemicals storage & disposal facility",
           });
         }
         if (water > 50) {
           clearances.push({
-            name: "Groundwater Authority (MGWA) Extraction NOC",
+            name: "Groundwater Extraction Clearance Certificate",
             dept: "Water Resources",
             desc: "Water balance & recharge verification",
           });
@@ -656,19 +655,19 @@
         // Incentive Schemes
         const schemes = [
           {
-            title: "Maharashtra Package Scheme of Incentives (PSI 2019/2024)",
+            title: "Maharashtra Package Scheme of Incentives",
             benefit:
               "Up to 50% Capital Subsidy + 100% Stamp Duty Exemption on Land purchase.",
           },
           {
-            title: "MSInS Innovation & Prototype Seed Fund",
+            title: "Maharashtra State Innovation Society Prototype Seed Fund",
             benefit:
               "Up to ₹15 Lakhs grant for registered innovative enterprises in Maharashtra.",
           },
           {
             title: "Electricity Duty Exemption (7 Years)",
             benefit:
-              "100% exemption on industrial power tariffs under MSEDCL industrial grid.",
+              "100% exemption on industrial power tariffs under Maharashtra State Electricity Distribution grid.",
           },
         ];
 
@@ -794,13 +793,13 @@
               (d) => {
                 let planBadge = "";
                 if (d.plan_type === "environmental_plan") {
-                  planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Pollution Control Board">🌿 MPCB (Pollution Board)</span>';
+                  planBadge = '<span class="badge green" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Pollution Control Board">🌿 Pollution Control Board</span>';
                 } else if (d.plan_type === "civil_plan") {
-                  planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Industrial Development Corporation">📐 MIDC (Civil &amp; Infra)</span>';
+                  planBadge = '<span class="badge blue" style="margin-left:6px; font-size:0.7rem;" title="Maharashtra Industrial Development Corporation">📐 Industrial Development Corporation</span>';
                 } else if (d.plan_type === "factory_safety_plan") {
-                  planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Industrial Safety &amp; Health">🛡️ DISH (Industrial Safety)</span>';
+                  planBadge = '<span class="badge red" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Industrial Safety &amp; Health">🛡️ Industrial Safety &amp; Health</span>';
                 } else if (d.plan_type === "fire_safety_plan") {
-                  planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Maharashtra Fire Services">🚒 Fire Services (Life Safety)</span>';
+                  planBadge = '<span class="badge orange" style="margin-left:6px; font-size:0.7rem;" title="Directorate of Maharashtra Fire Services">🚒 Fire Services</span>';
                 }
 
                 return `
@@ -839,7 +838,7 @@
           if (banner) {
             banner.style.display = "block";
             document.getElementById("banReasonText").textContent =
-              `By order of Directorate of Industries & MSInS (Apex Authority), your enterprise account has been blacklisted. Reason: "${user.banReason || "Statutory Non-Compliance"}". You are barred from receiving future licenses and clearances, and cannot submit new applications.`;
+              `By order of Directorate of Industries & State Innovation Society (Apex Authority), your enterprise account has been blacklisted. Reason: "${user.banReason || "Statutory Non-Compliance"}". You are barred from receiving future licenses and clearances, and cannot submit new applications.`;
           }
           const form = document.getElementById("appForm");
           if (form) {

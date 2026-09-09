@@ -1,6 +1,6 @@
 /**
  * Fire Officer Controller - Directorate of Maharashtra Fire Services
- * Phase 2: Simultaneous Fire Safety & NBC 2016 Part 4 Scrutiny
+ * Phase 2: Simultaneous Fire Safety & National Building Code (Part 4) Scrutiny
  */
 
 let allApplications = [];
@@ -93,11 +93,11 @@ function renderApplicationsTable() {
 
       let statusBadge = "";
       if (fireDecision === "Approved") {
-        statusBadge = `<span class="badge green">Fire NOC Sanctioned</span>`;
+        statusBadge = `<span class="badge green">Fire Clearance Sanctioned</span>`;
       } else if (isAwaitingFire) {
         statusBadge = `<span class="badge yellow" style="font-weight:700">Phase 2: Simultaneous Review Active</span>`;
       } else if (a.current_stage === "mpcb") {
-        statusBadge = `<span class="badge gray">Queued (Awaiting MPCB)</span>`;
+        statusBadge = `<span class="badge gray">Queued (Awaiting Environmental Clearance)</span>`;
       } else {
         statusBadge = `<span class="badge blue">Processed (${a.status})</span>`;
       }
@@ -129,7 +129,7 @@ function renderApplicationsTable() {
             ${
               isAwaitingFire
                 ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFireDecisionModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
-                     🔥 Grant Fire NOC
+                     🔥 Grant Fire Clearance
                    </button>`
                 : `<a href="verification.html?id=${a.id}" class="btn sm" style="font-size:0.75rem; background:#f1f5f9; color:#334155;">
                      View Scrutiny
@@ -219,7 +219,7 @@ async function submitFireDecision(decision) {
         targetDept: "fire",
         remarks:
           remarks ||
-          `Provisional Fire Safety NOC granted under Maharashtra Fire Act 2006.`,
+          `Provisional Fire Safety Clearance Certificate granted under Maharashtra Fire Prevention and Life Safety Measures Act 2006.`,
       }),
     });
 

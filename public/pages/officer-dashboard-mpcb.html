@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MPCB Environmental Clearance | Udyog Samyog - Govt. of Maharashtra</title>
+    <title>Pollution Control Board Environmental Clearance | Udyog Samyog - Govt. of Maharashtra</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
       :root {
@@ -47,25 +47,25 @@
           <div class="brand-emblem">&#127807;</div>
           <div class="brand-text">
             <div class="brand-title">&#2313;&#2342;&#2381;&#2351;&#2379;&#2327; &#2360;&#2306;&#2351;&#2379;&#2327; | UDYOG SAMYOG</div>
-            <div class="brand-tag">Maharashtra Pollution Control Board (MPCB) &middot; Environmental Gateway</div>
+            <div class="brand-tag">Maharashtra Pollution Control Board &middot; Environmental Gateway</div>
           </div>
         </div>
         <div class="topbar-actions">
           <div class="user-pill">
             <div class="user-pill-avatar" data-user-initial>P</div>
             <div>
-              <div style="font-weight:700;line-height:1.2" data-user-name>MPCB Regional Officer</div>
-              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>MPCB · Environmental Clearance</div>
+              <div style="font-weight:700;line-height:1.2" data-user-name>Regional Officer (Environmental)</div>
+              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>Pollution Control Board · Environmental Clearance</div>
             </div>
           </div>
-          <span class="dept-badge">MPCB (Pollution Board)</span>
+          <span class="dept-badge">Pollution Control Board</span>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
 
       <div class="layout">
         <aside class="sidebar">
-          <div class="sidebar-header">MPCB Operations</div>
+          <div class="sidebar-header">Environmental Operations</div>
           <a href="javascript:void(0)" class="active" onclick="switchTab('queue')">
             <span class="sidebar-icon">&#128203;</span> Consent to Establish Queue
           </a>
@@ -80,7 +80,7 @@
           </a>
           <div class="sidebar-footer">
             <b style="color:#ffffff">Water &amp; Air Acts</b><br/>
-            Phase 1 Primary Gateway: All industrial units land at MPCB (Maharashtra Pollution Control Board) first. Grant Consent to Establish (CTE) to unlock Phase 2 simultaneous reviews.
+            Phase 1 Primary Gateway: All industrial units land at Maharashtra Pollution Control Board first. Grant Consent to Establish to unlock Phase 2 simultaneous reviews.
           </div>
         </aside>
 
@@ -89,15 +89,15 @@
           <div id="sectionQueue">
             <div class="page-header">
               <div class="page-pretitle">Maharashtra Pollution Control Board &middot; Phase 1 Statutory Gateway</div>
-              <h1 class="page-title">Consent to Establish (CTE) Scrutiny Queue</h1>
+              <h1 class="page-title">Consent to Establish Scrutiny Queue</h1>
               <p class="page-subtitle">Scrutinize Environmental Management Plans, Trade Effluent schemes, and Air Emission control systems for all incoming Maharashtra industrial units.</p>
             </div>
 
             <div class="stage-info-box">
-              <b style="color:var(--dept-color);font-size:.95rem">&#127807; MPCB (Maharashtra Pollution Control Board) Officer &middot; Phase 1 Primary Gateway</b>
-              <div style="margin-top:4px;color:var(--ink-light)">All single-window applications enter the statutory pipeline at MPCB first. Review the applicant's <b>Environmental Plan PDF</b>. Approving the CTE (Consent to Establish) milestone automatically forwards the dossier to <b>Phase 2 Simultaneous Scrutiny</b> across MIDC (Civil), DISH (Factory Safety), and Fire Services.</div>
+              <b style="color:var(--dept-color);font-size:.95rem">&#127807; Maharashtra Pollution Control Board Officer &middot; Phase 1 Primary Gateway</b>
+              <div style="margin-top:4px;color:var(--ink-light)">All single-window applications enter the statutory pipeline at Maharashtra Pollution Control Board first. Review the applicant's <b>Environmental Plan PDF</b>. Approving the Consent to Establish milestone automatically forwards the dossier to <b>Phase 2 Simultaneous Scrutiny</b> across Industrial Development Corporation (Civil), Industrial Safety &amp; Health, and Fire Services.</div>
               <div class="cpcb-tabs">
-                <span style="font-size:.75rem;font-weight:700;color:var(--navy);align-self:center">CPCB Categorization:</span>
+                <span style="font-size:.75rem;font-weight:700;color:var(--navy);align-self:center">Pollution Categorization:</span>
                 <button class="cpcb-btn category-tab active" data-category="all" onclick="filterCategory('all')">All Categories</button>
                 <button class="cpcb-btn category-tab" data-category="Red" style="color:#b91c1c" onclick="filterCategory('Red')">&#9679; Red (PI &ge; 60)</button>
                 <button class="cpcb-btn category-tab" data-category="Orange" style="color:#c2410c" onclick="filterCategory('Orange')">&#9679; Orange (PI 41-59)</button>
@@ -106,9 +106,9 @@
             </div>
 
             <div class="grid">
-              <div class="card card-kpi saffron"><span class="card-label">Phase 1 Pending CTE</span><span class="card-value" id="kpiPendingPhase1">0</span><span class="card-sub">Awaiting MPCB Clearance</span></div>
+              <div class="card card-kpi saffron"><span class="card-label">Pending Environmental Clearance</span><span class="card-value" id="kpiPendingPhase1">0</span><span class="card-sub">Awaiting Board Clearance</span></div>
               <div class="card card-kpi ruby"><span class="card-label">Red Category (High Pollution)</span><span class="card-value" id="kpiRedCategory">0</span><span class="card-sub">Severe Scrutiny (PI &ge; 60)</span></div>
-              <div class="card card-kpi emerald"><span class="card-label">CTE Consents Granted</span><span class="card-value" id="kpiApprovedCTE">0</span><span class="card-sub">Forwarded to Phase 2</span></div>
+              <div class="card card-kpi emerald"><span class="card-label">Consents Granted</span><span class="card-value" id="kpiApprovedCTE">0</span><span class="card-sub">Forwarded to Phase 2</span></div>
               <div class="card card-kpi"><span class="card-label">Total Inward Dossiers</span><span class="card-value" id="kpiTotalDossiers">0</span><span class="card-sub">All Applications</span></div>
             </div>
 
@@ -132,7 +132,7 @@
                     </tr>
                   </thead>
                   <tbody id="applicationsTableBody">
-                    <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--ink-light)">Loading MPCB environmental queue&hellip;</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--ink-light)">Loading environmental scrutiny queue&hellip;</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -143,8 +143,8 @@
           <div id="sectionCalc" style="display:none">
             <div class="page-header">
               <div class="page-pretitle">Environmental Engineering Tool</div>
-              <h1 class="page-title">MPCB Effluent Treatment (ETP) &amp; Stack Height Calculator</h1>
-              <p class="page-subtitle">Verify industrial water balance, treatment plant hydraulic capacity, and statutory chimney stack height under CPCB/MPCB norms.</p>
+              <h1 class="page-title">Effluent Treatment &amp; Stack Height Calculator</h1>
+              <p class="page-subtitle">Verify industrial water balance, treatment plant hydraulic capacity, and statutory chimney stack height under statutory environmental norms.</p>
             </div>
 
             <div class="mpcb-tool-card">
@@ -161,14 +161,14 @@
               <div id="mpcbCalcResult" style="margin-top:18px;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:6px;padding:16px">
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px">
                   <div>
-                    <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Required ETP Capacity</div>
+                    <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Required Effluent Treatment Capacity</div>
                     <div style="font-size:1.4rem;font-weight:800;color:#15803d" id="calcEtpCapacity">48 KLD</div>
                     <div style="font-size:.72rem;color:#15803d">&#10003; 80% trade discharge + 20% surge</div>
                   </div>
                   <div>
                     <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Mandatory Chimney Stack Height</div>
                     <div style="font-size:1.4rem;font-weight:800;color:#b45309" id="calcStackHeight">29.5 Meters</div>
-                    <div style="font-size:.72rem;color:#b45309">&#10003; CPCB H = 14 &times; (Q_SO2)^0.3</div>
+                    <div style="font-size:.72rem;color:#b45309">&#10003; Chimney Formula: H = 14 &times; (Q_SO2)^0.3</div>
                   </div>
                 </div>
               </div>
@@ -178,7 +178,7 @@
       </div>
     </div>
 
-    <!-- MPCB INSPECT DOSSIER MODAL -->
+    <!-- ENVIRONMENTAL INSPECT DOSSIER MODAL -->
     <div id="mpcbInspectModal" class="modal modal-overlay">
       <div class="modal-card" style="max-width:760px">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
@@ -197,7 +197,7 @@
           <div>Hazard Level: <b id="modalInspectHazard">---</b></div>
         </div>
 
-        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">Statutory Environmental Management &amp; ETP Plan (PDF)</h3>
+        <h3 style="color:var(--navy); font-size:0.95rem; margin-bottom:8px;">Statutory Environmental Management &amp; Effluent Treatment Plan (PDF)</h3>
         <div id="modalEnvPlanContainer" style="margin-bottom:16px;">
           <!-- Loaded dynamically -->
         </div>
@@ -208,20 +208,20 @@
       </div>
     </div>
 
-    <!-- CTE DECISION MODAL -->
+    <!-- CONSENT DECISION MODAL -->
     <div id="cteModal" class="modal modal-overlay">
       <div class="modal-card" style="max-width:580px">
-        <h2 style="color:var(--dept-color);">&#127807; Consent to Establish (CTE) Decision</h2>
+        <h2 style="color:var(--dept-color);">&#127807; Consent to Establish Decision</h2>
         <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">
           Record statutory environmental determination under Water &amp; Air Acts for <b id="cteModalAppNo">---</b> (<span id="cteModalCompany">---</span>).
         </p>
 
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">MPCB Statutory Checklist:</div>
+          <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Environmental Statutory Checklist:</div>
           <ul class="checklist">
             <li>Environmental Management Plan PDF verified</li>
-            <li>Effluent Treatment Plant (ETP) hydraulic sizing and flow scheme confirmed</li>
-            <li>Hazardous waste management and MEPL disposal agreement checked</li>
+            <li>Effluent Treatment Plant hydraulic sizing and flow scheme confirmed</li>
+            <li>Hazardous waste management and disposal facility agreement checked</li>
             <li>Air pollution scrubbers and chimney stack dispersion height verified</li>
           </ul>
         </div>
@@ -231,13 +231,13 @@
             Official Environmental Remarks / Consent Conditions:
           </label>
           <textarea id="cteModalRemarks" rows="3"
-            placeholder="Specify CTE conditions, discharge standards, or query grounds..."
+            placeholder="Specify consent conditions, discharge standards, or query grounds..."
             style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
         </div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
           <button class="btn" style="background:#16a34a; color:#fff;" onclick="submitMpcbDecision('Approved')">
-            &#10003; Grant CTE &amp; Advance to Phase 2 &rarr;
+            &#10003; Grant Consent to Establish &amp; Advance to Phase 2 &rarr;
           </button>
           <button class="btn" style="background:#d97706; color:#fff;" onclick="submitMpcbDecision('Query')">
             &#10067; Raise Query

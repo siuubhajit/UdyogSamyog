@@ -1,6 +1,6 @@
 /**
- * MSInS Apex Officer Controller - Directorate of Industries & MSInS
- * Phase 3: Consolidated Clearance, Company Search Console & Final Single-Window Licensing
+ * Apex Officer Controller - Directorate of Industries & Maharashtra State Innovation Society
+ * Phase 3: Final Consolidated Single-Window Statutory Clearance
  */
 
 let allApplications = [];
@@ -25,7 +25,7 @@ async function loadApplications(companySearch = "") {
     renderApplicationsTable();
     renderCompanySearchResults(apps);
   } catch (err) {
-    console.error("Failed to load MSInS applications:", err);
+    console.error("Failed to load State Innovation Society applications:", err);
   }
 }
 
@@ -118,7 +118,7 @@ function renderCompanySearchResults(apps) {
               ${msinsOk ? '<span class="badge green" style="font-weight:700;">★ VERIFIED LICENSE ISSUED</span>' : ""}
             </div>
             <div style="font-size:0.82rem; color:var(--ink-light); margin-top:4px;">
-              App No: <b>${a.application_no}</b> · GSTIN: <code>${a.registration_no || "PENDING"}</code> · ${a.district} (${a.location || "MIDC"})
+              App No: <b>${a.application_no}</b> · GSTIN: <code>${a.registration_no || "PENDING"}</code> · ${a.district} (${a.location || "Industrial Area"})
             </div>
             <div style="font-size:0.8rem; color:#475569; margin-top:3px;">
               Industry: <b>${a.industry_category}</b> · Hazard: <span class="badge gray">${a.hazard_level || "Standard"}</span> · Investment: ₹<b>${a.project_cost || 5} Cr</b>
@@ -136,7 +136,7 @@ function renderCompanySearchResults(apps) {
                    </a>`
                 : readyForFinal
                   ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
-                       🏆 Grant Final Single-Window NOC
+                       🏆 Grant Final Single-Window Clearance
                      </button>`
                   : `<button class="btn outline sm" style="color:#64748b;" onclick="inspectApexDossier(${a.id})">
                        ⏳ Awaiting Clearances
@@ -148,19 +148,19 @@ function renderCompanySearchResults(apps) {
         <!-- 4 Confirming Department Clearance Badges -->
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid #f1f5f9;">
           <div class="matrix-pill ${mpcbOk ? "ok" : "pending"}">
-            ${mpcbOk ? "✓" : "⏳"} MPCB Env: <b>${mpcbOk ? "Approved" : "Pending"}</b>
+            ${mpcbOk ? "✓" : "⏳"} Environment: <b>${mpcbOk ? "Approved" : "Pending"}</b>
           </div>
           <div class="matrix-pill ${midcOk ? "ok" : "pending"}">
-            ${midcOk ? "✓" : "⏳"} MIDC Civil: <b>${midcOk ? "Approved" : "Pending"}</b>
+            ${midcOk ? "✓" : "⏳"} Civil: <b>${midcOk ? "Approved" : "Pending"}</b>
           </div>
           <div class="matrix-pill ${dishOk ? "ok" : "pending"}">
-            ${dishOk ? "✓" : "⏳"} DISH Safety: <b>${dishOk ? "Approved" : "Pending"}</b>
+            ${dishOk ? "✓" : "⏳"} Safety: <b>${dishOk ? "Approved" : "Pending"}</b>
           </div>
           <div class="matrix-pill ${fireOk ? "ok" : "pending"}">
-            ${fireOk ? "✓" : "⏳"} Fire Services: <b>${fireOk ? "Approved" : "Pending"}</b>
+            ${fireOk ? "✓" : "⏳"} Fire: <b>${fireOk ? "Approved" : "Pending"}</b>
           </div>
           <div class="matrix-pill ${msinsOk ? "ok" : readyForFinal ? "pending" : "flagged"}">
-            ★ MSInS Apex: <b>${msinsOk ? "Sanctioned" : readyForFinal ? "Ready for Action" : "Waiting"}</b>
+            ★ Apex: <b>${msinsOk ? "Sanctioned" : readyForFinal ? "Ready for Action" : "Waiting"}</b>
           </div>
         </div>
       </div>
@@ -224,10 +224,10 @@ function renderApplicationsTable() {
         </td>
         <td>
           <div style="display:flex; flex-wrap:wrap; gap:4px;">
-            <span class="matrix-pill ${mpcbOk ? "ok" : "pending"}">MPCB ${mpcbOk ? "✓" : "⏳"}</span>
-            <span class="matrix-pill ${midcOk ? "ok" : "pending"}">MIDC ${midcOk ? "✓" : "⏳"}</span>
-            <span class="matrix-pill ${dishOk ? "ok" : "pending"}">DISH ${dishOk ? "✓" : "⏳"}</span>
-            <span class="matrix-pill ${fireOk ? "ok" : "pending"}">FIRE ${fireOk ? "✓" : "⏳"}</span>
+            <span class="matrix-pill ${mpcbOk ? "ok" : "pending"}">Environment ${mpcbOk ? "✓" : "⏳"}</span>
+            <span class="matrix-pill ${midcOk ? "ok" : "pending"}">Civil ${midcOk ? "✓" : "⏳"}</span>
+            <span class="matrix-pill ${dishOk ? "ok" : "pending"}">Safety ${dishOk ? "✓" : "⏳"}</span>
+            <span class="matrix-pill ${fireOk ? "ok" : "pending"}">Fire ${fireOk ? "✓" : "⏳"}</span>
           </div>
         </td>
         <td>
@@ -247,7 +247,7 @@ function renderApplicationsTable() {
                    </a>`
                 : isReadyForFinal
                   ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
-                       🏆 Grant Final NOC
+                       🏆 Grant Final Clearance
                      </button>`
                   : ""
             }
@@ -284,7 +284,7 @@ async function inspectApexDossier(id) {
       const planItems = [
         {
           key: "environmental",
-          title: "🌿 Environmental Plan & ETP · MPCB (Maharashtra Pollution Control Board)",
+          title: "🌿 Environmental Management Plan & Effluent Scheme · Maharashtra Pollution Control Board",
           doc:
             data.plans?.environmental ||
             (data.documents || []).find(
@@ -295,7 +295,7 @@ async function inspectApexDossier(id) {
         },
         {
           key: "civil",
-          title: "📐 Civil Master Layout & Infra · MIDC (Maharashtra Industrial Development Corp)",
+          title: "📐 Civil Master Layout & Infrastructure · Maharashtra Industrial Development Corporation",
           doc:
             data.plans?.civil ||
             (data.documents || []).find(
@@ -307,7 +307,7 @@ async function inspectApexDossier(id) {
         },
         {
           key: "factorySafety",
-          title: `🛡️ Factory Safety Blueprint · DISH (Directorate of Industrial Safety & Health) - ${data.hazardLevel || "Standard"} Hazard`,
+          title: `🛡️ Factory Safety Blueprint · Directorate of Industrial Safety & Health - ${data.hazardLevel || "Standard"} Hazard`,
           doc:
             data.plans?.factorySafety ||
             (data.documents || []).find(
@@ -361,25 +361,25 @@ async function inspectApexDossier(id) {
       const depts = [
         {
           code: "mpcb",
-          name: "MPCB · Maharashtra Pollution Control Board (Phase 1 Environmental Gateway)",
+          name: "Maharashtra Pollution Control Board (Phase 1 Environmental Gateway)",
           info: stages.mpcb,
           icon: "🌿",
         },
         {
           code: "midc",
-          name: "MIDC · Maharashtra Industrial Development Corp (Phase 2 Civil & Infra)",
+          name: "Maharashtra Industrial Development Corporation (Phase 2 Civil & Infrastructure)",
           info: stages.midc,
           icon: "📐",
         },
         {
           code: "dish",
-          name: "DISH · Directorate of Industrial Safety & Health (Phase 2 Factory Safety)",
+          name: "Directorate of Industrial Safety & Health (Phase 2 Factory Safety)",
           info: stages.dish,
           icon: "🛡️",
         },
         {
           code: "fire",
-          name: "Directorate of Maharashtra Fire Services (Phase 2 Life Safety NOC)",
+          name: "Directorate of Maharashtra Fire Services (Phase 2 Life Safety Clearance)",
           info: stages.fire,
           icon: "🚒",
         },
@@ -429,7 +429,7 @@ async function submitFinalApexDecision(decision) {
         targetDept: "msins",
         remarks:
           remarks ||
-          `Final Single-Window Statutory Clearance granted by Directorate of Industries & MSInS Apex.`,
+          `Final Single-Window Statutory Clearance granted by Directorate of Industries & State Innovation Society Apex Authority.`,
       }),
     });
 

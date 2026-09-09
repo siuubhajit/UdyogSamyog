@@ -1,5 +1,5 @@
 /**
- * MIDC Officer Controller - Maharashtra Industrial Development Corporation
+ * Civil Infrastructure Officer Controller - Maharashtra Industrial Development Corporation
  * Phase 2: Simultaneous Civil Infrastructure & Building Plan Scrutiny
  */
 
@@ -21,7 +21,7 @@ async function loadApplications() {
     renderKPIs();
     renderApplicationsTable();
   } catch (err) {
-    console.error("Failed to load MIDC applications:", err);
+    console.error("Failed to load Civil Infrastructure applications:", err);
   }
 }
 
@@ -114,7 +114,7 @@ function renderApplicationsTable() {
       } else if (isAwaitingCivil) {
         statusBadge = `<span class="badge yellow" style="font-weight:700">Phase 2: Simultaneous Review Pending</span>`;
       } else if (a.current_stage === "mpcb") {
-        statusBadge = `<span class="badge gray">Queued (Awaiting MPCB)</span>`;
+        statusBadge = `<span class="badge gray">Queued (Awaiting Environmental Clearance)</span>`;
       } else {
         statusBadge = `<span class="badge blue">Processed (${a.status})</span>`;
       }
@@ -236,7 +236,7 @@ async function submitCivilDecision(decision) {
         targetDept: "midc",
         remarks:
           remarks ||
-          `MIDC Civil Infrastructure & Building Plan sanction granted.`,
+          `Civil Infrastructure & Building Plan sanction granted.`,
       }),
     });
 
