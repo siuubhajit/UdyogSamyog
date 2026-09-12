@@ -1,3 +1,9 @@
+/* ═══════════════════════════════════════════════════════════════
+   UDYOG SAMYOG · COMMON UTILITIES
+   Shared across all portal pages
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── API Helper ───────────────────────────────────────────────── */
 async function api(url, options = {}) {
   const r = await fetch(url, {
     headers: {
@@ -14,6 +20,7 @@ async function api(url, options = {}) {
   return data;
 }
 
+/* ─── Auth / Session ───────────────────────────────────────────── */
 async function logout() {
   await api("/api/logout", { method: "POST" });
   location = "/";
@@ -47,22 +54,24 @@ async function guard(role) {
       return null;
     }
 
-    // Update any dashboard links in topbar or sidebar to point to this officer's dedicated dashboard
+    // Update dashboard links to officer's dedicated portal
     if (user.role === "official") {
       const dashUrl = getOfficerDashboardUrl(user);
-      document.querySelectorAll("a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]").forEach((a) => {
-        a.setAttribute("href", dashUrl);
-      });
+      document
+        .querySelectorAll(
+          "a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]"
+        )
+        .forEach((a) => a.setAttribute("href", dashUrl));
     }
 
-    // Populate user indicators
-    document.querySelectorAll("[data-company]").forEach((x) => {
-      x.textContent = user.companyName || user.department || user.email;
-    });
+    // Populate user identity indicators
+    document
+      .querySelectorAll("[data-company]")
+      .forEach((x) => (x.textContent = user.companyName || user.department || user.email));
 
-    document.querySelectorAll("[data-user-name]").forEach((x) => {
-      x.textContent = user.contactPerson || user.companyName || user.email;
-    });
+    document
+      .querySelectorAll("[data-user-name]")
+      .forEach((x) => (x.textContent = user.contactPerson || user.companyName || user.email));
 
     document.querySelectorAll("[data-user-dept]").forEach((x) => {
       x.textContent =
@@ -82,6 +91,7 @@ async function guard(role) {
   }
 }
 
+/* ─── Feedback Message ──────────────────────────────────────────── */
 function show(id, text, ok = false) {
   const e = document.getElementById(id);
   if (!e) return;
@@ -90,6 +100,7 @@ function show(id, text, ok = false) {
   e.style.display = "block";
 }
 
+/* ─── Format Helpers ────────────────────────────────────────────── */
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -99,9 +110,9 @@ function formatBytes(bytes) {
 }
 
 /**
- * Universal HTML Sanitization Helper to prevent Cross-Site Scripting (XSS)
+ * Universal HTML sanitiser — prevents XSS
  * @param {string|number|null|undefined} str
- * @returns {string} Escaped safe HTML string
+ * @returns {string}
  */
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
@@ -112,13 +123,9 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
-if (typeof window !== "undefined") {
-  window.escapeHtml = escapeHtml;
-}
+if (typeof window !== "undefined") window.escapeHtml = escapeHtml;
 
-/**
- * Universal Statutory Checklist Helpers for Officer Dashboards
- */
+/* ─── Statutory Checklist Helpers ───────────────────────────────── */
 function updateChecklistCounter(prefix, total) {
   const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
   const totalCount = total || checkboxes.length || 1;
@@ -135,11 +142,10 @@ function updateChecklistCounter(prefix, total) {
       counterEl.style.fontWeight = "600";
     }
   }
-
   const btn = document.getElementById(`${prefix}ToggleBtn`);
-  if (btn) {
-    btn.textContent = (checked === totalCount && totalCount > 0) ? "Deselect All" : "Select All";
-  }
+  if (btn)
+    btn.textContent =
+      checked === totalCount && totalCount > 0 ? "Deselect All" : "Select All";
 }
 
 function toggleAllChecklist(prefix, total, btn) {
@@ -165,3 +171,89 @@ if (typeof window !== "undefined") {
   window.resetChecklist = resetChecklist;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   THEME SYSTEM — Dark / Light Mode
+   Zero-FOUC: apply theme before first paint via inline <script>
+   in <head> of every page. This file handles runtime toggling.
+   ═══════════════════════════════════════════════════════════════ */
+
+const THEME_KEY = "udyog_theme";
+
+/** Get currently active theme */
+function getTheme() {
+  return document.documentElement.getAttribute("data-theme") || "light";
+}
+
+/** Set theme, persist to localStorage, and dispatch change event */
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+  updateThemeToggleUI(theme);
+  document.dispatchEvent(new CustomEvent("udyog-theme-change", { detail: { theme } }));
+}
+
+/** Toggle between light and dark */
+function toggleTheme() {
+  setTheme(getTheme() === "dark" ? "light" : "dark");
+}
+
+/** Update all mounted toggle button icons/labels */
+function updateThemeToggleUI(theme) {
+  const isDark = (theme || getTheme()) === "dark";
+  document.querySelectorAll(".theme-toggle-btn").forEach((btn) => {
+    const icon  = btn.querySelector(".toggle-icon");
+    const label = btn.querySelector(".toggle-label");
+    if (icon)  icon.textContent  = isDark ? "☀️" : "🌙";
+    if (label) label.textContent = isDark ? "Light Mode" : "Dark Mode";
+    btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+    btn.setAttribute("title",      isDark ? "Switch to light mode" : "Switch to dark mode");
+  });
+}
+
+/** Build and insert a theme toggle button into the given container */
+function _createToggleBtn() {
+  const btn = document.createElement("button");
+  btn.className = "theme-toggle-btn";
+  btn.type = "button";
+  btn.innerHTML = `<span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span>`;
+  btn.addEventListener("click", toggleTheme);
+  return btn;
+}
+
+/** Mount theme toggle buttons into standard mount points */
+function mountThemeToggleButtons() {
+  const selectors = [".topbar-actions", ".hero-header", "[data-theme-toggle-mount]"];
+  selectors.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((container) => {
+      // Don't double-mount
+      if (!container.querySelector(".theme-toggle-btn")) {
+        container.appendChild(_createToggleBtn());
+      }
+    });
+  });
+  updateThemeToggleUI(getTheme());
+}
+
+/** React to OS-level prefers-color-scheme changes (only if user hasn't manually set a preference) */
+if (typeof window !== "undefined" && window.matchMedia) {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    try {
+      if (!localStorage.getItem(THEME_KEY)) {
+        setTheme(e.matches ? "dark" : "light");
+      }
+    } catch (_) {}
+  });
+}
+
+/** Auto-initialise when DOM is ready */
+if (typeof window !== "undefined") {
+  window.getTheme  = getTheme;
+  window.setTheme  = setTheme;
+  window.toggleTheme = toggleTheme;
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountThemeToggleButtons);
+  } else {
+    mountThemeToggleButtons();
+  }
+}

@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Consolidated Industrial Clearance Certificate · Government of Maharashtra</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      /* Zero-FOUC: apply theme before first paint */
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
+        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
     <style>
       body {
         background: #f1f5f9;

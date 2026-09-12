@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title id="pageTabTitle">Department Scrutiny | Udyog Samyog - Govt. of Maharashtra</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      /* Zero-FOUC: apply theme before first paint */
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
+        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
     <style>
       :root { --dept-color: #1e3a5f; --dept-light: #e8eaf6; }
       .dept-stripe { height:4px; background:var(--dept-color); position:fixed; top:0; left:0; right:0; z-index:1000; }

@@ -7,6 +7,15 @@
       Approval Tracker & License Vault | Udyog Samyog - Govt. of Maharashtra
     </title>
     <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      /* Zero-FOUC: apply theme before first paint */
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
+        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
   </head>
   <body>
     <div class="gov-stripe"></div>
