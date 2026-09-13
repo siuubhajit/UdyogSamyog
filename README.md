@@ -5,6 +5,7 @@
 **Problem Statement ID:** 26130  
 **Organization:** Government of Maharashtra  
 **Department:** Maharashtra State Innovation Society, Department of Skills, Employment, Entrepreneurship and Innovation  
+**Database Engine:** MongoDB (Mongoose ODM)  
 **Live Portal:** `http://localhost:3000`
 
 ---
@@ -178,7 +179,7 @@ Located directly on the Apex Authority Portal, this search console provides comp
 ### 8. Digital Clearance Certificate Vault & Cryptographic Verification
 - **Official Issuance:** Upon Apex approval, the system generates an official Government of Maharashtra Single-Window Industrial Establishment Permit.
 - **Cryptographic Fingerprint:** Every certificate is embedded with an irreversible SHA-256 digital signature hash generated from the enterprise name, application number, and state approval metadata.
-- **Unique Serial Identification:** Serialized certificate numbering format (e.g., `CERT/MH/IND/1/2026`).
+- **Unique Serial Identification:** Serialized certificate numbering format (e.g., `CERT/MH/IND/6aa6fdf0ac6f8597c2b3e1b9/2026`).
 - **Printable Certificate View:** Formatted with state emblem, statutory legislation citations, five-year validity term, and direct QR verification parameters.
 
 ---
@@ -198,31 +199,35 @@ Located directly on the Apex Authority Portal, this search console provides comp
 - **Test Domain Bypass:** Automated test suites using test domains (`testcorp.in`, `hi2.in`, `example.com`) generate instant mock OTPs without invoking outbound networks.
 - **Password Complexity Standards:** Alphanumeric, minimum 8 characters, at least one special symbol (`@`, `#`, `$`, `%`, etc.) verified via interactive live UI checklists and backend validation.
 - **Duplicate Prevention:** Strict database uniqueness checks on official email addresses, 10-digit Indian mobile numbers (starting with 6, 7, 8, or 9), and 15-character GSTIN registration codes.
-- **Role-Based Access Control (RBAC):** Middleware guards (`auth`, `official`) protect administrative endpoints. Applicants cannot access official consoles; official users cannot spawn clearance applications.
-- **Zero SQL Injection:** 100% parameterized SQL prepared statements using Node.js built-in `node:sqlite` engine.
-- **Zero Statutory Abbreviations:** Strict adherence to full statutory terminology across all user interfaces, database tables, and system logs.
+- **Role-Based Access Control (RBAC):** Middleware guards (`auth`, `official`, `apexOfficial`) protect administrative endpoints. Applicants cannot access official consoles; official users cannot spawn clearance applications.
+- **Modern MongoDB Layer:** High-performance Mongoose schemas with type-safety, validation, atomic updates, and automatic `id` serialization.
+- **Zero Statutory Abbreviations:** Strict adherence to full statutory terminology across all user interfaces, database schemas, and system logs.
 
 ---
 
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **Node.js:** Version 20 or later (uses Node's native `node:sqlite` module; zero external C++ compiler tools or Python build dependencies required).
+- **Node.js:** Version 20 or later.
+- **MongoDB:** Community Server (running locally on port `27017`) or a MongoDB Atlas cloud connection URI.
 
 ### Installation & Launch
 
 ```bash
 # 1. Clone or navigate to the project directory
-cd "Udyog Samyog"
+cd UdyogSamyog
 
 # 2. Install dependencies
 npm install
 
-# 3. Start the application
+# 3. (Optional) Set custom MongoDB URI in .env (defaults to mongodb://localhost:27017/udyog_samyog)
+# MONGODB_URI=mongodb://localhost:27017/udyog_samyog
+
+# 4. Start the application
 npm start
 ```
 
-The server will initialize the SQLite database, apply migrations, seed evaluation accounts, and begin listening on **`http://localhost:3000`**.
+The server will automatically connect to MongoDB, seed the default official and applicant accounts (if not already seeded), and begin listening on **`http://localhost:3000`**.
 
 ---
 
@@ -243,21 +248,34 @@ Pre-seeded demonstration accounts with 1-click autofill buttons available direct
 
 ## 📁 Project Architecture & File Structure
 
+The backend follows a clean, modular Express & Mongoose architecture:
+
 ```
-Udyog Samyog/
-├── server.js                          # Express server, SQLite database, RBAC middleware, and 33 API routes
-├── package.json                       # Project configuration and dependencies
-├── .env                               # Optional Gmail SMTP environment variables
-├── data/
-│   └── udyog-samyog.db               # SQLite database with foreign keys enabled
-├── uploads/                           # Storage directory for statutory blueprints and revised compliance files
+UdyogSamyog/
+├── server.js                          # Application bootstrap, Express server setup, middleware & route mounting
+├── package.json                       # Project configuration and dependencies (mongoose, express, helmet, etc.)
+├── .env                               # Optional Gmail SMTP & MongoDB URI environment variables
+├── db/
+│   ├── models.js                      # Mongoose schemas & models (User, Application, Document, Query, Inspection, Otp, ResetToken)
+│   └── seed.js                        # Idempotent database seeder for demo accounts, application, blueprints & plans
+├── routes/
+│   ├── auth.js                        # Authentication, Enterprise Registration, OTP Verification, Password Reset & Profile
+│   ├── admin.js                       # Apex Authority Enterprise Directory, Blacklisting & Reinstatement
+│   ├── applications.js                # 3-Phase Statutory Pipeline, Stage Decisions, Dossiers & Digital Certificates
+│   ├── documents.js                   # Industrial Vault Uploads, In-browser Preview, Downloads & Officer Verification
+│   ├── queries.js                     # Officer Formal Queries & Applicant Clarifications with Blueprint Revisions
+│   ├── inspections.js                 # Joint On-Site Inspection Scheduling & History Tracking
+│   └── analytics.js                   # Service Level Guarantees, Bottleneck Detection & State Incentive Matching
+├── utils/
+│   └── helpers.js                     # Rate Limiters, Regulatory Knowledge Engine, Plan Classifier & Auth Middleware
+├── uploads/                           # Industrial vault disk storage for statutory blueprints and revised compliance files
 ├── public/
 │   ├── index.html                     # Government of Maharashtra Single-Window Landing Page
 │   ├── css/
-│   │   └── style.css                  # State government theme, responsive layouts, badges, and modal styles
+│   │   └── style.css                  # Professional government theme, glassmorphic topbar, responsive layout & dark mode tokens
 │   ├── js/
-│   │   ├── common.js                  # Shared fetch wrapper, navigation guards, and dashboard URL resolver
-│   │   ├── auth.js                    # Authentication controller, OTP timer, live complexity, Gmail config modal
+│   │   ├── common.js                  # Shared fetch wrapper, Zero-FOUC theme switcher, navigation guards & UI helpers
+│   │   ├── auth.js                    # Authentication controller, OTP timer, live complexity & Gmail config modal
 │   │   ├── applicant-workflow.js      # Enterprise applicant workflow card and multi-agency clearance matrix
 │   │   ├── officer-msins.js           # Apex Officer controller: search console, registry, banning, PSI calculator
 │   │   ├── officer-midc.js            # Civil Officer controller: cluster zoning, setbacks, site blueprints
@@ -278,6 +296,10 @@ Udyog Samyog/
 │       ├── officer-dashboard-mpcb.html # Maharashtra Pollution Control Board Environmental Console
 │       ├── officer-dashboard-dish.html # Directorate of Industrial Safety and Health Safety Console
 │       └── officer-dashboard-fire.html # Directorate of Maharashtra Fire Services Safety Console
+└── scratch/                           # Automated test suites and verification scripts
+    ├── test_mongodb_integration.js    # 26-point end-to-end integration test suite
+    ├── test_full_lifecycle.js         # Complete lifecycle test (uploads, queries, decisions, certificates)
+    └── test_all_portals.js            # Multi-portal login and dashboard verification suite
 ```
 
 ---
@@ -300,6 +322,7 @@ Udyog Samyog/
 | `POST` | `/api/config/gmail/test` | Authenticated | Tests live connectivity to Google Gmail SMTP servers |
 | `GET` | `/api/account` | Authenticated | Retrieves enterprise profile and application counts |
 | `DELETE` | `/api/account` | Authenticated | Removes enterprise profile (guarded against active applications) |
+| `POST` | `/api/test/reset-limits` | Dev/Test | Resets rate limiting buckets for automated testing |
 
 ### 2. Enterprise Administration (Apex Authority Only)
 | Method | Endpoint | Access | Description |
@@ -315,9 +338,12 @@ Udyog Samyog/
 | `GET` | `/api/applications` | Authenticated | Lists applications (filtered by departmental jurisdiction or applicant ownership) |
 | `GET` | `/api/applications/pending` | Authenticated | Lists pending applications awaiting departmental scrutiny |
 | `GET` | `/api/applications/:id` | Authenticated | Retrieves complete application dossier, plans, remarks, and metadata |
+| `PUT` | `/api/applications/:id` | Authenticated | Updates existing application parameters with automated re-tiering |
 | `POST` | `/api/applications/:id/stage-decision` | Official | Records departmental decision (`Approved`, `Rejected`, `Query`) and drives transitions |
 | `GET` | `/api/applications/:id/pipeline` | Authenticated | Retrieves live 3-phase pipeline milestone statuses (ownership enforced) |
-| `PATCH` | `/api/applications/:id/status` | Official (Apex) | Grants final consolidated approval or halts pipeline |
+| `PATCH`| `/api/applications/:id/department-clearance`| Official | Updates departmental milestone status |
+| `PATCH`| `/api/applications/:id/status` | Official (Apex) | Grants final consolidated approval or halts pipeline |
+| `GET` | `/api/applications/:id/certificate` | Authenticated | Retrieves official digital clearance certificate with SHA-256 hash |
 
 ### 4. Statutory Documents & Vault
 | Method | Endpoint | Access | Description |
@@ -335,7 +361,6 @@ Udyog Samyog/
 | `POST` | `/api/queries/:id/reply` | Authenticated | Submits clarification reply and optional revised compliance document |
 | `POST` | `/api/applications/:id/inspections` | Official | Schedules joint on-site physical inspection |
 | `GET` | `/api/applications/:id/inspections` | Authenticated | Lists scheduled inspections (ownership enforced) |
-| `GET` | `/api/applications/:id/certificate` | Authenticated | Retrieves official digital clearance certificate with SHA-256 hash |
 | `GET` | `/api/schemes/eligible` | Authenticated | Returns eligible Maharashtra state incentive packages |
 | `GET` | `/api/analytics/summary` | Authenticated | Returns Service Level Guarantee compliance rates and district intelligence |
 
@@ -343,20 +368,17 @@ Udyog Samyog/
 
 ## 🧪 Automated Testing & Verification
 
-The project includes four automated verification suites:
+The project includes automated verification suites:
 
 ```bash
-# 1. Endpoint Security, RBAC & Logic Suite (24 tests)
-node scratch/test_all_endpoints_security_logic.js
+# 1. Comprehensive MongoDB End-to-End Integration Suite (26 tests)
+node scratch/test_mongodb_integration.js
 
-# 2. Registration, Authentication & OTP Lifecycle Suite (18 tests)
-node scratch/test_auth_lifecycle.js
+# 2. Complete Lifecycle Suite: Uploads, Queries, 3-Phase Approvals & Certificate Generation (16 tests)
+node scratch/test_full_lifecycle.js
 
-# 3. End-to-End 3-Phase Statutory Clearance Workflow (7 steps)
-node scratch/test_streamlined_workflow.js
-
-# 4. Zero Statutory Abbreviations Audit
-node scratch/verify_zero_abbr.js
+# 3. Multi-Portal Authentication and Dashboard Visibility Verification (6 portals)
+node scratch/test_all_portals.js
 ```
 
 ### Test Coverage Highlights
@@ -364,7 +386,7 @@ node scratch/verify_zero_abbr.js
 - **IDOR Safeguards:** Confirms that applicants cannot access documents, inspection schedules, or pipeline statuses belonging to other enterprises.
 - **Input Validation:** Tests rejection of weak passwords, invalid 10-digit phone numbers, malformed GSTIN codes, empty ban reasons, and invalid decision enums.
 - **End-to-End Pipeline Transition:** Proves that an industrial application progresses seamlessly through Phase 1 (Pollution Control Board) ➔ Phase 2 (Industrial Development Corporation, Factory Safety, and Fire Services) ➔ Phase 3 (State Innovation Society Apex Approval) ➔ Final Certificate Issuance.
-- **Database Cleanliness:** All test suites automatically purge temporary test records upon completion, leaving the production SQLite database clean.
+- **Data Integrity:** All MongoDB models enforce unique indexes on emails, registration numbers, and application numbers.
 
 ---
 
@@ -373,4 +395,4 @@ node scratch/verify_zero_abbr.js
 - **Ease of Doing Business (EoDB):** Eliminates physical visits to government secretariats by providing end-to-end digital clearances.
 - **Maharashtra Single Window Act:** Strictly enforces that specialized bodies scrutinize domain blueprints concurrently during Phase 2 before the Apex Authority issues the consolidated permit.
 - **Right to Public Services:** Embeds Service Level Guarantees with automated breach detection to ensure timely delivery of government services.
-- **Data Sovereignty:** Operates with embedded local SQLite storage, prepared statements, and role-scoped document vaults ensuring citizen and enterprise data remains secure.
+- **Data Sovereignty & Scalability:** Operates with scalable MongoDB document storage, atomic operations, and role-scoped document vaults ensuring citizen and enterprise data remains secure.
