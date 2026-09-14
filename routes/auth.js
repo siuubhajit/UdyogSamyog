@@ -512,6 +512,9 @@ router.post(
   async (req, res) => {
     try {
       const email = String(req.body.email || "").trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ error: "Please enter a valid email address." });
+      }
       const u = await User.findOne({ email }).lean();
       if (!u) {
         return res.json({

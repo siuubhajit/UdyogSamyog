@@ -823,7 +823,6 @@ async function handleResetPasswordSubmit() {
     setTimeout(() => {
       switchAuthTab("login");
       document.getElementById("email").value = email;
-      document.getElementById("password").value = password;
     }, 1500);
   } catch (err) {
     show("forgotmsg", err.message);
