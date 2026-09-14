@@ -124,9 +124,9 @@ function getEmailTransporter() {
     return nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
-      connectionTimeout: 4000,
-      greetingTimeout: 4000,
-      socketTimeout: 5000,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 12000,
     });
   }
   return null;
@@ -150,6 +150,8 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
       ? "उद्योग संयोग (Udyog Samyog) - Enterprise Registration OTP"
       : "उद्योग संयोग (Udyog Samyog) - Password Reset OTP";
 
+  const purposeLabel = purpose === "registration" ? "Enterprise Registration" : "Account Password Reset";
+
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
       <div style="background: #1e3a8a; color: #ffffff; padding: 20px; text-align: center;">
@@ -159,14 +161,15 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
       <div style="padding: 24px; color: #1e293b; background: #ffffff;">
         <p style="font-size: 16px; margin-bottom: 16px;">Namaskar,</p>
         <p style="font-size: 14px; line-height: 1.5; color: #475569;">
-          Your One-Time Password (OTP) for <b>${purpose === "registration" ? "Enterprise Registration" : "Account Password Reset"}</b> on the Maharashtra Single Window Portal is:
+          Your One-Time Password (OTP) for <b>${purposeLabel}</b> on the Maharashtra Single Window Portal is:
         </p>
         <div style="background: #f8fafc; border: 2px dashed #3b82f6; border-radius: 8px; padding: 16px; text-align: center; margin: 20px 0;">
           <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #1e3a8a;">${otpCode}</span>
           <p style="font-size: 12px; color: #dc2626; font-weight: bold; margin: 8px 0 0 0;">Valid for 1 minute 30 seconds (90 seconds). Do not share this OTP with anyone.</p>
         </div>
         <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-          This is an automated dispatch from the Directorate of Industries and Maharashtra State Innovation Society.
+          This is an automated dispatch from the Directorate of Industries and Maharashtra State Innovation Society.<br>
+          If you did not request this OTP, please ignore this email.
         </p>
       </div>
       <div style="background: #f1f5f9; padding: 12px 24px; text-align: center; font-size: 11px; color: #94a3b8;">
@@ -174,6 +177,8 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
       </div>
     </div>
   `;
+
+  const textContent = `Udyog Samyog - Government of Maharashtra\n\nYour OTP for ${purposeLabel} is: ${otpCode}\n\nThis OTP is valid for 90 seconds. Do not share it with anyone.\n\nIf you did not request this, please ignore this email.`;
 
   if (transporter) {
     const fromAddress = customGmailConfig.user || process.env.GMAIL_USER;
@@ -185,7 +190,12 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
         from: `"Udyog Samyog - Govt of Maharashtra" <${fromAddress}>`,
         to: toEmail,
         subject,
+        text: textContent,
         html: htmlContent,
+        headers: {
+          "X-Mailer": "Udyog Samyog Portal v1.0",
+          "X-Priority": "1",
+        },
       });
       console.log(
         `[GMAIL SMTP SUCCESS] Message delivered to ${toEmail}. MessageId: ${info.messageId}`,

@@ -760,16 +760,27 @@ async function handleSendForgotOtp() {
     if (otpGroup) otpGroup.style.display = "block";
     startForgotOtpCountdown();
 
+    // Re-enable the button for resend
+    if (btn) {
+      btn.textContent = "Resend OTP ✉";
+    }
+
     if (res.devOtp) {
+      // Dev / fallback mode — show OTP on screen and auto-fill
       show(
         "forgotmsg",
-        `One-Time Password Dispatched! (Dev Mode: ${res.devOtp}) - Enter code below along with your new password.`,
+        `✓ OTP Generated (Dev Mode: ${res.devOtp}) — Auto-filled below. Enter your new password and click Update.`,
         true,
       );
       const forgotInp = document.getElementById("forgotOtp");
       if (forgotInp) forgotInp.value = res.devOtp;
     } else {
-      show("forgotmsg", res.message, true);
+      // Gmail mode — email sent, tell user to check inbox
+      show(
+        "forgotmsg",
+        `✓ OTP sent to ${email}! Check your inbox and spam/junk folder. Enter the 6-digit code below.`,
+        true,
+      );
     }
   } catch (err) {
     if (btn) {
