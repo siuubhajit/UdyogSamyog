@@ -669,6 +669,7 @@ function checkForgotMatch() {
   }
 }
 
+// Forgot Password OTP Dispatch with 90-Second Timer & Resend Cooldown
 let forgotOtpTimerInterval = null;
 let forgotOtpTimeRemaining = 90;
 let forgotOtpCooldownRemaining = 0;
@@ -679,10 +680,17 @@ function startForgotOtpCountdown() {
   forgotOtpCooldownRemaining = OTP_RESEND_COOLDOWN_SECONDS;
   updateForgotOtpTimerDisplay(false);
 
-  const btn = document.getElementById("btnSendForgotOtp");
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = `⏳ Resend in ${forgotOtpCooldownRemaining}s`;
+  const resendBtn = document.getElementById("btnResendForgotOtp");
+  const sendBtn = document.getElementById("btnSendForgotOtp");
+  if (resendBtn) {
+    resendBtn.disabled = true;
+    resendBtn.style.opacity = "0.6";
+    resendBtn.style.cursor = "not-allowed";
+    resendBtn.textContent = `⏳ Resend in ${forgotOtpCooldownRemaining}s`;
+  }
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = `Resend in ${forgotOtpCooldownRemaining}s`;
   }
 
   forgotOtpTimerInterval = setInterval(() => {
@@ -692,27 +700,47 @@ function startForgotOtpCountdown() {
     }
     updateForgotOtpTimerDisplay(false);
 
-    const btn = document.getElementById("btnSendForgotOtp");
     if (forgotOtpCooldownRemaining > 0) {
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = `⏳ Resend in ${forgotOtpCooldownRemaining}s`;
+      if (resendBtn) {
+        resendBtn.disabled = true;
+        resendBtn.style.opacity = "0.6";
+        resendBtn.style.cursor = "not-allowed";
+        resendBtn.textContent = `⏳ Resend in ${forgotOtpCooldownRemaining}s`;
+      }
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = `Resend in ${forgotOtpCooldownRemaining}s`;
       }
     } else {
-      if (btn && btn.disabled) {
-        btn.disabled = false;
-        btn.textContent = "Resend OTP ✉";
+      if (resendBtn && resendBtn.disabled) {
+        resendBtn.disabled = false;
+        resendBtn.style.opacity = "1";
+        resendBtn.style.cursor = "pointer";
+        resendBtn.textContent = "🔄 Resend OTP";
+      }
+      if (sendBtn && sendBtn.disabled) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Resend OTP ✉";
       }
     }
 
     if (forgotOtpTimeRemaining <= 0) {
       clearInterval(forgotOtpTimerInterval);
       updateForgotOtpTimerDisplay(true);
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "Resend OTP ✉";
+      if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.style.opacity = "1";
+        resendBtn.style.cursor = "pointer";
+        resendBtn.textContent = "🔄 Resend OTP";
       }
-      show("forgotmsg", "⚠️ One-Time Password expired. Please click 'Resend OTP' to request a fresh code.");
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Resend OTP ✉";
+      }
+      const otpStatus = document.getElementById("forgotOtpStatus");
+      if (otpStatus) {
+        otpStatus.innerHTML = `<span style="color: var(--ruby); font-weight: 700;">⚠️ One-Time Password expired (1 min 30 sec limit). Please click "🔄 Resend OTP" to request a fresh code.</span>`;
+      }
     }
   }, 1000);
 }
@@ -733,13 +761,31 @@ function updateForgotOtpTimerDisplay(expired = false) {
   }
 }
 
-async function handleSendForgotOtp() {
-  const email = document.getElementById("forgotEmail")?.value.trim();
+async function handleResendForgotOtp() {
+  const resendBtn = document.getElementById("btnResendForgotOtp");
+  if (resendBtn && forgotOtpCooldownRemaining > 0) {
+    return;
+  }
+  if (resendBtn) {
+    resendBtn.disabled = true;
+    resendBtn.textContent = "Resending...";
+  }
+  await handleSendForgotOtp(true);
+  if (resendBtn) {
+    resendBtn.textContent = "🔄 Resend OTP";
+  }
+}
+
+async function handleSendForgotOtp(isResend = false) {
+  const emailInput = document.getElementById("forgotEmail");
+  const email = emailInput?.value.trim();
   const btn = document.getElementById("btnSendForgotOtp");
   const otpGroup = document.getElementById("forgotOtpGroup");
+  const otpStatus = document.getElementById("forgotOtpStatus");
 
-  if (!email) {
-    alert("Please enter your registered email address.");
+  if (!email || !email.includes("@") || !email.includes(".")) {
+    alert("Please enter a valid registered official email address first.");
+    emailInput?.focus();
     return;
   }
 
@@ -747,48 +793,91 @@ async function handleSendForgotOtp() {
     return; // Active cooldown
   }
 
+  // Open the OTP container immediately so the user sees real-time progress
+  if (otpGroup) otpGroup.style.display = "block";
+
   try {
     if (btn) {
       btn.disabled = true;
-      btn.textContent = "Sending...";
+      btn.textContent = isResend ? "Resending..." : "Sending...";
     }
-    const res = await api("/api/forgot-password", {
+    if (otpStatus) {
+      const safeEmail = typeof escapeHtml === "function" ? escapeHtml(email) : email;
+      otpStatus.innerHTML = `<span style="color: var(--navy); font-weight: 600;">⏳ Connecting to Gmail SMTP & dispatching One-Time Password to <b>${safeEmail}</b>...</span>`;
+    }
+
+    const res = await api("/api/otp/send", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, purpose: "reset" }),
     });
 
-    if (otpGroup) otpGroup.style.display = "block";
-    startForgotOtpCountdown();
-
-    // Re-enable the button for resend
     if (btn) {
       btn.textContent = "Resend OTP ✉";
+      btn.disabled = false;
     }
 
+    const inp = document.getElementById("forgotOtp");
+    if (inp) {
+      inp.disabled = false;
+      if (isResend) inp.value = "";
+      inp.focus();
+    }
+
+    startForgotOtpCountdown();
+
+    const safeRecipient = typeof escapeHtml === "function" ? escapeHtml(res.recipient || email) : (res.recipient || email);
     if (res.devOtp) {
-      // Dev / fallback mode — show OTP on screen and auto-fill
-      show(
-        "forgotmsg",
-        `✓ OTP Generated (Dev Mode: ${res.devOtp}) — Auto-filled below. Enter your new password and click Update.`,
-        true,
-      );
-      const forgotInp = document.getElementById("forgotOtp");
-      if (forgotInp) forgotInp.value = res.devOtp;
+      const safeDevOtp = typeof escapeHtml === "function" ? escapeHtml(res.devOtp) : res.devOtp;
+      if (otpStatus) {
+        otpStatus.innerHTML = `
+          <div class="dev-otp-pill">
+            <span><b>One-Time Password Sent!</b> (Dev Mode: <b>${safeDevOtp}</b>)</span>
+            <button type="button" class="btn outline sm" style="padding: 2px 8px; font-size: 0.72rem;" onclick="autofillForgotOtp('${safeDevOtp}')">Auto-fill</button>
+          </div>
+        `;
+      }
+      if (inp) inp.value = res.devOtp;
     } else {
-      // Gmail mode — email sent, tell user to check inbox
-      show(
-        "forgotmsg",
-        `✓ OTP sent to ${email}! Check your inbox and spam/junk folder. Enter the 6-digit code below.`,
-        true,
-      );
+      if (otpStatus) {
+        otpStatus.innerHTML = `
+          <div style="color: var(--emerald); font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 8px 12px;">
+            ✓ One-Time Password dispatched via Gmail to <b>${safeRecipient}</b>!
+            <div style="color: #065f46; font-size: 0.76rem; font-weight: normal; margin-top: 3px;">
+              Please check your inbox & spam folder. Code is valid for <b>1 minute 30 seconds</b>.
+            </div>
+          </div>
+        `;
+      }
     }
   } catch (err) {
     if (btn) {
       btn.disabled = false;
       btn.textContent = "Send OTP ✉";
     }
-    show("forgotmsg", err.message);
+    const errMsg =
+      err.message &&
+      (err.message.includes("fetch") || err.message.includes("NetworkError"))
+        ? "Unable to reach Udyog Samyog server. Please ensure the backend server is running on port 3000."
+        : err.message;
+    const safeErrMsg = typeof escapeHtml === "function" ? escapeHtml(errMsg) : errMsg;
+    if (otpStatus) {
+      otpStatus.innerHTML = `
+        <div style="color: var(--ruby); font-weight: 700; background: #fee2e2; border: 1px solid #f87171; border-radius: 6px; padding: 8px 12px; margin-top: 4px;">
+          ✕ ${safeErrMsg}
+        </div>
+      `;
+    }
+    show("forgotmsg", errMsg);
+    alert("One-Time Password Dispatch Error:\n\n" + errMsg);
   }
+}
+
+function autofillForgotOtp(code) {
+  const inp = document.getElementById("forgotOtp");
+  if (inp) {
+    inp.value = code;
+  }
+  document.getElementById("forgotNewPassword")?.focus();
 }
 
 async function handleResetPasswordSubmit() {
@@ -799,8 +888,15 @@ async function handleResetPasswordSubmit() {
     "forgotConfirmPassword",
   )?.value;
 
-  if (!otp) {
-    show("forgotmsg", "Please enter the 6-digit verification One-Time Password.");
+  if (!email) {
+    alert("Please enter your registered email address.");
+    document.getElementById("forgotEmail")?.focus();
+    return;
+  }
+
+  if (!otp || otp.length < 6) {
+    alert("Please enter the full 6-digit verification One-Time Password received on your email.");
+    document.getElementById("forgotOtp")?.focus();
     return;
   }
 
@@ -831,12 +927,20 @@ async function handleResetPasswordSubmit() {
       "Password updated successfully! Redirecting to login...",
       true,
     );
+    alert("Password Updated Successfully!\n\nYour account password has been reset. Please sign in with your new password.");
     setTimeout(() => {
       switchAuthTab("login");
-      document.getElementById("email").value = email;
+      const loginEmail = document.getElementById("email");
+      if (loginEmail) loginEmail.value = email;
+      const loginPass = document.getElementById("password");
+      if (loginPass) {
+        loginPass.value = "";
+        loginPass.focus();
+      }
     }, 1500);
   } catch (err) {
     show("forgotmsg", err.message);
+    alert("Password Reset Error:\n\n" + err.message);
   }
 }
 

@@ -621,10 +621,10 @@
               verification code (OTP).
             </p>
 
-            <form id="forgotOtpForm">
+            <form id="forgotOtpForm" onsubmit="event.preventDefault(); handleResetPasswordSubmit();">
               <!-- Step 1: Email + Send OTP -->
               <label>
-                Registered Official Email
+                Registered Official Email * (Receives Gmail OTP)
                 <div class="input-with-btn">
                   <input
                     id="forgotEmail"
@@ -644,10 +644,37 @@
               </label>
 
               <!-- Step 2: Enter OTP & New Password -->
-              <div id="forgotOtpGroup" style="display: none; margin-top: 10px">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
-                  <label style="margin: 0; font-weight: 700; color: var(--navy); font-size: 0.85rem;">
-                    Enter 6-Digit Email OTP:
+              <div
+                id="forgotOtpGroup"
+                style="
+                  display: none;
+                  margin-top: 14px;
+                  margin-bottom: 16px;
+                  background: #f8fafc;
+                  border: 1.5px solid #cbd5e1;
+                  border-radius: 8px;
+                  padding: 14px 16px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                  "
+                >
+                  <label
+                    style="
+                      margin: 0;
+                      font-weight: 700;
+                      color: var(--navy);
+                      font-size: 0.85rem;
+                    "
+                  >
+                    Enter 6-Digit Email Verification OTP:
                   </label>
                   <span
                     id="otpTimerPillForgot"
@@ -663,20 +690,40 @@
                     ⏱️ Valid for: <span id="forgotOtpCountdown">01:30</span>
                   </span>
                 </div>
-                <input
-                  id="forgotOtp"
-                  type="text"
-                  maxlength="6"
-                  placeholder="123456"
-                  style="font-family: monospace; letter-spacing: 3px; font-size: 1.15rem; font-weight: 700;"
-                  oninput="this.value = this.value.replace(/\D/g, '')"
-                  required
-                />
+                <div class="input-with-btn">
+                  <input
+                    id="forgotOtp"
+                    type="text"
+                    maxlength="6"
+                    placeholder="e.g. 123456"
+                    style="
+                      font-family: monospace;
+                      letter-spacing: 3px;
+                      font-size: 1.15rem;
+                      font-weight: 700;
+                    "
+                    oninput="this.value = this.value.replace(/\D/g, '')"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn outline sm"
+                    id="btnResendForgotOtp"
+                    onclick="handleResendForgotOtp()"
+                    style="white-space: nowrap"
+                  >
+                    🔄 Resend OTP
+                  </button>
+                </div>
+                <div
+                  id="forgotOtpStatus"
+                  style="font-size: 0.8rem; margin-top: 8px; line-height: 1.4"
+                ></div>
 
                 <!-- Step 3: New Password & Confirm Password -->
-                <div class="formgrid" style="margin-top: 8px">
+                <div class="formgrid" style="margin-top: 12px">
                   <label>
-                    New Password
+                    New Account Password
                     <input
                       id="forgotNewPassword"
                       type="password"
@@ -725,8 +772,7 @@
                 <button
                   class="btn emerald"
                   style="width: 100%; margin-top: 14px"
-                  type="button"
-                  onclick="handleResetPasswordSubmit()"
+                  type="submit"
                 >
                   Update Account Password ✓
                 </button>

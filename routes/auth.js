@@ -49,7 +49,7 @@ router.post(
         const existing = await User.findOne({ email: emailNorm }).lean();
         if (!existing) {
           return res.status(404).json({
-            error: "No account registered with this email address.",
+            error: `No registered account found with email '${emailNorm}'. Please verify your email or register a new enterprise profile.`,
           });
         }
       }
@@ -517,10 +517,8 @@ router.post(
       }
       const u = await User.findOne({ email }).lean();
       if (!u) {
-        return res.json({
-          ok: true,
-          message:
-            "If registered, a secure verification One-Time Password has been dispatched to your email.",
+        return res.status(404).json({
+          error: `No registered account found with email '${email}'. Please verify your email or register a new enterprise profile.`,
         });
       }
 
@@ -545,13 +543,20 @@ router.post(
 
       const dispatch = await sendOtpEmail(email, otp, "reset");
 
+      console.log(
+        `[/api/forgot-password] Successfully issued reset OTP for ${email} (mode: ${dispatch.mode}, expires in 90s)`,
+      );
+
       res.json({
         ok: true,
         message:
           dispatch.mode === "gmail"
             ? `Password reset One-Time Password sent to ${email} via Gmail. Check your inbox and spam folder.`
             : `Password reset One-Time Password generated. (Dev Mode: ${otp})`,
+        recipient: email,
         devOtp: dispatch.mode === "gmail" ? undefined : otp,
+        mode: dispatch.mode,
+        expiresInSeconds: 90,
         resetUrl:
           dispatch.mode === "gmail"
             ? undefined
@@ -613,24 +618,53 @@ router.post("/api/reset-password", async (req, res) => {
       await row.save();
     } else if (email && otp) {
       const emailNorm = String(email).trim().toLowerCase();
-      const record = await Otp.findOne({
-        email: emailNorm,
-        otp: String(otp).trim(),
-        purpose: "reset",
-        used: 0,
-        expires_at: { $gt: Date.now() },
-      }).sort({ _id: -1 });
+      const isSessionVerified =
+        req.session?.verifiedOtps &&
+        req.session.verifiedOtps[`reset_${emailNorm}`];
 
-      if (!record) {
-        return res.status(400).json({ error: "Invalid or expired OTP code." });
+      let record = null;
+      if (!isSessionVerified) {
+        record = await Otp.findOne({
+          email: emailNorm,
+          otp: String(otp).trim(),
+          purpose: "reset",
+          used: 0,
+          expires_at: { $gt: Date.now() },
+        }).sort({ _id: -1 });
+
+        if (!record) {
+          const expired = await Otp.findOne({
+            email: emailNorm,
+            otp: String(otp).trim(),
+            purpose: "reset",
+            expires_at: { $lte: Date.now() },
+          }).sort({ _id: -1 });
+
+          if (expired) {
+            return res.status(400).json({
+              error:
+                "Password reset OTP has expired (validity is 1 minute 30 seconds). Please click 'Resend OTP' to receive a fresh code.",
+            });
+          }
+
+          return res.status(400).json({
+            error: `Invalid password reset OTP code for '${emailNorm}'. Please click 'Resend OTP' to receive a valid 6-digit code.`,
+          });
+        }
       }
+
       const u = await User.findOne({ email: emailNorm }).lean();
       if (!u) {
         return res.status(404).json({ error: "Enterprise user account not found." });
       }
       userId = u._id;
-      record.used = 1;
-      await record.save();
+      if (record) {
+        record.used = 1;
+        await record.save();
+      }
+      if (req.session?.verifiedOtps) {
+        delete req.session.verifiedOtps[`reset_${emailNorm}`];
+      }
     } else {
       return res.status(400).json({
         error: "Either a reset token or email + OTP is required to reset password.",
