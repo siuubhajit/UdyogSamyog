@@ -136,7 +136,7 @@ async function sendOtpEmail(toEmail, otpCode, purpose) {
   // Never dispatch real emails to test addresses or in automated test runs
   if (
     process.env.NODE_ENV === "test" ||
-    /@(?:test|example|invalid|localhost|testcorp\.in|hi2\.in)/i.test(toEmail)
+    /@(?:test|example|invalid|localhost|testcorp\.in)/i.test(toEmail)
   ) {
     console.log(
       `[TEST/DEV DOMAIN] OTP generated for ${toEmail}: ${otpCode} (skipping live SMTP dispatch)`,
