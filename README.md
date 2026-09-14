@@ -194,7 +194,7 @@ Located directly on the Apex Authority Portal, this search console provides comp
 
 ### 10. Robust Authentication, Two-Factor OTP & Security Engine
 - **Mandatory Two-Factor OTP Verification:** Integrated OTP validation for both Enterprise Registration and Password Reset.
-- **Nodemailer Gmail SMTP Integration:** Full support for Google Gmail App Passwords with strict socket and connection timeouts (4,000ms connection, 4,000ms greeting, 5,000ms socket timeout) preventing server hangs.
+- **Nodemailer Gmail SMTP Integration:** Full support for Google Gmail App Passwords with strict socket and connection timeouts (10,000ms connection, 10,000ms greeting, 12,000ms socket timeout) preventing server hangs. Emails include both HTML and plain-text bodies for improved deliverability and spam-filter resilience.
 - **Resilient Development Fallback:** Automatic local fallback mode (`fallback_console`) logs verification codes to stdout and displays accessible helper pills for offline development and local evaluation.
 - **Test Domain Bypass:** Automated test suites using test domains (`testcorp.in`, `hi2.in`, `example.com`) generate instant mock OTPs without invoking outbound networks.
 - **Password Complexity Standards:** Alphanumeric, minimum 8 characters, at least one special symbol (`@`, `#`, `$`, `%`, etc.) verified via interactive live UI checklists and backend validation.
@@ -220,14 +220,36 @@ cd UdyogSamyog
 # 2. Install dependencies
 npm install
 
-# 3. (Optional) Set custom MongoDB URI in .env (defaults to mongodb://localhost:27017/udyog_samyog)
-# MONGODB_URI=mongodb://localhost:27017/udyog_samyog
+# 3. Configure environment variables
+cp .env.example .env
+# Then edit .env and fill in your values (see below)
 
 # 4. Start the application
 npm start
 ```
 
 The server will automatically connect to MongoDB, seed the default official and applicant accounts (if not already seeded), and begin listening on **`http://localhost:3000`**.
+
+### Environment Variables (`.env`)
+
+Copy `.env.example` to `.env` and set the following:
+
+```env
+# Gmail address used to dispatch OTP emails
+GMAIL_USER=your_address@gmail.com
+
+# 16-character Google App Password (NOT your Gmail login password)
+# Generate one at: https://myaccount.google.com/apppasswords
+GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+
+# Optional: MongoDB connection URI (defaults to local instance)
+# MONGODB_URI=mongodb://localhost:27017/udyog_samyog
+
+# Optional: Session encryption secret (randomise for production)
+# SESSION_SECRET=a-long-random-string-here
+```
+
+> **Security note:** `.env` is listed in `.gitignore` and will never be committed. Never share your Gmail App Password or session secret publicly.
 
 ---
 
@@ -254,7 +276,9 @@ The backend follows a clean, modular Express & Mongoose architecture:
 UdyogSamyog/
 ├── server.js                          # Application bootstrap, Express server setup, middleware & route mounting
 ├── package.json                       # Project configuration and dependencies (mongoose, express, helmet, etc.)
-├── .env                               # Optional Gmail SMTP & MongoDB URI environment variables
+├── .env.example                       # Template for environment variables — copy to .env and fill in values
+├── .env                               # ⛔ gitignored — contains Gmail App Password & session secret (never commit)
+├── .gitignore                         # Excludes .env, node_modules/, scratch/, uploads/*, logs, build artefacts
 ├── db/
 │   ├── models.js                      # Mongoose schemas & models (User, Application, Document, Query, Inspection, Otp, ResetToken)
 │   └── seed.js                        # Idempotent database seeder for demo accounts, application, blueprints & plans
@@ -267,39 +291,36 @@ UdyogSamyog/
 │   ├── inspections.js                 # Joint On-Site Inspection Scheduling & History Tracking
 │   └── analytics.js                   # Service Level Guarantees, Bottleneck Detection & State Incentive Matching
 ├── utils/
-│   └── helpers.js                     # Rate Limiters, Regulatory Knowledge Engine, Plan Classifier & Auth Middleware
-├── uploads/                           # Industrial vault disk storage for statutory blueprints and revised compliance files
-├── public/
-│   ├── index.html                     # Government of Maharashtra Single-Window Landing Page
-│   ├── css/
-│   │   └── style.css                  # Professional government theme, glassmorphic topbar, responsive layout & dark mode tokens
-│   ├── js/
-│   │   ├── common.js                  # Shared fetch wrapper, Zero-FOUC theme switcher, navigation guards & UI helpers
-│   │   ├── auth.js                    # Authentication controller, OTP timer, live complexity & Gmail config modal
-│   │   ├── applicant-workflow.js      # Enterprise applicant workflow card and multi-agency clearance matrix
-│   │   ├── officer-msins.js           # Apex Officer controller: search console, registry, banning, PSI calculator
-│   │   ├── officer-midc.js            # Civil Officer controller: cluster zoning, setbacks, site blueprints
-│   │   ├── officer-mpcb.js            # Environmental Officer controller: risk tiering, effluent, Consent to Establish
-│   │   ├── officer-dish.js            # Factory Safety Officer controller: machinery layout, chemical hazard review
-│   │   └── officer-fire.js            # Fire Services Officer controller: hydrant network, reservoir checks
-│   └── pages/
-│       ├── login.html                 # State Innovation Society gateway: login, register with OTP, forgot password
-│       ├── applicant-dashboard.html   # Enterprise applicant portal, active applications, alerts, query inbox
-│       ├── application.html           # 4-step clearance application wizard with dynamic Regulatory Knowledge Engine
-│       ├── tracker.html               # Real-time multi-department clearance tracker, query reply, certificate view
-│       ├── verification.html          # Split-screen dossier scrutiny console with embedded browser PDF inspector
-│       ├── analytics.html             # Service Level Guarantee intelligence, bottleneck analysis, district heatmap
-│       ├── reset-password.html        # Secure password reset page with token/OTP validation
-│       ├── officer-dashboard.html     # Unified officer routing gateway
-│       ├── officer-dashboard-msins.html# Maharashtra State Innovation Society Apex Authority Console
-│       ├── officer-dashboard-midc.html # Maharashtra Industrial Development Corporation Civil Console
-│       ├── officer-dashboard-mpcb.html # Maharashtra Pollution Control Board Environmental Console
-│       ├── officer-dashboard-dish.html # Directorate of Industrial Safety and Health Safety Console
-│       └── officer-dashboard-fire.html # Directorate of Maharashtra Fire Services Safety Console
-└── scratch/                           # Automated test suites and verification scripts
-    ├── test_mongodb_integration.js    # 26-point end-to-end integration test suite
-    ├── test_full_lifecycle.js         # Complete lifecycle test (uploads, queries, decisions, certificates)
-    └── test_all_portals.js            # Multi-portal login and dashboard verification suite
+│   └── helpers.js                     # Rate Limiters, Gmail SMTP, Regulatory Knowledge Engine, Plan Classifier & Auth Middleware
+├── uploads/                           # ⛔ gitignored — Industrial vault disk storage for statutory blueprints
+│   └── .gitkeep                       # Ensures the uploads/ directory exists in the repo
+├── scratch/                           # ⛔ gitignored — Local diagnostic & one-off test scripts (never committed)
+└── public/
+    ├── css/
+    │   └── style.css                  # Professional government theme, glassmorphic topbar, responsive layout & dark mode tokens
+    ├── js/
+    │   ├── common.js                  # Shared fetch wrapper, Zero-FOUC theme switcher, navigation guards & UI helpers
+    │   ├── auth.js                    # Authentication controller, OTP timer, live complexity & Gmail config modal
+    │   ├── applicant-workflow.js      # Enterprise applicant workflow card and multi-agency clearance matrix
+    │   ├── officer-msins.js           # Apex Officer controller: search console, registry, banning, PSI calculator
+    │   ├── officer-midc.js            # Civil Officer controller: cluster zoning, setbacks, site blueprints
+    │   ├── officer-mpcb.js            # Environmental Officer controller: risk tiering, effluent, Consent to Establish
+    │   ├── officer-dish.js            # Factory Safety Officer controller: machinery layout, chemical hazard review
+    │   └── officer-fire.js            # Fire Services Officer controller: hydrant network, reservoir checks
+    └── pages/
+        ├── login.html                 # State Innovation Society gateway: login, register with OTP, forgot password
+        ├── applicant-dashboard.html   # Enterprise applicant portal, active applications, alerts, query inbox
+        ├── application.html           # 4-step clearance application wizard with dynamic Regulatory Knowledge Engine
+        ├── tracker.html               # Real-time multi-department clearance tracker, query reply, certificate view
+        ├── verification.html          # Split-screen dossier scrutiny console with embedded browser PDF inspector
+        ├── analytics.html             # Service Level Guarantee intelligence, bottleneck analysis, district heatmap
+        ├── reset-password.html        # Secure password reset page with token/OTP validation
+        ├── officer-dashboard.html     # Unified officer routing gateway
+        ├── officer-dashboard-msins.html  # Maharashtra State Innovation Society Apex Authority Console
+        ├── officer-dashboard-midc.html   # Maharashtra Industrial Development Corporation Civil Console
+        ├── officer-dashboard-mpcb.html   # Maharashtra Pollution Control Board Environmental Console
+        ├── officer-dashboard-dish.html   # Directorate of Industrial Safety and Health Safety Console
+        └── officer-dashboard-fire.html   # Directorate of Maharashtra Fire Services Safety Console
 ```
 
 ---
@@ -368,7 +389,7 @@ UdyogSamyog/
 
 ## 🧪 Automated Testing & Verification
 
-The project includes automated verification suites:
+The `scratch/` directory contains local diagnostic and verification scripts. It is **gitignored** and never committed — clone the repo and create these locally as needed.
 
 ```bash
 # 1. Comprehensive MongoDB End-to-End Integration Suite (26 tests)
