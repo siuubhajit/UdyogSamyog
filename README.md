@@ -6,7 +6,7 @@
 **Organization:** Government of Maharashtra  
 **Department:** Maharashtra State Innovation Society, Department of Skills, Employment, Entrepreneurship and Innovation  
 **Database Engine:** MongoDB (Mongoose ODM)  
-**Live Portal:** `http://localhost:3000`
+**Live Portal:** `NA`
 
 ---
 
