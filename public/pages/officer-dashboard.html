@@ -63,21 +63,21 @@
             </div>
           </div>
           <span class="dept-badge" id="deptBadge">Loading</span>
-          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
         </div>
       </header>
 
       <div class="layout">
         <aside class="sidebar">
           <div class="sidebar-header">Department Operations</div>
-          <a href="javascript:void(0)" id="navQueue" class="active" onclick="switchView('queue')">
+          <a href="#queue" id="navQueue" class="active" onclick="switchView('queue'); return false;">
             <span class="sidebar-icon">&#128203;</span> Application Queue
           </a>
           <a href="verification.html">
             <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
           </a>
-          <a href="javascript:void(0)" id="navEnterprises" style="display:none" onclick="switchView('enterprises')">
+          <a href="#enterprises" id="navEnterprises" style="display:none" onclick="switchView('enterprises'); return false;">
             <span class="sidebar-icon">&#127970;</span> Enterprise Registry &amp; Ban
           </a>
           <a href="analytics.html">
@@ -287,10 +287,22 @@
         const show = view === "enterprises";
         document.getElementById("queueSection").style.display = show ? "none" : "block";
         document.getElementById("enterpriseSection").style.display = show ? "block" : "none";
-        document.getElementById("navQueue").classList.toggle("active", !show);
-        document.getElementById("navEnterprises").classList.toggle("active", show);
+        document.getElementById("navQueue")?.classList.toggle("active", !show);
+        document.getElementById("navEnterprises")?.classList.toggle("active", show);
+        try {
+          if (history.replaceState) {
+            history.replaceState(null, "", "#" + (show ? "enterprises" : "queue"));
+          } else {
+            location.hash = show ? "enterprises" : "queue";
+          }
+        } catch (_) {}
         if (show) loadEnterprises(); else loadApplications();
       }
+
+      window.addEventListener("hashchange", () => {
+        const h = (location.hash || "").replace("#", "");
+        if (h === "enterprises" || h === "queue") switchView(h);
+      });
 
       async function loadApplications() {
         try {
@@ -363,7 +375,7 @@
             "<td>" + slaBadge + "</td>" +
             "<td><span class='badge " + badgeClass + "'>" + app.status + "</span></td>" +
             "<td style='white-space:nowrap'>" +
-            (canAct ? "<button class='btn sm' style='background:" + cfg.color + ";color:#fff;border:none;margin-right:4px' onclick='openDecisionModal(" + app.id + ")'>✏️ Decide</button>" : "") +
+            (canAct ? "<button class='btn sm' style='background:" + cfg.color + ";color:#fff;border:none;margin-right:4px' onclick='openDecisionModal(\"" + app.id + "\")'>✏️ Decide</button>" : "") +
             "<a class='btn outline sm' href='verification.html?id=" + app.id + "'>🔍 Dossier</a>" +
             (app.status === "Approved" ? " <a class='btn sm' style='background:#16a34a;color:#fff;border:none;margin-left:4px' href='/pages/certificate.html?id=" + app.id + "' target='_blank'>📜 Certificate</a>" : "") +
             "</td></tr>";
@@ -417,7 +429,7 @@
           }
           document.getElementById("decisionModal").style.display = "grid";
         } catch (err) {
-          alert("Failed to load application: " + err.message);
+          notify("Failed to load application: " + err.message, "error");
         }
       }
 
@@ -433,7 +445,7 @@
           const checkboxes = document.querySelectorAll(".gen-chk");
           const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
           if (checkboxes.length > 0 && checked < checkboxes.length) {
-            alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} statutory checklist items before approving.`);
+            notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} statutory checklist items before approving.`, "warning");
             return;
           }
         }
@@ -473,8 +485,8 @@
               ? "<span class='badge red'>🚫 Blacklisted</span><div style='font-size:.7rem;color:#991b1b;max-width:160px'>" + escapeHtml(ent.ban_reason || "Statutory Breach") + "</div>"
               : "<span class='badge green'>✓ Active</span>";
             const actionBtn = banned
-              ? "<button class='btn emerald sm' onclick='unbanEnterprise(" + ent.id + ")'>✓ Reinstate</button>"
-              : "<button class='btn danger sm' onclick='openBanModal(" + ent.id + ")'>🚫 Ban</button>";
+              ? "<button class='btn emerald sm' onclick='unbanEnterprise(\"" + ent.id + "\")'>✓ Reinstate</button>"
+              : "<button class='btn danger sm' onclick='openBanModal(\"" + ent.id + "\")'>🚫 Ban</button>";
             return "<tr>" +
               "<td><b style='color:var(--navy)'>" + escapeHtml(ent.company_name) + "</b><div style='font-size:.72rem;color:var(--ink-muted)'>Registered: " + new Date(ent.created_at).toLocaleDateString() + "</div></td>" +
               "<td><span style='font-family:monospace;font-size:.8rem;font-weight:600'>" + escapeHtml(ent.registration_no || "GSTIN-PENDING") + "</span></td>" +
@@ -505,21 +517,40 @@
         try {
           show("banModalMsg", "Enforcing blacklist…");
           const res = await api("/api/admin/enterprises/" + activeBanEnterpriseId + "/ban", { method: "POST", body: JSON.stringify({ reason }) });
-          closeBanModal(); loadEnterprises(); alert(res.message);
-        } catch (err) { show("banModalMsg", err.message); }
+          closeBanModal();
+          loadEnterprises();
+          notify(res.message, "success");
+        } catch (err) {
+          show("banModalMsg", err.message);
+        }
       }
       async function unbanEnterprise(id) {
         const ent = allEnterprises.find(e => e.id === id);
         const name = ent ? ent.company_name : ("Enterprise #" + id);
-        if (!confirm("Reinstate '" + name + "' and restore permit rights?")) return;
-        try { const res = await api("/api/admin/enterprises/" + id + "/unban", { method: "POST", body: JSON.stringify({}) }); loadEnterprises(); alert(res.message); }
-        catch (err) { alert("Failed: " + err.message); }
+        const ok = await confirmDialog({
+          title: "Reinstate Enterprise",
+          body: "Reinstate '" + name + "' and restore single-window permit rights?",
+          confirmText: "Reinstate Enterprise",
+          cancelText: "Cancel",
+          danger: false,
+          icon: "🏢"
+        });
+        if (!ok) return;
+        try {
+          const res = await api("/api/admin/enterprises/" + id + "/unban", { method: "POST", body: JSON.stringify({}) });
+          loadEnterprises();
+          notify(res.message, "success");
+        } catch (err) {
+          notify("Failed: " + err.message, "error");
+        }
       }
 
       document.getElementById("filterSearch").addEventListener("keyup", e => { if (e.key === "Enter") loadApplications(); });
 
       guard("official").then(user => {
-        if (user) {
+        if (!user) return;
+        const params = new URLSearchParams(location.search);
+        if (params.get("redirect") === "1") {
           const target = getOfficerDashboardUrl(user);
           if (target && !target.endsWith("officer-dashboard.html")) {
             location.replace(target);
@@ -528,7 +559,12 @@
         }
         currentOfficer = user;
         setupDeptUI(user);
-        loadApplications();
+        const initHash = (location.hash || "").replace("#", "");
+        if (initHash === "enterprises") {
+          switchView("enterprises");
+        } else {
+          loadApplications();
+        }
       });
     </script>
   </body>

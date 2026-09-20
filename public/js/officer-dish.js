@@ -157,12 +157,12 @@ function renderApplicationsTable() {
         <td>${statusBadge}</td>
         <td>
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn outline sm" onclick="inspectSafetyDossier(${a.id})">
+            <button class="btn outline sm" onclick="inspectSafetyDossier('${a.id}')">
               🛡️ View Safety Plan PDF
             </button>
             ${
               isAwaitingSafety
-                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openSafetyDecisionModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}', '${escapeHtml(hazardText)}')">
+                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openSafetyDecisionModal('${a.id}', '${a.application_no}', '${escapeHtml(a.company_name)}', '${escapeHtml(hazardText)}')">
                      ✅ Endorse Safety Plan
                    </button>`
                 : `<a href="verification.html?id=${a.id}" class="btn sm" style="font-size:0.75rem; background:#f1f5f9; color:#334155;">
@@ -229,7 +229,7 @@ async function inspectSafetyDossier(id) {
 
     modal.style.display = "flex";
   } catch (err) {
-    alert("Could not load dossier: " + err.message);
+    notify("Could not load dossier: " + err.message, "error");
   }
 }
 
@@ -253,7 +253,7 @@ async function submitSafetyDecision(decision) {
     const checkboxes = document.querySelectorAll(".dish-chk");
     const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
     if (checkboxes.length > 0 && checked < checkboxes.length) {
-      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} industrial safety checklist items before endorsing the safety blueprint.`);
+      notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} industrial safety checklist items before endorsing the safety blueprint.`, "warning");
       return;
     }
   }
@@ -270,11 +270,11 @@ async function submitSafetyDecision(decision) {
       }),
     });
 
-    alert(`Success: ${res.message}`);
+    notify(`Success: ${res.message}`, "success");
     closeModals();
     await loadApplications();
   } catch (err) {
-    alert("Action failed: " + err.message);
+    notify("Action failed: " + err.message, "error");
   }
 }
 

@@ -95,7 +95,7 @@
             });
             loadToggles();
           } catch (e) {
-            alert("Failed to update toggle: " + e.message);
+            (window.notify || alert)("Failed to update toggle: " + e.message, "error");
             chk.checked = !nextState;
           }
         };

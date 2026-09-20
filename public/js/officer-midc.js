@@ -150,12 +150,12 @@ function renderApplicationsTable() {
         <td>${statusBadge}</td>
         <td>
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn outline sm" onclick="inspectCivilDossier(${a.id})">
+            <button class="btn outline sm" onclick="inspectCivilDossier('${a.id}')">
               📐 View Civil Plan PDF
             </button>
             ${
               isAwaitingCivil
-                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openCivilDecisionModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
+                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openCivilDecisionModal('${a.id}', '${a.application_no}', '${escapeHtml(a.company_name)}')">
                      ✅ Sanction Civil Plan
                    </button>`
                 : `<a href="verification.html?id=${a.id}" class="btn sm" style="font-size:0.75rem; background:#f1f5f9; color:#334155;">
@@ -222,7 +222,7 @@ async function inspectCivilDossier(id) {
 
     modal.style.display = "flex";
   } catch (err) {
-    alert("Could not load dossier: " + err.message);
+    notify("Could not load dossier: " + err.message, "error");
   }
 }
 
@@ -245,7 +245,7 @@ async function submitCivilDecision(decision) {
     const checkboxes = document.querySelectorAll(".midc-chk");
     const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
     if (checkboxes.length > 0 && checked < checkboxes.length) {
-      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} civil & planning checklist items before sanctioning the plan.`);
+      notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} civil & planning checklist items before sanctioning the plan.`, "warning");
       return;
     }
   }
@@ -262,11 +262,11 @@ async function submitCivilDecision(decision) {
       }),
     });
 
-    alert(`Success: ${res.message}`);
+    notify(`Success: ${res.message}`, "success");
     closeModals();
     await loadApplications();
   } catch (err) {
-    alert("Action failed: " + err.message);
+    notify("Action failed: " + err.message, "error");
   }
 }
 

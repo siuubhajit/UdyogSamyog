@@ -42,7 +42,17 @@ fs.mkdirSync(dataDir, { recursive: true });
 fs.mkdirSync(uploadsDir, { recursive: true });
 
 // Middleware setup
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    hsts: false, // Disable HSTS in local development so browsers don't force https://localhost
+  }),
+);
+// Explicitly clear any previously cached HSTS in browsers
+app.use((req, res, next) => {
+  res.setHeader("Strict-Transport-Security", "max-age=0");
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(

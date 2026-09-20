@@ -883,7 +883,7 @@
                 if (document.getElementById("district")) document.getElementById("district").value = plot.district;
                 if (document.getElementById("landSize")) document.getElementById("landSize").value = plot.area_acres;
                 runKnowledgeEngine();
-                alert(`Selected Plot ${plot.plot_no} (${plot.area_acres} Acres). Location, district, and land footprint updated!`);
+                notify(`Selected Plot ${plot.plot_no} (${plot.area_acres} Acres). Location, district, and land footprint updated!`, "success");
               }
             });
           }
@@ -983,7 +983,7 @@
 
       async function directPlanUpload(planType, docType, inputEl) {
         if (!createdAppId) {
-          alert("Please complete and submit the initial application particulars first.");
+          notify("Please complete and submit the initial application particulars first.", "warning");
           if (inputEl) inputEl.value = "";
           return;
         }
@@ -1118,7 +1118,7 @@
               trackerBtn.innerHTML = `Go to Live Approval Tracker (${mandatoryCount}/4 Plans)`;
               trackerBtn.onclick = (e) => {
                 e.preventDefault();
-                alert(`Statutory Requirement: Under the Maharashtra Single Window Act, you must upload all 4 mandatory departmental blueprints (Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, Fire Services) before proceeding to Live Scrutiny. (Currently uploaded: ${mandatoryCount}/4).`);
+                notify(`Statutory Requirement: Under the Maharashtra Single Window Act, you must upload all 4 mandatory departmental blueprints (Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, Fire Services) before proceeding to Live Scrutiny. (Currently uploaded: ${mandatoryCount}/4).`, "warning");
               };
             }
           }

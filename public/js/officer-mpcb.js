@@ -157,12 +157,12 @@ function renderApplicationsTable() {
         <td>${statusBadge}</td>
         <td>
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn outline sm" onclick="inspectMpcbDossier(${a.id})">
+            <button class="btn outline sm" onclick="inspectMpcbDossier('${a.id}')">
               🔍 Scrutinize Plan & Dossier
             </button>
             ${
               isPhase1Pending
-                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openCteDecisionModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
+                ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openCteDecisionModal('${a.id}', '${a.application_no}', '${escapeHtml(a.company_name)}')">
                      🌿 Grant Consent to Establish / Decision
                    </button>`
                 : `<a href="verification.html?id=${a.id}" class="btn sm" style="font-size:0.75rem; background:#f1f5f9; color:#334155;">
@@ -230,7 +230,7 @@ async function inspectMpcbDossier(id) {
 
     modal.style.display = "flex";
   } catch (err) {
-    alert("Could not load dossier: " + err.message);
+    notify("Could not load dossier: " + err.message, "error");
   }
 }
 
@@ -253,17 +253,17 @@ async function submitMpcbDecision(decision) {
     const checkboxes = document.querySelectorAll(".mpcb-chk");
     const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
     if (checkboxes.length > 0 && checked < checkboxes.length) {
-      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} environmental statutory checklist items before granting Consent to Establish.`);
+      notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} environmental statutory checklist items before granting Consent to Establish.`, "warning");
       return;
     }
   }
 
   if (decision === "Query" && !remarks) {
-    alert("Please provide the clarification query message for the applicant.");
+    notify("Please provide the clarification query message for the applicant.", "warning");
     return;
   }
   if (decision === "Rejected" && !remarks) {
-    alert("Please provide statutory grounds for environmental Consent to Establish refusal.");
+    notify("Please provide statutory grounds for environmental Consent to Establish refusal.", "warning");
     return;
   }
 
@@ -272,17 +272,18 @@ async function submitMpcbDecision(decision) {
       method: "POST",
       body: JSON.stringify({
         decision,
+        targetDept: "mpcb",
         remarks:
           remarks ||
           `Consent to Establish granted under Water & Air Pollution Control Acts.`,
       }),
     });
 
-    alert(`Success: ${res.message}`);
+    notify(`Success: ${res.message}`, "success");
     closeModals();
     await loadApplications();
   } catch (err) {
-    alert("Action failed: " + err.message);
+    notify("Action failed: " + err.message, "error");
   }
 }
 

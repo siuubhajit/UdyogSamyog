@@ -15,42 +15,10 @@
       })();
     </script>
     <style>
-      :root {
-        --dept-color: #c2410c;
-        --dept-light: #ffedd5;
-        --dept-accent: #ea580c;
-      }
-      [data-theme="dark"] {
-        --dept-color: #fb923c;
-        --dept-light: rgba(234, 88, 12, 0.18);
-        --dept-accent: #fdba74;
-      }
-      .dept-stripe { height: 4px; background: #c2410c; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
-      .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: var(--dept-light); color: var(--dept-color); border: 1.5px solid var(--dept-color); }
-      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; max-width: 100%; box-sizing: border-box; }
-      .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
-      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: var(--line, #e2e8f0); }
-      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line, #cbd5e1); background: var(--surface-subtle, #f8fafc); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-light, #94a3b8); z-index: 1; flex-shrink: 0; }
-      .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
-      .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
-      .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
-      .pipe-label { font-size: .6rem; color: var(--ink-muted, #64748b); text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
-      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; width: 100%; box-sizing: border-box; }
-      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
-      .btn-approve { background: #16a34a; color: #fff; border: none; }
-      .btn-approve:hover { background: #15803d; }
-      .btn-reject { background: #dc2626; color: #fff; border: none; }
-      .btn-reject:hover { background: #b91c1c; }
-      .btn-query { background: #d97706; color: #fff; border: none; }
-      .btn-query:hover { background: #b45309; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-      .checklist-item { font-size: .83rem; color: var(--ink, #334155); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
-      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #c2410c); margin-top: 2px; flex-shrink: 0; }
-      .stage-info-box { background: linear-gradient(135deg, var(--dept-light), var(--surface-card, #fff)); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: var(--ink, #1e293b); max-width: 100%; box-sizing: border-box; }
       .dish-tool-card { background: var(--surface-card, #fff); border: 1.5px solid var(--line, #fed7aa); border-radius: 8px; padding: 18px; margin-top: 20px; max-width: 100%; box-sizing: border-box; }
     </style>
   </head>
-  <body>
+  <body class="dept-dish" data-dept="dish">
     <div class="dept-stripe"></div>
     <div class="gov-stripe"></div>
     <div class="shell">
@@ -71,18 +39,18 @@
             </div>
           </div>
           <span class="dept-badge">Industrial Safety &amp; Health</span>
-          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
         </div>
       </header>
 
       <div class="layout">
         <aside class="sidebar">
           <div class="sidebar-header">Safety Operations</div>
-          <a href="javascript:void(0)" class="active" onclick="switchTab('queue')">
+          <a href="#queue" id="navQueue" class="active" onclick="switchTab('queue'); return false;">
             <span class="sidebar-icon">&#128203;</span> Factory Safety Queue
           </a>
-          <a href="javascript:void(0)" onclick="switchTab('calculator')">
+          <a href="#calculator" id="navCalc" onclick="switchTab('calculator'); return false;">
             <span class="sidebar-icon">&#128104;&#8205;&#128295;</span> Worker Density &amp; Welfare
           </a>
           <a href="verification.html">
@@ -279,14 +247,39 @@
     <script src="/js/common.js"></script>
     <script src="/js/officer-dish.js"></script>
     <script>
+      let currentDishTab = "queue";
       function switchTab(tab) {
-        document.getElementById("sectionQueue").style.display = tab === "queue" ? "block" : "none";
-        document.getElementById("sectionCalc").style.display = tab === "calculator" ? "block" : "none";
-        if (tab === "calculator") runDishCalc();
+        if (!tab) tab = "queue";
+        currentDishTab = tab;
+        const secQ = document.getElementById("sectionQueue");
+        const secC = document.getElementById("sectionCalc");
+        if (secQ) secQ.style.display = isCalc ? "none" : "block";
+        if (secC) secC.style.display = isCalc ? "block" : "none";
+        const navQueue = document.getElementById("navQueue");
+        const navCalc = document.getElementById("navCalc");
+        if (navQueue) navQueue.classList.toggle("active", !isCalc);
+        if (navCalc) navCalc.classList.toggle("active", isCalc);
+        try {
+          if (history.replaceState) {
+            history.replaceState(null, "", "#" + (isCalc ? "calculator" : "queue"));
+          } else if ((location.hash || "").replace("#", "") !== (isCalc ? "calculator" : "queue")) {
+            location.hash = isCalc ? "calculator" : "queue";
+          }
+        } catch (_) {}
+        if (isCalc) runDishCalc();
         else loadApplications();
       }
 
-      document.addEventListener("DOMContentLoaded", initDishPortal);
+      window.addEventListener("hashchange", () => {
+        const h = (location.hash || "").replace("#", "");
+        if ((h === "calculator" || h === "queue") && h !== currentDishTab) switchTab(h);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initDishPortal();
+        const initialTab = (location.hash || "").replace("#", "");
+        if (initialTab === "calculator") switchTab("calculator");
+      });
     </script>
   </body>
 </html>

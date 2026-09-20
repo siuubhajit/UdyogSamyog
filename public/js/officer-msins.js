@@ -171,7 +171,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
             </div>
 
             <div style="display:flex; gap:8px;">
-              <button class="btn outline sm" onclick="inspectApexDossier(${a.id})">
+              <button class="btn outline sm" onclick="inspectApexDossier('${a.id}')">
                 📑 Review All Plans & Remarks
               </button>
               ${
@@ -180,10 +180,10 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
                        📜 View License Certificate
                      </a>`
                   : readyForFinal
-                    ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
+                    ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal('${a.id}', '${a.application_no}', '${escapeHtml(a.company_name)}')">
                          🏆 Grant Final Single-Window Clearance
                        </button>`
-                    : `<button class="btn outline sm" style="color:#64748b;" onclick="inspectApexDossier(${a.id})">
+                    : `<button class="btn outline sm" style="color:#64748b;" onclick="inspectApexDossier('${a.id}')">
                          ⏳ Awaiting Clearances
                        </button>`
               }
@@ -341,7 +341,7 @@ function renderApplicationsTable() {
         </td>
         <td>
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn outline sm" onclick="inspectApexDossier(${a.id})">
+            <button class="btn outline sm" onclick="inspectApexDossier('${a.id}')">
               📑 Dossier &amp; PDFs
             </button>
             ${
@@ -350,7 +350,7 @@ function renderApplicationsTable() {
                      📜 View Certificate
                    </a>`
                 : isReadyForFinal
-                  ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal(${a.id}, '${a.application_no}', '${escapeHtml(a.company_name)}')">
+                  ? `<button class="btn saffron sm" style="font-weight:700;" onclick="openFinalApprovalModal('${a.id}', '${a.application_no}', '${escapeHtml(a.company_name)}')">
                        🏆 Grant Final Clearance
                      </button>`
                   : ""
@@ -621,7 +621,7 @@ async function inspectApexDossier(id) {
         `;
       } else if (allDeptsApproved && hasSupporting) {
         quickActionEl.innerHTML = `
-          <button type="button" class="btn saffron sm" style="font-weight:700;" onclick="closeModals(); openFinalApprovalModal(${data.id}, '${data.application_no}', '${escapeHtml(data.company_name)}')">
+          <button type="button" class="btn saffron sm" style="font-weight:700;" onclick="closeModals(); openFinalApprovalModal('${data.id}', '${data.application_no}', '${escapeHtml(data.company_name)}')">
             🏆 Grant Final Single-Window Clearance
           </button>
         `;
@@ -667,7 +667,7 @@ async function inspectApexDossier(id) {
 
     modal.style.display = "flex";
   } catch (err) {
-    alert("Could not load dossier: " + err.message);
+    notify("Could not load dossier: " + err.message, "error");
   }
 }
 
@@ -725,7 +725,7 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
     );
 
     if (suppDocs.length === 0) {
-      alert("Statutory Requirement: General statutory supporting documents must be submitted by the enterprise before Apex approval can be granted.");
+      notify("Statutory Requirement: General statutory supporting documents must be submitted by the enterprise before Apex approval can be granted.", "warning");
       return;
     }
 
@@ -733,7 +733,7 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
     const checkboxes = document.querySelectorAll(".msins-chk");
     const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
     if (checkboxes.length > 0 && checked < checkboxes.length) {
-      alert(`Statutory Requirement: Please verify and tick all ${checkboxes.length} Apex statutory review checklist items before granting final clearance.`);
+      notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} Apex statutory review checklist items before granting final clearance.`, "warning");
       return;
     }
   }
@@ -757,7 +757,7 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
       }),
     });
 
-    alert(`Success: ${res.message}`);
+    notify(`Success: ${res.message}`, "success");
     closeDecisionModal();
     closeModals();
     await loadApplications();
@@ -766,7 +766,7 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
       window.open(`/pages/certificate.html?id=${approvedId}`, "_blank");
     }
   } catch (err) {
-    alert("Action failed: " + err.message);
+    notify("Action failed: " + err.message, "error");
   }
 }
 
@@ -815,8 +815,8 @@ function renderEnterprisesTable() {
         ? `<span class="badge red">🚫 Statutorily Banned</span><div style="font-size:.72rem; color:#991b1b; max-width:180px; margin-top:2px;">${escapeHtml(ent.ban_reason || "Statutory Breach")}</div>`
         : `<span class="badge green">✓ Active Enterprise</span>`;
       const actionBtn = banned
-        ? `<button class="btn sm" style="background:#059669; color:#fff;" onclick="unbanEnterprise(${ent.id})">✓ Lift Ban</button>`
-        : `<button class="btn sm" style="background:#dc2626; color:#fff;" onclick="openBanModal(${ent.id})">🚫 Blacklist Enterprise</button>`;
+        ? `<button class="btn sm" style="background:#059669; color:#fff;" onclick="unbanEnterprise('${ent.id}')">✓ Lift Ban</button>`
+        : `<button class="btn sm" style="background:#dc2626; color:#fff;" onclick="openBanModal('${ent.id}')">🚫 Blacklist Enterprise</button>`;
 
       return `
       <tr>
@@ -841,19 +841,21 @@ function renderEnterprisesTable() {
 
 async function unbanEnterprise(id) {
   const ent = allEnterprises.find((x) => x.id === id);
-  if (
-    !confirm(
-      `Lift statutory ban and restore Single-Window access for '${ent?.company_name}'?`,
-    )
-  )
-    return;
+  const ok = await confirmDialog({
+    title: "Lift Statutory Ban",
+    body: `Lift statutory ban and restore Single-Window access for '${ent?.company_name}'?`,
+    confirmText: "Lift Ban",
+    danger: false,
+    icon: "🔓",
+  });
+  if (!ok) return;
 
   try {
     const res = await api(`/api/admin/enterprises/${id}/unban`, { method: "POST" });
-    alert(res.message || "Enterprise ban lifted.");
+    notify(res.message || "Enterprise ban lifted.", "success");
     await loadEnterprises();
   } catch (err) {
-    alert("Unban failed: " + err.message);
+    notify("Unban failed: " + err.message, "error");
   }
 }
 
@@ -863,32 +865,29 @@ function openBanModal(id) {
   const nameEl =
     document.getElementById("banTargetName") ||
     document.getElementById("banModalCompany");
-  if (nameEl) nameEl.textContent = ent?.company_name || `Enterprise #${id}`;
-
+  if (nameEl) nameEl.textContent = ent ? ent.company_name : `ID #${id}`;
+  const modal = document.getElementById("banModal");
+  if (modal) modal.style.display = "flex";
   const reasonEl =
     document.getElementById("banReasonInput") ||
     document.getElementById("banModalReason");
   if (reasonEl) reasonEl.value = "";
-
-  const msgEl = document.getElementById("banModalMsg");
-  if (msgEl) msgEl.textContent = "";
-
-  const modal = document.getElementById("banModal");
-  if (modal) modal.style.display = "flex";
 }
 
 function closeBanModal() {
-  activeBanEnterpriseId = null;
   const modal = document.getElementById("banModal");
   if (modal) modal.style.display = "none";
+  activeBanEnterpriseId = null;
 }
 
-function setBanChip(reason) {
+function selectBanTemplate(reason) {
   const reasonEl =
     document.getElementById("banReasonInput") ||
     document.getElementById("banModalReason");
   if (reasonEl) reasonEl.value = reason;
 }
+
+const setBanChip = selectBanTemplate;
 
 async function submitBanEnterprise() {
   if (!activeBanEnterpriseId) return;
@@ -897,7 +896,7 @@ async function submitBanEnterprise() {
     document.getElementById("banModalReason");
   const reason = reasonEl ? reasonEl.value.trim() : "";
   if (!reason) {
-    alert("Please provide the statutory reason for blacklisting.");
+    notify("Please provide the statutory reason for blacklisting.", "warning");
     return;
   }
 
@@ -906,43 +905,69 @@ async function submitBanEnterprise() {
       method: "POST",
       body: JSON.stringify({ reason }),
     });
-    alert(res.message || "Enterprise statutorily blacklisted.");
+    notify(res.message || "Enterprise statutorily blacklisted.", "success");
     closeBanModal();
     await loadEnterprises();
   } catch (err) {
-    alert("Blacklist enforcement failed: " + err.message);
+    notify("Blacklist enforcement failed: " + err.message, "error");
   }
 }
 
 const submitBan = submitBanEnterprise;
 
 function runPsiCalc() {
-  const zone = document.getElementById("calcPsiZone")?.value || "D";
+  const zone =
+    document.getElementById("calcPsiZone")?.value ||
+    document.getElementById("psiTaluka")?.value ||
+    "D";
   const capital =
-    parseFloat(document.getElementById("calcPsiCapital")?.value) || 10;
+    parseFloat(document.getElementById("calcPsiCapital")?.value) ||
+    parseFloat(document.getElementById("psiInvestment")?.value) ||
+    10;
   const category =
-    document.getElementById("calcPsiCategory")?.value || "Small";
+    document.getElementById("calcPsiCategory")?.value ||
+    document.getElementById("psiMsme")?.value ||
+    "Small";
 
   let subsidyRate = 0.3;
   if (zone === "A") subsidyRate = 0.1;
   else if (zone === "B") subsidyRate = 0.2;
   else if (zone === "C") subsidyRate = 0.3;
   else if (zone === "D") subsidyRate = 0.4;
-  else if (zone === "D_plus") subsidyRate = 0.5;
-  else if (zone === "Aspirational") subsidyRate = 0.6;
+  else if (zone === "D_plus" || zone === "D_PLUS") subsidyRate = 0.5;
+  else if (zone === "Aspirational" || zone === "VIDARBHA") subsidyRate = 0.6;
 
   if (category === "Micro") subsidyRate += 0.05;
 
   const eligibleSubsidy = (capital * subsidyRate).toFixed(2);
   const sgstPeriod =
-    zone === "D_plus" || zone === "Aspirational" ? "10 Years" : "7 Years";
+    zone === "D_plus" || zone === "D_PLUS" || zone === "Aspirational" || zone === "VIDARBHA"
+      ? "10 Years"
+      : "7 Years";
 
   const subEl = document.getElementById("calcEligibleSubsidy");
-  if (subEl) subEl.textContent = `₹${eligibleSubsidy} Crores (${(subsidyRate * 100).toFixed(0)}%)`;
+  if (subEl)
+    subEl.textContent = `₹${eligibleSubsidy} Crores (${(subsidyRate * 100).toFixed(0)}%)`;
 
   const sgstEl = document.getElementById("calcSgstPeriod");
   if (sgstEl) sgstEl.textContent = `${sgstPeriod} (100% SGST Refund)`;
+
+  const resultBox = document.getElementById("psiResultBox");
+  if (resultBox) {
+    resultBox.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-weight:700;color:var(--navy);font-size:1rem;">💰 Eligible Capital Subsidy: ₹${eligibleSubsidy} Crores (${(subsidyRate * 100).toFixed(0)}%)</div>
+          <div style="font-size:0.8rem;color:var(--ink-light);margin-top:2px;">SGST Refund Benefit: <b>${sgstPeriod}</b> · Stamp Duty Exemption: <b>100%</b></div>
+        </div>
+        <span class="badge green" style="font-size:0.8rem;padding:6px 12px;">✓ Sanction Pre-Approved</span>
+      </div>
+    `;
+    resultBox.style.display = "block";
+  }
 }
+
+const calculatePsi = runPsiCalc;
 
 function closeModals() {
   document
@@ -1112,14 +1137,14 @@ async function invokeDeemedApproval(appId, appNo) {
     });
     const data = await res.json();
     if (!res.ok) {
-      alert("Failed to invoke deemed approval: " + (data.error || "Unknown error"));
+      notify("Failed to invoke deemed approval: " + (data.error || "Unknown error"), "error");
       return;
     }
-    alert(`✓ Deemed approval successfully invoked for ${appNo}!\n\nApplication moved to: ${data.application?.current_stage || 'next stage'}`);
+    notify(`✓ Deemed approval successfully invoked for ${appNo}! Application moved to: ${data.application?.current_stage || 'next stage'}`, "success");
     await loadApplications();
     loadDeemedApplications();
   } catch (err) {
-    alert("Error executing deemed approval: " + err.message);
+    notify("Error executing deemed approval: " + err.message, "error");
   }
 }
 
@@ -1145,6 +1170,7 @@ window.resetFilters = resetFilters;
 window.runPsiCalc = runPsiCalc;
 window.loadDeemedApplications = loadDeemedApplications;
 window.invokeDeemedApproval = invokeDeemedApproval;
+window.calculatePsi = calculatePsi;
 
 
 

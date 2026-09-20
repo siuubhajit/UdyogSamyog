@@ -223,7 +223,7 @@
         misSec.style.display = "none";
       }
     } catch (err) {
-      alert("Completeness check failed: " + err.message);
+      (window.notify || alert)("Completeness check failed: " + err.message, "error");
     }
   }
 

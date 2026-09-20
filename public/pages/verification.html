@@ -283,9 +283,9 @@
           </div>
 
           <!-- Dossier Split Workspace: Left Document Vault vs Right Scrutiny Actions -->
-          <div class="dossier-layout">
+          <div class="dossier-layout with-splitter" id="dossierLayout">
             <!-- LEFT COLUMN: Statutory Folder Directory, Document Explorer & PDF Inspector -->
-            <div>
+            <div class="dossier-pane-left" id="dossierPaneLeft">
               <!-- Departmental Vault Scrutiny Badge & Jurisdiction Banner -->
               <div id="vaultScopeBanner" style="background: var(--surface-card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -343,6 +343,26 @@
                   </div>
                   <div class="doc-viewer-actions">
                     <span id="activeDocBadge" class="badge gray">Pending Scrutiny</span>
+                    
+                    <!-- Zoom & Transform Controls -->
+                    <div class="doc-toolbar-group" role="group" aria-label="Zoom controls">
+                      <button type="button" class="doc-toolbar-btn" onclick="zoomDoc(-0.15)" title="Zoom Out (-)" aria-label="Zoom Out">−</button>
+                      <span class="doc-zoom-label" id="docZoomVal" title="Current Zoom">100%</span>
+                      <button type="button" class="doc-toolbar-btn" onclick="zoomDoc(0.15)" title="Zoom In (+)" aria-label="Zoom In">+</button>
+                      <button type="button" class="doc-toolbar-btn" onclick="resetDocZoom()" title="Reset Zoom (1:1)">1:1</button>
+                    </div>
+
+                    <!-- Rotate Control -->
+                    <div class="doc-toolbar-group" role="group" aria-label="Rotation control">
+                      <button type="button" class="doc-toolbar-btn" onclick="rotateDoc(90)" title="Rotate 90° clockwise (R)">⟳ 90°</button>
+                    </div>
+
+                    <!-- Workspace Display Controls -->
+                    <div class="doc-toolbar-group" role="group" aria-label="Viewer layout controls">
+                      <button type="button" class="doc-toolbar-btn" id="btnFocusMode" onclick="toggleFocusMode()" title="Toggle Focus Mode (F)">⛶ Focus</button>
+                      <button type="button" class="doc-toolbar-btn" id="btnFullscreen" onclick="toggleDocFullscreen()" title="Toggle Fullscreen">🗖</button>
+                    </div>
+
                     <button type="button" class="btn outline sm" style="color: #ffffff; border-color: #475569;" onclick="reloadDocPreview()" title="Reload PDF Canvas">🔄 Reload</button>
                     <a
                       id="btnDocExternal"
@@ -435,8 +455,11 @@
               </div>
             </div>
 
+            <!-- Draggable Splitter Handle -->
+            <div class="dossier-splitter" id="dossierSplitter" title="Drag horizontally to resize document canvas"></div>
+
             <!-- RIGHT COLUMN: Statutory Clearances, Queries & Joint Inspection -->
-            <div>
+            <div class="dossier-pane-right" id="dossierPaneRight">
               <!-- 0. Department-Specific Scrutiny & Clearance Action -->
               <div
                 class="scrutiny-card"
@@ -884,6 +907,7 @@
       }
 
       async function init() {
+        initDossierSplitter();
         currentUser = await guard("official");
         updateVaultScopeBanner();
 
@@ -1094,7 +1118,7 @@
 
           return `
             <div class="vault-file-card ${isSelected ? "active" : ""}" id="fileCard_${doc.id}">
-              <div class="vault-file-info" onclick="selectDocument(${doc.id})" style="cursor: pointer;">
+              <div class="vault-file-info" onclick="selectDocument('${doc.id}')" style="cursor: pointer;">
                 <div class="vault-file-title">
                   <span>📄</span>
                   <span style="word-break: break-all;">${escapeHtml(doc.original_name)}</span>
@@ -1120,7 +1144,7 @@
                 <button class="btn sm outline" style="border-color:var(--navy);color:var(--navy);font-weight:700;" onclick="if(window.openDocIntelReview) window.openDocIntelReview('${doc.id}', '${escapeHtml(doc.name)}')">
                   🤖 AI Extraction
                 </button>
-                <button class="btn sm ${isSelected ? "navy" : "outline"}" onclick="selectDocument(${doc.id})">
+                <button class="btn sm ${isSelected ? "navy" : "outline"}" onclick="selectDocument('${doc.id}')">
                   👁️ Inspect in Viewer
                 </button>
                 <a class="btn outline sm" href="/api/documents/${doc.id}/view" target="_blank" title="Open Full Screen">
@@ -1183,6 +1207,7 @@
         frame.style.display = "block";
         emptyNotice.style.display = "none";
         frame.src = `/api/documents/${doc.id}/view#toolbar=1&navpanes=0&view=FitH`;
+        resetDocZoom();
 
         // Helper bar
         document.getElementById("docViewerHelperText").innerHTML = `
@@ -1211,13 +1236,116 @@
         document.getElementById("docViewerHelperLink").href = "#";
         document.getElementById("scrutinyActiveDocName").textContent = "No Document Selected";
         document.getElementById("docScrutinyRemark").value = "";
+        resetDocZoom();
+      }
+
+      /* ─── Document Zoom, Rotate & Focus Mode Controls ─── */
+      let docZoomLevel = 1.0;
+      let docRotation = 0;
+
+      function applyDocTransform() {
+        const frame = document.getElementById("docFrame");
+        if (!frame) return;
+        frame.style.transform = `scale(${docZoomLevel}) rotate(${docRotation}deg)`;
+        const zoomLbl = document.getElementById("docZoomVal");
+        if (zoomLbl) zoomLbl.textContent = `${Math.round(docZoomLevel * 100)}%`;
+      }
+
+      function zoomDoc(delta) {
+        docZoomLevel = Math.max(0.4, Math.min(3.0, parseFloat((docZoomLevel + delta).toFixed(2))));
+        applyDocTransform();
+      }
+
+      function resetDocZoom() {
+        docZoomLevel = 1.0;
+        docRotation = 0;
+        applyDocTransform();
+      }
+
+      function rotateDoc(deg = 90) {
+        docRotation = (docRotation + deg) % 360;
+        applyDocTransform();
+      }
+
+      function toggleFocusMode() {
+        const layout = document.getElementById("dossierLayout");
+        const btn = document.getElementById("btnFocusMode");
+        if (!layout) return;
+        const isFocus = layout.classList.toggle("focus-mode");
+        if (btn) {
+          btn.classList.toggle("active", isFocus);
+          btn.innerHTML = isFocus ? "✕ Exit" : "⛶ Focus";
+        }
+      }
+
+      function toggleDocFullscreen() {
+        const container = document.getElementById("docViewerContainer");
+        if (!container) return;
+        if (!document.fullscreenElement) {
+          container.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
       }
 
       function reloadDocPreview() {
         if (!activeDocId) return;
         const frame = document.getElementById("docFrame");
         frame.src = `/api/documents/${activeDocId}/view?t=${Date.now()}#toolbar=1&navpanes=0&view=FitH`;
+        resetDocZoom();
       }
+
+      /* ─── Draggable Splitter Implementation ─── */
+      function initDossierSplitter() {
+        const splitter = document.getElementById("dossierSplitter");
+        const layout = document.getElementById("dossierLayout");
+        if (!splitter || !layout) return;
+
+        let isDragging = false;
+
+        splitter.addEventListener("mousedown", () => {
+          isDragging = true;
+          splitter.classList.add("is-dragging");
+          document.body.style.cursor = "col-resize";
+          document.body.style.userSelect = "none";
+        });
+
+        window.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+          const rect = layout.getBoundingClientRect();
+          const offsetX = e.clientX - rect.left;
+          const pct = Math.max(25, Math.min(75, (offsetX / rect.width) * 100));
+          layout.style.setProperty("--dossier-left-w", `${pct}%`);
+        });
+
+        window.addEventListener("mouseup", () => {
+          if (isDragging) {
+            isDragging = false;
+            splitter.classList.remove("is-dragging");
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+          }
+        });
+      }
+
+      // Keyboard shortcuts (+, -, r, f, Escape)
+      document.addEventListener("keydown", (e) => {
+        if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+        if (e.key === "+" || e.key === "=") {
+          zoomDoc(0.15);
+        } else if (e.key === "-" || e.key === "_") {
+          zoomDoc(-0.15);
+        } else if (e.key === "r" || e.key === "R") {
+          rotateDoc(90);
+        } else if (e.key === "f" || e.key === "F") {
+          toggleFocusMode();
+        } else if (e.key === "Escape") {
+          const layout = document.getElementById("dossierLayout");
+          if (layout && layout.classList.contains("focus-mode")) {
+            toggleFocusMode();
+          }
+        }
+      });
 
       async function loadDossier(id, autoSelect = true) {
         try {

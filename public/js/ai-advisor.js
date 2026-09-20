@@ -395,7 +395,7 @@
       });
 
     } catch (err) {
-      alert("Failed to evaluate statutory rules: " + err.message);
+      (window.notify || alert)("Failed to evaluate statutory rules: " + err.message, "error");
     }
   }
 

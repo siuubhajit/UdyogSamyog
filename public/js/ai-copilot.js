@@ -165,11 +165,11 @@
             subject: `Deficiency Notice: ${brief.application_no}`,
           }),
         });
-        alert("Statutory Deficiency Notice dispatched to applicant dossier successfully!");
+        (window.notify || alert)("Statutory Deficiency Notice dispatched to applicant dossier successfully!", "success");
         modal.style.display = "none";
         if (typeof window.refreshOfficerQueries === "function") window.refreshOfficerQueries();
       } catch (err) {
-        alert("Failed to dispatch query: " + err.message);
+        (window.notify || alert)("Failed to dispatch query: " + err.message, "error");
       }
     };
   }

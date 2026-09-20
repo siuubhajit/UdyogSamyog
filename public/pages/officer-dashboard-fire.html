@@ -15,37 +15,10 @@
       })();
     </script>
     <style>
-      :root {
-        --dept-color: #b91c1c;
-        --dept-light: #fee2e2;
-        --dept-accent: #dc2626;
-      }
-      .dept-stripe { height: 4px; background: #b91c1c; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
-      .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: var(--dept-light); color: var(--dept-color); border: 1.5px solid var(--dept-color); }
-      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; max-width: 100%; box-sizing: border-box; }
-      .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
-      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: var(--line); }
-      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface-subtle); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); z-index: 1; flex-shrink: 0; }
-      .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
-      .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
-      .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
-      .pipe-label { font-size: .6rem; color: var(--ink-muted); text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
-      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; width: 100%; box-sizing: border-box; }
-      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
-      .btn-approve { background: #16a34a; color: #fff; border: none; }
-      .btn-approve:hover { background: #15803d; }
-      .btn-reject { background: #dc2626; color: #fff; border: none; }
-      .btn-reject:hover { background: #b91c1c; }
-      .btn-query { background: #d97706; color: #fff; border: none; }
-      .btn-query:hover { background: #b45309; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-      .checklist-item { font-size: .83rem; color: var(--ink); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
-      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #b91c1c); margin-top: 2px; flex-shrink: 0; }
-      .stage-info-box { background: var(--surface-card); border: 1px solid var(--line); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: var(--ink); max-width: 100%; box-sizing: border-box; }
       .fire-tool-card { background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 8px; padding: 18px; margin-top: 20px; max-width: 100%; box-sizing: border-box; }
     </style>
   </head>
-  <body>
+  <body class="dept-fire" data-dept="fire">
     <div class="dept-stripe"></div>
     <div class="gov-stripe"></div>
     <div class="shell">
@@ -66,18 +39,18 @@
             </div>
           </div>
           <span class="dept-badge">FIRE SERVICES (LIFE SAFETY)</span>
-          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
         </div>
       </header>
 
       <div class="layout">
         <aside class="sidebar">
           <div class="sidebar-header">Fire Operations</div>
-          <a href="javascript:void(0)" class="active" onclick="switchTab('queue')">
+          <a href="#queue" id="navQueue" class="active" onclick="switchTab('queue'); return false;">
             <span class="sidebar-icon">&#128203;</span> Fire Clearance Queue
           </a>
-          <a href="javascript:void(0)" onclick="switchTab('calculator')">
+          <a href="#calculator" id="navCalc" onclick="switchTab('calculator'); return false;">
             <span class="sidebar-icon">&#128295;</span> Static Tank &amp; Hydrant Sizing
           </a>
           <a href="verification.html">
@@ -274,14 +247,39 @@
     <script src="/js/common.js"></script>
     <script src="/js/officer-fire.js"></script>
     <script>
+      let currentFireTab = "queue";
       function switchTab(tab) {
-        document.getElementById("sectionQueue").style.display = tab === "queue" ? "block" : "none";
-        document.getElementById("sectionCalc").style.display = tab === "calculator" ? "block" : "none";
-        if (tab === "calculator") runFireCalc();
+        if (!tab) tab = "queue";
+        currentFireTab = tab;
+        const secQ = document.getElementById("sectionQueue");
+        const secC = document.getElementById("sectionCalc");
+        if (secQ) secQ.style.display = isCalc ? "none" : "block";
+        if (secC) secC.style.display = isCalc ? "block" : "none";
+        const navQueue = document.getElementById("navQueue");
+        const navCalc = document.getElementById("navCalc");
+        if (navQueue) navQueue.classList.toggle("active", !isCalc);
+        if (navCalc) navCalc.classList.toggle("active", isCalc);
+        try {
+          if (history.replaceState) {
+            history.replaceState(null, "", "#" + (isCalc ? "calculator" : "queue"));
+          } else if ((location.hash || "").replace("#", "") !== (isCalc ? "calculator" : "queue")) {
+            location.hash = isCalc ? "calculator" : "queue";
+          }
+        } catch (_) {}
+        if (isCalc) runFireCalc();
         else loadApplications();
       }
 
-      document.addEventListener("DOMContentLoaded", initFirePortal);
+      window.addEventListener("hashchange", () => {
+        const h = (location.hash || "").replace("#", "");
+        if ((h === "calculator" || h === "queue") && h !== currentFireTab) switchTab(h);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initFirePortal();
+        const initialTab = (location.hash || "").replace("#", "");
+        if (initialTab === "calculator") switchTab("calculator");
+      });
     </script>
   </body>
 </html>

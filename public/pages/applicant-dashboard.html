@@ -354,7 +354,7 @@
               <span class="badge blue">Live Single Window Status</span>
             </div>
             <div class="table-container" style="border: none">
-              <table>
+              <table data-sortable="true">
                 <thead>
                   <tr>
                     <th>Application ID</th>
@@ -993,7 +993,7 @@
         const input = document.getElementById("deleteConfirmInput");
         const confirmation = input.value.trim();
         if (confirmation !== "DELETE") {
-          alert("You must type DELETE in all capital letters to confirm.");
+          notify("You must type DELETE in all capital letters to confirm.", "warning");
           return;
         }
 
@@ -1007,12 +1007,15 @@
             body: JSON.stringify({ confirmation }),
           });
 
-          alert(
+          notify(
             res.message || "Your company account has been permanently deleted.",
+            "success"
           );
-          window.location.href = "/";
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
         } catch (err) {
-          alert("Failed to delete account: " + err.message);
+          notify("Failed to delete account: " + err.message, "error");
           btn.disabled = false;
           btn.textContent = "Permanently Delete Company";
         }
@@ -1036,8 +1039,9 @@
             applyBtn.style.cursor = "not-allowed";
             applyBtn.onclick = (e) => {
               e.preventDefault();
-              alert(
+              notify(
                 "Your account is blacklisted and cannot submit new applications.",
+                "error"
               );
             };
           }
@@ -1167,7 +1171,7 @@
                   <a class="btn saffron sm" href="tracker.html?id=${x.id}" style="display:inline-block; margin-bottom:4px; font-size:0.75rem; padding:4px 8px; width:100%; text-align:center;">
                     View &amp; Respond &rarr;
                   </a>
-                  <button class="btn outline sm" style="display:inline-block; font-size:0.75rem; padding:4px 8px; width:100%;" onclick="loadApplicantWorkflow(${x.id})">
+                  <button class="btn outline sm" style="display:inline-block; font-size:0.75rem; padding:4px 8px; width:100%;" onclick="loadApplicantWorkflow('${x.id}')">
                     🏛️ Clearance Matrix
                   </button>
                 </td>

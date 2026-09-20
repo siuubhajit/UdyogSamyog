@@ -15,42 +15,15 @@
       })();
     </script>
     <style>
-      :root {
-        --dept-color: #1e3a5f;
-        --dept-light: #fff7ed;
-        --dept-accent: #d97706;
-      }
-      .dept-stripe { height: 4px; background: linear-gradient(90deg, #1e3a5f, #d97706, #16a34a); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
-      .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: #fff7ed; color: #d97706; border: 1.5px solid #d97706; }
-      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; max-width: 100%; box-sizing: border-box; }
-      .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
-      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: #e2e8f0; }
-      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface-subtle); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); z-index: 1; flex-shrink: 0; }
-      .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
-      .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
-      .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
-      .pipe-label { font-size: .6rem; color: var(--ink-muted); text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
       .matrix-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; font-size: .68rem; font-weight: 600; margin: 1px 2px; }
       .matrix-pill.ok { background: rgba(22, 163, 74, 0.15); color: var(--emerald, #15803d); border: 1px solid rgba(22, 163, 74, 0.3); }
       .matrix-pill.pending { background: rgba(217, 119, 6, 0.15); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.3); }
       .matrix-pill.flagged { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
       .decision-panel { background: var(--surface-subtle); border: 1.5px solid var(--line); border-radius: 8px; padding: 16px 20px; margin-top: 16px; max-width: 100%; box-sizing: border-box; }
-      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; width: 100%; box-sizing: border-box; }
-      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
-      .btn-approve { background: #16a34a; color: #fff; border: none; }
-      .btn-approve:hover { background: #15803d; }
-      .btn-reject { background: #dc2626; color: #fff; border: none; }
-      .btn-reject:hover { background: #b91c1c; }
-      .btn-query { background: #d97706; color: #fff; border: none; }
-      .btn-query:hover { background: #b45309; }
-      .stage-info-box { background: var(--surface-card); border: 1px solid var(--line); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: var(--ink); }
       .psi-calc-box { background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 8px; padding: 18px; margin-top: 20px; }
-      .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-      .checklist-item { font-size: .83rem; color: var(--ink); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
-      .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #1e3a8a); margin-top: 2px; flex-shrink: 0; }
     </style>
   </head>
-  <body>
+  <body class="dept-msins" data-dept="msins">
     <div class="dept-stripe"></div>
     <div class="gov-stripe"></div>
     <div class="shell">
@@ -71,24 +44,24 @@
             </div>
           </div>
           <span class="dept-badge">&#9733; APEX APPROVER AUTHORITY</span>
-          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
         </div>
       </header>
 
       <div class="layout">
         <aside class="sidebar">
           <div class="sidebar-header">Apex Authority Console</div>
-          <a href="javascript:void(0)" id="navQueue" class="active" onclick="switchView('queue')">
+          <a href="#queue" id="navQueue" class="active" onclick="switchView('queue'); return false;">
             <span class="sidebar-icon">&#128203;</span> Consolidated Queue
           </a>
-          <a href="javascript:void(0)" id="navEnterprises" onclick="switchView('enterprises')">
+          <a href="#enterprises" id="navEnterprises" onclick="switchView('enterprises'); return false;">
             <span class="sidebar-icon">&#127970;</span> Enterprise Registry &amp; Ban
           </a>
-          <a href="javascript:void(0)" id="navPsi" onclick="switchView('psi')">
+          <a href="#psi" id="navPsi" onclick="switchView('psi'); return false;">
             <span class="sidebar-icon">&#128176;</span> Incentive Schemes Sanction
           </a>
-          <a href="javascript:void(0)" id="navDeemed" onclick="switchView('deemed')">
+          <a href="#deemed" id="navDeemed" onclick="switchView('deemed'); return false;">
             <span class="sidebar-icon">⚖️</span> SLA &amp; Deemed Approvals
           </a>
           <a href="verification.html">
@@ -544,26 +517,59 @@
     <script src="/js/common.js"></script>
     <script src="/js/officer-msins.js"></script>
     <script>
+      let currentMsinsView = "queue";
       function switchView(view) {
-        document.getElementById("queueSection").style.display = view === "queue" ? "block" : "none";
-        document.getElementById("enterpriseSection").style.display = view === "enterprises" ? "block" : "none";
-        document.getElementById("psiSection").style.display = view === "psi" ? "block" : "none";
-        const deemedSec = document.getElementById("deemedSection");
-        if (deemedSec) deemedSec.style.display = view === "deemed" ? "block" : "none";
+        if (!view) view = "queue";
+        currentMsinsView = view;
 
-        document.getElementById("navQueue").classList.toggle("active", view === "queue");
-        document.getElementById("navEnterprises").classList.toggle("active", view === "enterprises");
-        document.getElementById("navPsi").classList.toggle("active", view === "psi");
-        const navDeemed = document.getElementById("navDeemed");
-        if (navDeemed) navDeemed.classList.toggle("active", view === "deemed");
+        const secQ = document.getElementById("queueSection");
+        const secE = document.getElementById("enterpriseSection");
+        const secP = document.getElementById("psiSection");
+        const secD = document.getElementById("deemedSection");
 
-        if (view === "enterprises") loadEnterprises();
-        else if (view === "psi") runPsiCalc();
-        else if (view === "deemed") loadDeemedApplications();
-        else loadApplications();
+        if (secQ) secQ.style.display = view === "queue" ? "block" : "none";
+        if (secE) secE.style.display = view === "enterprises" ? "block" : "none";
+        if (secP) secP.style.display = view === "psi" ? "block" : "none";
+        if (secD) secD.style.display = view === "deemed" ? "block" : "none";
+
+        document.getElementById("navQueue")?.classList.toggle("active", view === "queue");
+        document.getElementById("navEnterprises")?.classList.toggle("active", view === "enterprises");
+        document.getElementById("navPsi")?.classList.toggle("active", view === "psi");
+        document.getElementById("navDeemed")?.classList.toggle("active", view === "deemed");
+
+        try {
+          if (history.replaceState) {
+            history.replaceState(null, "", "#" + view);
+          } else if ((location.hash || "").replace("#", "") !== view) {
+            location.hash = view;
+          }
+        } catch (_) {}
+
+        if (view === "enterprises") {
+          loadEnterprises();
+        } else if (view === "psi") {
+          runPsiCalc();
+        } else if (view === "deemed") {
+          loadDeemedApplications();
+        } else {
+          loadApplications();
+        }
       }
-      document.addEventListener("DOMContentLoaded", initMsinsPortal);
+
+      window.addEventListener("hashchange", () => {
+        const h = (location.hash || "").replace("#", "");
+        if (["queue", "enterprises", "psi", "deemed"].includes(h) && h !== currentMsinsView) {
+          switchView(h);
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initMsinsPortal();
+        const initialView = (location.hash || "").replace("#", "");
+        if (["enterprises", "psi", "deemed"].includes(initialView)) {
+          switchView(initialView);
+        }
+      });
     </script>
   </body>
 </html>
-

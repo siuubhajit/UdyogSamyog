@@ -124,7 +124,7 @@
           body: JSON.stringify({ confirmed_fields: confirmed }),
         });
 
-        alert("Document extraction values verified and confirmed successfully!");
+        (window.notify || alert)("Document extraction values verified and confirmed successfully!", "success");
         modal.style.display = "none";
       };
     } catch (err) {
