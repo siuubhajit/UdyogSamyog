@@ -225,9 +225,22 @@ function mountThemeToggleButtons() {
   const selectors = [".topbar-actions", ".hero-header", "[data-theme-toggle-mount]"];
   selectors.forEach((sel) => {
     document.querySelectorAll(sel).forEach((container) => {
-      // Don't double-mount
-      if (!container.querySelector(".theme-toggle-btn")) {
-        container.appendChild(_createToggleBtn());
+      const signOutBtn = container.querySelector(
+        'button[onclick*="logout"], .btn-logout, a[href*="logout"], a[onclick*="logout"]'
+      );
+      let btn = container.querySelector(".theme-toggle-btn");
+      if (!btn) {
+        btn = _createToggleBtn();
+        if (signOutBtn && signOutBtn.parentElement === container) {
+          container.insertBefore(btn, signOutBtn);
+        } else {
+          container.appendChild(btn);
+        }
+      } else {
+        // If theme toggle button exists in container, ensure it is positioned before the sign out button
+        if (signOutBtn && signOutBtn.parentElement === container && btn.nextElementSibling !== signOutBtn) {
+          container.insertBefore(btn, signOutBtn);
+        }
       }
     });
   });
@@ -256,4 +269,109 @@ if (typeof window !== "undefined") {
   } else {
     mountThemeToggleButtons();
   }
+
+  // Automatically mount AI modules across all portal pages
+  [
+    "/js/ai-chat.js",
+    "/js/ai-advisor.js",
+    "/js/ai-form-assist.js",
+    "/js/ai-doc-intel.js",
+    "/js/ai-copilot.js",
+  ].forEach((src) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.defer = true;
+    document.head.appendChild(s);
+  });
+
+  /* ═══════════════════════════════════════════════════════════════
+     MODAL & WINDOWING CONTROLLER
+     - Body scroll locking when modals/drawers open
+     - Backdrop click outside detection to close active dialogs
+     - Keyboard Escape (ESC) dismiss
+     - Mutation observer for dynamic programmatic modal triggers
+     ═══════════════════════════════════════════════════════════════ */
+
+  function isModalVisible(el) {
+    if (!el) return false;
+    if (el.classList.contains("open")) return true;
+    const style = window.getComputedStyle ? window.getComputedStyle(el) : el.style;
+    return style && style.display !== "none" && style.visibility !== "hidden";
+  }
+
+  function getOpenModals() {
+    const list = document.querySelectorAll(
+      ".modal-overlay, .modal, .advisor-modal-overlay, #ai-advisor-modal, #vcModal"
+    );
+    return Array.from(list).filter(isModalVisible);
+  }
+
+  function syncBodyModalLock() {
+    const openModals = getOpenModals();
+    if (openModals.length > 0) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+  }
+
+  function closeTopModal() {
+    const openModals = getOpenModals();
+    if (openModals.length > 0) {
+      const top = openModals[openModals.length - 1];
+      top.style.display = "none";
+      top.classList.remove("open");
+      syncBodyModalLock();
+      return true;
+    }
+    return false;
+  }
+
+  // Global Backdrop Click
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (
+      target.classList.contains("modal-overlay") ||
+      target.classList.contains("modal") ||
+      target.classList.contains("advisor-modal-overlay")
+    ) {
+      if (!target.closest(".modal-card") && !target.closest(".advisor-modal")) {
+        target.style.display = "none";
+        target.classList.remove("open");
+        syncBodyModalLock();
+      }
+    }
+  });
+
+  // Global Escape (ESC) Key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" || e.key === "Esc") {
+      closeTopModal();
+    }
+  });
+
+  // MutationObserver to track any modal opens/closes across the entire page
+  if (typeof MutationObserver !== "undefined") {
+    const observer = new MutationObserver(() => {
+      syncBodyModalLock();
+    });
+    const setupObserver = () => {
+      if (document.body) {
+        observer.observe(document.body, {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ["style", "class"],
+        });
+      }
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", setupObserver);
+    } else {
+      setupObserver();
+    }
+  }
+
+  window.syncBodyModalLock = syncBodyModalLock;
+  window.closeTopModal = closeTopModal;
 }
+

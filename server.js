@@ -70,6 +70,7 @@ app.use(require("./routes/documents"));
 app.use(require("./routes/queries"));
 app.use(require("./routes/inspections"));
 app.use(require("./routes/analytics"));
+app.use(require("./routes/ai"));
 
 // Root route
 app.get("/", (req, res) =>

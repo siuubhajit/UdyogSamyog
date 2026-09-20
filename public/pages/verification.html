@@ -49,6 +49,7 @@
               </div>
             </div>
           </div>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -75,6 +76,9 @@
 
         <!-- Main Workspace -->
         <main class="main">
+          <!-- Officer AI Copilot Executive Scrutiny Brief -->
+          <div id="aiOfficerCopilotContainer"></div>
+
           <!-- Application Header Card -->
           <!-- Application Header Card: Complete Applying Industry Profile -->
           <div class="panel" style="margin-bottom: 24px">
@@ -123,12 +127,14 @@
                 </p>
               </div>
 
-              <div style="display: flex; gap: 10px; align-items: center">
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 <select
                   id="quickAppSelect"
                   onchange="switchApplication(this.value)"
                   style="
-                    min-width: 240px;
+                    min-width: 200px;
+                    max-width: 100%;
+                    box-sizing: border-box;
                     margin-top: 0;
                     padding: 8px 12px;
                     font-size: 0.85rem;
@@ -160,6 +166,10 @@
               <div class="industry-info-item">
                 <span class="industry-info-label">📅 Application Filing Date</span>
                 <span class="industry-info-value" id="headerFilingDate">---</span>
+              </div>
+              <div class="industry-info-item">
+                <span class="industry-info-label">⏱️ Statutory SLA Status</span>
+                <span class="industry-info-value" id="headerSlaStatus" style="color:var(--navy); font-weight:800;">Evaluating...</span>
               </div>
               <div class="industry-info-item">
                 <span class="industry-info-label">⏱️ Statutory Clearance Phase</span>
@@ -277,7 +287,7 @@
             <!-- LEFT COLUMN: Statutory Folder Directory, Document Explorer & PDF Inspector -->
             <div>
               <!-- Departmental Vault Scrutiny Badge & Jurisdiction Banner -->
-              <div id="vaultScopeBanner" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+              <div id="vaultScopeBanner" style="background: var(--surface-card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span id="vaultScopeIcon" style="font-size: 1.6rem;">🏛️</span>
                   <div>
@@ -540,11 +550,53 @@
                       placeholder="Specify clearly the missing information, layout discrepancy, or required statutory document..."
                     ></textarea>
                   </label>
+
+                  <!-- Visual Blueprint Annotation Tool -->
+                  <div style="background:var(--surface-subtle); border:1px dashed var(--line); border-radius:6px; padding:8px 12px; margin:8px 0;">
+                    <div style="font-size:0.75rem; font-weight:700; color:var(--ink); margin-bottom:4px; display:flex; justify-content:space-between;">
+                      <span>📍 Visual Blueprint Annotation Callout (Optional)</span>
+                      <label style="font-weight:normal; font-size:0.72rem; cursor:pointer;">
+                        <input type="checkbox" id="chkEnableAnnotation" onchange="toggleAnnotationInputs(this.checked)"> Attach Box Callout
+                      </label>
+                    </div>
+                    <div id="annotationInputs" style="display:none; grid-template-columns: repeat(4, 1fr); gap:6px; font-size:0.75rem;">
+                      <div><span style="color:var(--ink-muted);">Page</span><input type="number" id="annPage" value="1" min="1" style="padding:2px 4px; width:100%;"></div>
+                      <div><span style="color:var(--ink-muted);">X (px)</span><input type="number" id="annX" value="120" style="padding:2px 4px; width:100%;"></div>
+                      <div><span style="color:var(--ink-muted);">Y (px)</span><input type="number" id="annY" value="280" style="padding:2px 4px; width:100%;"></div>
+                      <div><span style="color:var(--ink-muted);">Width</span><input type="number" id="annW" value="180" style="padding:2px 4px; width:100%;"></div>
+                    </div>
+                  </div>
+
                   <button class="btn rust sm" onclick="raiseOfficerQuery()">
                     ✉ Send Formal Query to Applicant
                   </button>
                   <div id="queryMsg" class="msg"></div>
                 </div>
+              </div>
+
+              <!-- 2.5 Inter-Departmental Joint Coordination Thread -->
+              <div class="scrutiny-card" id="internalNotesCard" style="border:1.5px solid #0284c7; background:var(--surface-card);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <h3 style="margin:0; font-size:1rem; color:var(--ink); display:flex; align-items:center; gap:6px;">
+                    <span>🔒</span> <span>Inter-Agency Joint Scrutiny Notes</span>
+                  </h3>
+                  <span class="badge blue" style="font-size:0.7rem;">Confidential · Officer Only</span>
+                </div>
+                <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:10px;">
+                  Internal technical collaboration between MIDC, MPCB, DISH, and Fire Directorate during Phase 2. Hidden from applicant.
+                </p>
+
+                <div id="internalNotesThread" style="max-height:160px; overflow-y:auto; background:var(--surface-subtle); border:1px solid var(--line); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.82rem;">
+                  <div style="color:var(--ink-muted); text-align:center; padding:12px;">Loading internal agency notes...</div>
+                </div>
+
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="internalNoteInput" placeholder="Post internal observation to other scrutiny officers..." style="font-size:0.82rem; padding:6px 10px; flex:1; border:1px solid var(--line); border-radius:4px;">
+                  <button type="button" class="btn sm" style="background:#0284c7; color:#fff; font-size:0.8rem; padding:6px 12px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="postInternalNote()">
+                    Post Note
+                  </button>
+                </div>
+                <div id="internalNoteMsg" style="font-size:0.75rem; margin-top:4px;"></div>
               </div>
 
               <!-- 3. Joint On-Site Inspection Scheduler -->
@@ -1017,7 +1069,7 @@
         const list = document.getElementById("vaultFileList");
         if (folderDocs.length === 0) {
           list.innerHTML = `
-            <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 28px 16px; text-align: center;">
+            <div style="background: var(--surface-subtle); border: 1.5px dashed var(--line); border-radius: 8px; padding: 28px 16px; text-align: center;">
               <div style="font-size: 2.2rem; margin-bottom: 6px;">${folder.icon}</div>
               <h4 style="color: var(--navy); margin-bottom: 4px; font-size: 0.95rem;">No Blueprints Uploaded in this Category</h4>
               <p style="font-size: 0.8rem; color: var(--ink-light); margin: 0; max-width: 480px; margin-left: auto; margin-right: auto;">
@@ -1058,13 +1110,16 @@
                 </div>
                 ${
                   doc.officer_remarks
-                    ? `<div style="font-size: 0.75rem; color: #334155; margin-top: 6px; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--navy);">
+                    ? `<div style="font-size: 0.75rem; color: var(--ink); margin-top: 6px; background: var(--surface-subtle); padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--navy);">
                         <b>Scrutiny Remark:</b> ${escapeHtml(doc.officer_remarks)}
                        </div>`
                     : ""
                 }
               </div>
               <div class="vault-file-actions">
+                <button class="btn sm outline" style="border-color:var(--navy);color:var(--navy);font-weight:700;" onclick="if(window.openDocIntelReview) window.openDocIntelReview('${doc.id}', '${escapeHtml(doc.name)}')">
+                  🤖 AI Extraction
+                </button>
                 <button class="btn sm ${isSelected ? "navy" : "outline"}" onclick="selectDocument(${doc.id})">
                   👁️ Inspect in Viewer
                 </button>
@@ -1169,6 +1224,11 @@
           const d = await api(`/api/applications/${id}`);
           currentDossier = d;
 
+          // Render Officer AI Copilot Brief
+          if (window.renderOfficerCopilotBrief) {
+            window.renderOfficerCopilotBrief(d.id || id, document.getElementById("aiOfficerCopilotContainer"));
+          }
+
           // Header Info
           document.getElementById("headerAppNo").textContent = d.application_no;
           document.getElementById("headerCompanyName").textContent = d.company_name;
@@ -1204,6 +1264,25 @@
             };
             document.getElementById("headerCurrentStage").textContent = stageNameMap[d.current_stage] || d.current_stage || "Statutory Scrutiny";
           }
+
+          // SLA Status calculation
+          const createdDate = new Date(d.created_at || Date.now());
+          const daysElapsed = Math.max(1, Math.floor((Date.now() - createdDate) / (1000 * 60 * 60 * 24)));
+          const slaStatusEl = document.getElementById("headerSlaStatus");
+          if (slaStatusEl) {
+            if (daysElapsed > 45) {
+              slaStatusEl.innerHTML = `<span style="color:#dc2626; font-weight:800;">🚨 Day ${daysElapsed} / 45 (Breached)</span>`;
+            } else if (daysElapsed >= 15) {
+              slaStatusEl.innerHTML = `<span style="color:#d97706; font-weight:800;">⚠️ Day ${daysElapsed} / 45 (Deemed Eligible)</span>`;
+            } else if (daysElapsed >= 10) {
+              slaStatusEl.innerHTML = `<span style="color:#2563eb; font-weight:800;">Day ${daysElapsed} / 45 (Review Alert)</span>`;
+            } else {
+              slaStatusEl.innerHTML = `<span style="color:#059669; font-weight:800;">Day ${daysElapsed} / 45 (Within Target Window)</span>`;
+            }
+          }
+
+          // Load Inter-Departmental Joint Notes
+          loadInternalNotes();
 
           // Status & Risk Badges
           const statusBadge = document.getElementById("headerStatusBadge");
@@ -1386,18 +1465,40 @@
           .join("");
       }
 
+      function toggleAnnotationInputs(enabled) {
+        const box = document.getElementById("annotationInputs");
+        if (box) box.style.display = enabled ? "grid" : "none";
+      }
+
       async function raiseOfficerQuery() {
         const msg = document.getElementById("queryMessage").value.trim();
         if (!msg)
           return show("queryMsg", "Please enter clarification details.");
 
+        let annotation = null;
+        const chkAnn = document.getElementById("chkEnableAnnotation");
+        if (chkAnn && chkAnn.checked) {
+          annotation = {
+            page: parseInt(document.getElementById("annPage").value || 1, 10),
+            x: parseInt(document.getElementById("annX").value || 120, 10),
+            y: parseInt(document.getElementById("annY").value || 280, 10),
+            width: parseInt(document.getElementById("annW").value || 180, 10),
+            height: 60,
+            label: "Statutory Deficiency Area",
+          };
+        }
+
         try {
           await api(`/api/applications/${currentAppId}/query`, {
             method: "POST",
-            body: JSON.stringify({ message: msg }),
+            body: JSON.stringify({ message: msg, annotation }),
           });
 
           document.getElementById("queryMessage").value = "";
+          if (chkAnn) {
+            chkAnn.checked = false;
+            toggleAnnotationInputs(false);
+          }
           show(
             "queryMsg",
             "Query transmitted to applicant. Dossier marked as Flagged.",
@@ -1406,6 +1507,53 @@
           loadDossier(currentAppId);
         } catch (err) {
           show("queryMsg", err.message);
+        }
+      }
+
+      async function loadInternalNotes() {
+        const thread = document.getElementById("internalNotesThread");
+        if (!thread || !currentAppId) return;
+        try {
+          const res = await api(`/api/applications/${currentAppId}/internal-notes`);
+          if (!res.internal_notes || res.internal_notes.length === 0) {
+            thread.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:12px;">No internal agency notes yet. Post observations to collaborate across departments.</div>`;
+            return;
+          }
+          thread.innerHTML = res.internal_notes.map(n => `
+            <div style="background:var(--surface-card); border:1px solid var(--line); border-radius:4px; padding:6px 8px; margin-bottom:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--ink-muted); margin-bottom:2px;">
+                <span><strong>${typeof escapeHtml === 'function' ? escapeHtml(n.author_name) : n.author_name}</strong> (${(n.department || 'Officer').toUpperCase()})</span>
+                <span>${new Date(n.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+              </div>
+              <div style="color:var(--ink);">${typeof escapeHtml === 'function' ? escapeHtml(n.note) : n.note}</div>
+            </div>
+          `).join("");
+        } catch (err) {
+          thread.innerHTML = `<div style="color:#ef4444; text-align:center; padding:8px;">Could not load internal notes.</div>`;
+        }
+      }
+
+      async function postInternalNote() {
+        const input = document.getElementById("internalNoteInput");
+        const msgEl = document.getElementById("internalNoteMsg");
+        if (!input || !input.value.trim() || !currentAppId) return;
+        try {
+          await api(`/api/applications/${currentAppId}/internal-notes`, {
+            method: "POST",
+            body: JSON.stringify({ note: input.value.trim() })
+          });
+          input.value = "";
+          if (msgEl) {
+            msgEl.textContent = "Note posted to internal thread.";
+            msgEl.style.color = "#059669";
+            setTimeout(() => { msgEl.textContent = ""; }, 2500);
+          }
+          loadInternalNotes();
+        } catch (err) {
+          if (msgEl) {
+            msgEl.textContent = "Failed: " + err.message;
+            msgEl.style.color = "#ef4444";
+          }
         }
       }
 
@@ -1422,7 +1570,7 @@
             const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
             const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
             return `
-          <div style="background: #f1f5f9; border-left: 3px solid var(--navy); padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
+          <div style="background: var(--surface-subtle); border-left: 3px solid var(--navy); border: 1px solid var(--line); border-left-width: 3px; padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.84rem; color: var(--navy);">
               <span>📅 ${new Date(i.scheduled_date).toLocaleDateString()}</span>
               <span class="badge blue">${i.status}</span>
@@ -1535,7 +1683,7 @@
                       ? "red"
                       : "orange";
                   return `
-                    <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <div style="background: var(--surface-subtle); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
                       <div style="flex: 1; min-width: 200px;">
                         <div style="font-weight: 700; color: var(--navy); font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
                           <span>${info.icon}</span>
@@ -1559,7 +1707,7 @@
                 })
                 .join("")}
             </div>
-            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 10px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 10px; background: var(--surface-subtle); border: 1px solid var(--line); padding: 8px 12px; border-radius: 6px;">
               💡 <i>Apex Authority Tip:</i> You have statutory oversight to override or validate any department's milestone before issuing the final Single-Window Clearance Certificate.
             </div>
           `;
@@ -1588,7 +1736,7 @@
                 : "orange";
 
           container.innerHTML = `
-            <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="background: var(--surface-subtle); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy);">Milestone Status:</span>
                 <span class="badge ${badgeClass}">${cStat}</span>
@@ -1614,7 +1762,7 @@
               </button>
             </div>
 
-            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 12px; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--navy);">
+            <div style="font-size: 0.75rem; color: var(--ink-muted); margin-top: 12px; background: var(--surface-subtle); border: 1px solid var(--line); padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--navy);">
               🚀 <b>Streamlined Approval Workflow:</b> Your scrutiny clearance is directly updated in the state dossier and streamlined to the <b>Lead Approving Officer (State Innovation Society / Industries)</b> at <code>officer@udyog.gov.in</code> for final consolidated single-window approval.
             </div>
           `;
@@ -1706,13 +1854,13 @@
           badge.className = "badge gray";
 
           container.innerHTML = `
-            <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 18px 14px; text-align: center;">
+            <div style="background: var(--surface-subtle); border: 1.5px dashed var(--line); border-radius: 8px; padding: 18px 14px; text-align: center;">
               <div style="font-size: 1.8rem; margin-bottom: 6px;">🔒</div>
               <div style="font-weight: 700; color: var(--navy); font-size: 0.95rem;">Consolidated Final Approval Reserved</div>
               <p style="font-size: 0.8rem; color: var(--ink-light); margin: 6px 0 12px 0;">
                 Final Single-Window Statutory Clearance and Sanction issuance is strictly authorized for the <b>Lead Approving Officer (State Innovation Society / Industries) - Apex Authority</b> (<a href="mailto:officer@udyog.gov.in" style="color:var(--navy); font-weight:600;">officer@udyog.gov.in</a>).
               </p>
-              <div style="display: inline-block; background: #e2e8f0; color: var(--ink); font-size: 0.76rem; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+              <div style="display: inline-block; background: var(--surface-card); border: 1px solid var(--line); color: var(--ink); font-size: 0.76rem; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
                 Active Session: ${currentUser.contactPerson || currentUser.email} (${currentUser.department || "Department Officer"})
               </div>
             </div>

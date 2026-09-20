@@ -13,6 +13,7 @@ const {
   getDocumentDepartment,
   serialize,
   toObjectId,
+  emitEvent,
 } = require("../utils/helpers");
 
 // Document Upload
@@ -79,6 +80,21 @@ router.post(
         plan_type: planType,
         department,
         created_at: new Date().toISOString(),
+      });
+
+      emitEvent({
+        event_type: "doc_upload",
+        application_id: a._id,
+        user_id: req.session.user.id,
+        department,
+        details: {
+          document_id: newDoc._id,
+          document_type: newDoc.document_type,
+          plan_type: planType,
+          original_name: req.file.originalname,
+          size: req.file.size,
+          mime_type: req.file.mimetype,
+        },
       });
 
       res.json({
@@ -297,6 +313,20 @@ router.patch("/api/documents/:id/verify", auth, official, async (req, res) => {
         },
       },
     );
+
+    emitEvent({
+      event_type: "doc_verify",
+      application_id: d.application_id,
+      officer_id: req.session.user.id,
+      department: req.session.user.deptCode,
+      from_state: d.verification_status,
+      to_state: status || "Verified",
+      details: {
+        document_id: docId,
+        document_type: d.document_type,
+        remarks: remarks || "",
+      },
+    });
 
     res.json({ ok: true, message: "Document scrutiny updated." });
   } catch (err) {

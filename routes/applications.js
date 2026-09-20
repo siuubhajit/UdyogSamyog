@@ -10,7 +10,10 @@ const {
   getDocumentDepartment,
   serialize,
   toObjectId,
+  emitEvent,
 } = require("../utils/helpers");
+const { calculateStatutoryFees } = require("../utils/challanGenerator");
+const { evaluateApplicationSla } = require("../utils/slaMonitor");
 
 const PIPELINE_STAGES = ["mpcb", "parallel_scrutiny", "msins"];
 const STAGE_LABELS = {
@@ -142,6 +145,20 @@ router.post("/api/applications", auth, async (req, res) => {
       stage_statuses: "{}",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+    });
+
+    emitEvent({
+      event_type: "application_submitted",
+      application_id: newApp._id,
+      user_id: req.session.user.id,
+      from_state: null,
+      to_state: "In Progress",
+      details: {
+        application_no: appNo,
+        industryCategory: newApp.industryCategory,
+        risk_tier: evaluation.riskTier,
+        msme_category: evaluation.msme,
+      },
     });
 
     res.json({
@@ -753,6 +770,17 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
         },
       );
 
+      emitEvent({
+        event_type: "stage_decision",
+        application_id: appId,
+        user_id: appRow.user_id,
+        officer_id: req.session.user.id,
+        department: activeDept,
+        from_state: currentStage,
+        to_state: "Rejected",
+        details: { decision: "Rejected", remarks, activeDept },
+      });
+
       return res.json({
         ok: true,
         message: `Application rejected by ${STAGE_LABELS[activeDept] || activeDept}. Pipeline halted.`,
@@ -787,6 +815,17 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
           },
         },
       );
+
+      emitEvent({
+        event_type: "query_raised",
+        application_id: appId,
+        user_id: appRow.user_id,
+        officer_id: req.session.user.id,
+        department: activeDept,
+        from_state: currentStage,
+        to_state: "Flagged",
+        details: { message: remarks.trim(), activeDept },
+      });
 
       return res.json({
         ok: true,
@@ -852,15 +891,20 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
       if (suppCount === 0) {
         return res.status(400).json({
           error:
-            "Statutory Pre-requisite Unfulfilled: General statutory supporting documents must be submitted by the enterprise before final single-window Apex approval can be granted.",
+            "Final Single-Window Approval requires at least 1 verified supporting document (e.g. Incentive Eligibility Certificate or Site Inspection Report) in the dossier before sanctioning.",
         });
       }
 
-      nextStage = "completed";
       newOverallStatus = "Approved";
-      if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
+      nextStage = "completed";
+      if (parallelStatus.msins) {
+        parallelStatus.msins.status = "Approved & Permitted";
+        parallelStatus.msins.remarks =
+          "Single-Window Consolidated Approval Granted. License certificate issued.";
+        parallelStatus.msins.updated = new Date().toISOString();
+      }
       stageMsg =
-        "Final Single-Window Statutory Clearance granted by State Innovation Society Apex Authority. Application is officially Approved.";
+        "Consolidated Single-Window Industrial Establishment Permit granted by Department Officer (State Innovation Society Apex Authority). Digital license certificate issued.";
     }
 
     await Application.updateOne(
@@ -876,6 +920,17 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
         },
       },
     );
+
+    emitEvent({
+      event_type: "stage_decision",
+      application_id: appId,
+      user_id: appRow.user_id,
+      officer_id: req.session.user.id,
+      department: activeDept,
+      from_state: currentStage,
+      to_state: nextStage,
+      details: { decision: "Approved", remarks, newOverallStatus, nextStage, activeDept },
+    });
 
     console.log(
       `[Pipeline 3-Phase] App ${appRow.application_no}: ${currentStage} → ${nextStage} (${newOverallStatus}) by ${activeDept}`,
@@ -1308,6 +1363,224 @@ router.get("/api/applications/:id/certificate", auth, async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: "Could not generate certificate data" });
+  }
+});
+
+// ── Statutory Fee Challan Engine ──────────────────────────────────────
+router.get("/api/applications/:id/challan", auth, async (req, res) => {
+  try {
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const a = await Application.findById(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    if (req.session.user.role !== "official" && a.user_id.toString() !== req.session.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    if (!a.fee_breakdown) {
+      a.fee_breakdown = calculateStatutoryFees(a);
+      await a.save();
+    }
+
+    res.json({
+      ok: true,
+      application_no: a.application_no,
+      company_name: a.company_name,
+      challan: a.fee_breakdown,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to retrieve statutory fee challan: " + err.message });
+  }
+});
+
+router.post("/api/applications/:id/pay-fees", auth, async (req, res) => {
+  try {
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const a = await Application.findById(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    if (a.user_id.toString() !== req.session.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    if (!a.fee_breakdown) {
+      a.fee_breakdown = calculateStatutoryFees(a);
+    }
+
+    a.fee_breakdown.payment_status = "Paid";
+    a.fee_breakdown.paid_at = new Date().toISOString();
+    a.fee_breakdown.transaction_id = `TXN-MH-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+    a.fee_breakdown.payment_method = req.body.payment_method || "Bharatkosh NetBanking";
+    a.markModified("fee_breakdown");
+    await a.save();
+
+    emitEvent({
+      event_type: "fee_paid",
+      application_id: a._id,
+      user_id: a.user_id,
+      from_state: "Pending Payment",
+      to_state: "Paid",
+      details: {
+        grn: a.fee_breakdown.grn,
+        amount: a.fee_breakdown.total_amount,
+        transaction_id: a.fee_breakdown.transaction_id,
+      },
+    });
+
+    res.json({
+      ok: true,
+      message: "Statutory clearance fees recorded successfully.",
+      fee_breakdown: a.fee_breakdown,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Payment recording failed: " + err.message });
+  }
+});
+
+// ── Inter-Departmental Joint Notes ────────────────────────────────────
+router.post("/api/applications/:id/internal-notes", auth, official, async (req, res) => {
+  try {
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const noteText = req.body.note || req.body.note_text;
+    if (!noteText || !noteText.trim()) {
+      return res.status(400).json({ error: "Internal note cannot be empty." });
+    }
+
+    const a = await Application.findById(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    const newNote = {
+      id: crypto.randomBytes(6).toString("hex"),
+      author_id: req.session.user.id,
+      author_name: req.session.user.name || "Regulatory Officer",
+      department: req.session.user.deptCode || "apex",
+      note: noteText.trim(),
+      created_at: new Date().toISOString(),
+    };
+
+    a.internal_notes = a.internal_notes || [];
+    a.internal_notes.push(newNote);
+    a.markModified("internal_notes");
+    await a.save();
+
+    res.json({ ok: true, note: newNote, internal_notes: a.internal_notes });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to record internal note: " + err.message });
+  }
+});
+
+router.get("/api/applications/:id/internal-notes", auth, official, async (req, res) => {
+  try {
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const a = await Application.findById(appId).lean();
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    res.json({ ok: true, internal_notes: a.internal_notes || [] });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch internal notes: " + err.message });
+  }
+});
+
+// ── Statutory Deemed Approval Engine ──────────────────────────────────
+router.post("/api/applications/:id/deemed-approve", auth, official, async (req, res) => {
+  try {
+    if (!req.session.user.isApex && req.session.user.deptCode !== "msins") {
+      return res.status(403).json({
+        error: "Statutory Deemed Approval authority is exclusively vested in the Lead Approving Officer (Maharashtra State Innovation Society / Industries Apex Authority).",
+      });
+    }
+
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const a = await Application.findById(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    const sla = evaluateApplicationSla(a);
+    const reason = req.body.reason || "Exceeded statutory departmental review window under Maharashtra Right to Public Services Act 2015.";
+
+    a.sla_escalation = {
+      ...sla,
+      deemed_approved: true,
+      deemed_reason: reason,
+      deemed_by: req.session.user.email,
+      deemed_at: new Date().toISOString(),
+    };
+
+    // If in Phase 1 or 2, advance directly
+    if (a.current_stage === "mpcb") {
+      a.current_stage = "parallel_scrutiny";
+      a.parallel_status_json = JSON.stringify({ midc: "In Progress", dish: "In Progress", fire: "In Progress" });
+    } else if (a.current_stage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(a.current_stage)) {
+      a.current_stage = "msins";
+      a.parallel_status_json = JSON.stringify({ midc: "Approved", dish: "Approved", fire: "Approved" });
+    } else {
+      a.status = "Approved";
+    }
+
+    a.updated_at = new Date().toISOString();
+    a.markModified("sla_escalation");
+    await a.save();
+
+    emitEvent({
+      event_type: "deemed_approval_invoked",
+      application_id: a._id,
+      officer_id: req.session.user.id,
+      department: "msins",
+      from_state: "SLA Exceeded",
+      to_state: a.current_stage,
+      details: { reason, days_elapsed: sla.days_elapsed },
+    });
+
+    res.json({
+      ok: true,
+      message: "Statutory Deemed Approval successfully invoked by Apex Authority.",
+      application: a,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to execute deemed approval: " + err.message });
+  }
+});
+
+// ── Spatial GIS Industrial Plot Selector ──────────────────────────────
+router.post("/api/applications/:id/gis-plot", auth, async (req, res) => {
+  try {
+    const appId = toObjectId(req.params.id);
+    if (!appId) return res.status(404).json({ error: "Application not found" });
+
+    const a = await Application.findById(appId);
+    if (!a) return res.status(404).json({ error: "Application not found" });
+
+    if (req.session.user.role !== "official" && a.user_id.toString() !== req.session.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const { park_name, plot_no, coordinates, polygon_area_sqm, setback_front, setback_side, eco_distance_km } = req.body;
+    a.gis_plot = {
+      park_name: park_name || "MIDC Industrial Estate",
+      plot_no: plot_no || "Plot-A",
+      coordinates: coordinates || [18.5204, 73.8567],
+      polygon_area_sqm: polygon_area_sqm || 4046.86,
+      setback_front: setback_front || 6.0,
+      setback_side: setback_side || 4.5,
+      eco_distance_km: eco_distance_km || 12.5,
+      selected_at: new Date().toISOString(),
+    };
+
+    a.markModified("gis_plot");
+    await a.save();
+
+    res.json({ ok: true, gis_plot: a.gis_plot });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save GIS plot selection: " + err.message });
   }
 });
 

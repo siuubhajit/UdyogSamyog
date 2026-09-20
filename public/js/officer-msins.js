@@ -82,7 +82,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
   // If no search query was entered, display the clean search guide prompt (never auto-populate unapplied/random industries)
   if (!term) {
     container.innerHTML = `
-      <div style="text-align:center; padding: 28px 16px; color: var(--ink-light); background:#f8fafc; border-radius:8px; border:1px dashed #cbd5e1;">
+      <div style="text-align:center; padding: 28px 16px; color: var(--ink-light); background:var(--surface-card-alt); border-radius:8px; border:1px dashed var(--line-strong);">
         <div style="font-size:1.6rem; margin-bottom:6px;">🔎</div>
         <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:4px;">Search Enterprise Clearances &amp; Licenses</div>
         <div style="font-size:0.82rem; color:var(--ink-muted); max-width:460px; margin:0 auto;">
@@ -124,7 +124,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
 
   if (matchedApps.length === 0 && unappliedMatches.length === 0) {
     container.innerHTML = `
-      <div style="text-align:center; padding: 24px; color: var(--ink-muted); background:#f8fafc; border-radius:8px; border:1px dashed #cbd5e1;">
+      <div style="text-align:center; padding: 24px; color: var(--ink-muted); background:var(--surface-card-alt); border-radius:8px; border:1px dashed var(--line-strong);">
         No applied clearance dossiers or registered enterprises found matching "<b>${escapeHtml(term)}</b>". Try searching by company name, GSTIN, or district.
       </div>`;
     return;
@@ -152,7 +152,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
           (mpcbOk && midcOk && dishOk && fireOk) || a.current_stage === "msins";
 
         return `
-        <div class="panel" style="margin-bottom:14px; border:1.5px solid ${msinsOk ? "#86efac" : readyForFinal ? "#fde047" : "#e2e8f0"}; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="panel" style="margin-bottom:14px; border:1.5px solid ${msinsOk ? "var(--ok-line)" : readyForFinal ? "var(--warn-line)" : "var(--line)"}; box-shadow:var(--shadow-xs);">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
             <div>
               <div style="display:flex; align-items:center; gap:8px;">
@@ -165,7 +165,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
               <div style="font-size:0.82rem; color:var(--ink-light); margin-top:4px;">
                 App No: <b>${a.application_no}</b> · GSTIN: <code>${a.registration_no || "PENDING"}</code> · ${a.district} (${a.location || "Industrial Area"})
               </div>
-              <div style="font-size:0.8rem; color:#475569; margin-top:3px;">
+              <div style="font-size:0.8rem; color:var(--ink-secondary); margin-top:3px;">
                 Industry: <b>${a.industry_category}</b> · Hazard: <span class="badge gray">${a.hazard_level || "Standard"}</span> · Investment: ₹<b>${a.project_cost || 5} Cr</b>
               </div>
             </div>
@@ -219,7 +219,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
     html += unappliedMatches
       .map(
         (ent) => `
-      <div class="panel" style="margin-bottom:14px; border:1.5px solid #fed7aa; background:#fffdfa; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+      <div class="panel" style="margin-bottom:14px; border:1.5px solid var(--warn-line); background:var(--warn-bg); box-shadow:var(--shadow-xs);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -229,7 +229,7 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
             <div style="font-size:0.82rem; color:var(--ink-light); margin-top:4px;">
               GSTIN: <code>${escapeHtml(ent.registration_no || "N/A")}</code> · District: <b>${escapeHtml(ent.district || "Maharashtra")}</b> · Registered Contact: ${escapeHtml(ent.email)}
             </div>
-            <div style="font-size:0.82rem; color:#b45309; margin-top:8px; display:flex; align-items:center; gap:6px;">
+            <div style="font-size:0.82rem; color:var(--warn-ink); margin-top:8px; display:flex; align-items:center; gap:6px;">
               <span>ℹ️</span>
               <span>This enterprise is registered in the state database, but has <b>not applied for any statutory clearance or license yet</b>. No clearance dossiers or licenses exist for this unit.</span>
             </div>
@@ -422,14 +422,14 @@ async function inspectApexDossier(id) {
     if (suppNoticeEl) {
       if (supportingDocs.length > 0) {
         suppNoticeEl.innerHTML = `
-          <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:0.8rem; color:#166534; display:flex; align-items:center; gap:8px;">
+          <div style="background:var(--ok-bg); border:1px solid var(--ok-line); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:0.8rem; color:var(--ok-ink); display:flex; align-items:center; gap:8px;">
             <span style="font-weight:700;">✓</span>
             <div><b>Statutory Pre-requisite Satisfied:</b> Enterprise has submitted general statutory supporting documents required for Apex single-window appraisal.</div>
           </div>
         `;
       } else {
         suppNoticeEl.innerHTML = `
-          <div style="background:#fef2f2; border:1.5px solid #fecaca; border-radius:6px; padding:10px 14px; margin-bottom:12px; font-size:0.82rem; color:#991b1b; display:flex; align-items:flex-start; gap:8px;">
+          <div style="background:var(--err-bg); border:1.5px solid var(--err-line); border-radius:6px; padding:10px 14px; margin-bottom:12px; font-size:0.82rem; color:var(--err-ink); display:flex; align-items:flex-start; gap:8px;">
             <span style="font-size:1.1rem; line-height:1;">⚠️</span>
             <div>
               <div style="font-weight:700;">Mandatory Statutory Requirement:</div>
@@ -444,7 +444,7 @@ async function inspectApexDossier(id) {
     if (suppListEl) {
       if (supportingDocs.length === 0) {
         suppListEl.innerHTML = `
-          <div style="text-align:center; padding:16px; background:#fff7ed; border:1px dashed #fdba74; border-radius:6px; color:#c2410c; font-size:0.82rem;">
+          <div style="text-align:center; padding:16px; background:var(--warn-bg); border:1px dashed var(--warn-line); border-radius:6px; color:var(--warn-ink); font-size:0.82rem;">
             ❌ No general statutory supporting documents have been submitted yet. Upload is pending from the enterprise portal.
           </div>
         `;
@@ -452,7 +452,7 @@ async function inspectApexDossier(id) {
         suppListEl.innerHTML = supportingDocs
           .map(
             (doc) => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px; margin-bottom:8px; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-card); border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin-bottom:8px; gap:12px;">
             <div style="flex:1; min-width:0;">
               <div style="font-weight:700; font-size:0.88rem; color:var(--navy); display:flex; align-items:center; gap:6px;">
                 <span>📄</span>
@@ -566,7 +566,7 @@ async function inspectApexDossier(id) {
                 : `<span class="badge yellow" style="font-weight:600; font-size:0.75rem;">⏳ Under Scrutiny (${p.deptName})</span>`;
 
           return `
-            <div style="background:${isApp ? "#fafffa" : "#f8fafc"}; border:1px solid #e2e8f0; border-left:4px solid ${isApp ? "#16a34a" : isRej ? "#dc2626" : isQue ? "#ca8a04" : "#94a3b8"}; border-radius:6px; padding:12px 14px; margin-bottom:10px;">
+            <div style="background:${isApp ? "var(--ok-bg)" : "var(--surface-card-alt)"}; border:1px solid var(--line); border-left:4px solid ${isApp ? "var(--ok-ink)" : isRej ? "var(--err-ink)" : isQue ? "var(--warn-ink)" : "var(--ink-muted)"}; border-radius:6px; padding:12px 14px; margin-bottom:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
                 <div style="flex:1; min-width:240px;">
                   <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -574,7 +574,7 @@ async function inspectApexDossier(id) {
                     ${statusBadge}
                   </div>
                   <div style="font-size:0.78rem; color:var(--ink-light); margin-top:4px;">
-                    ${p.doc ? `Blueprint File: <b>${escapeHtml(p.doc.original_name || p.doc.file_name)}</b> (${formatBytes(p.doc.size || 0)})` : '<span style="color:#b91c1c; font-weight:600;">⚠️ Plan Blueprint PDF pending submission</span>'}
+                    ${p.doc ? `Blueprint File: <b>${escapeHtml(p.doc.original_name || p.doc.file_name)}</b> (${formatBytes(p.doc.size || 0)})` : '<span style="color:var(--err-ink); font-weight:600;">⚠️ Plan Blueprint PDF pending submission</span>'}
                   </div>
                 </div>
                 <div style="flex-shrink:0;">
@@ -590,9 +590,9 @@ async function inspectApexDossier(id) {
               ${
                 p.info?.remarks
                   ? `
-              <div style="font-size:0.8rem; color:#334155; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">
+              <div style="font-size:0.8rem; color:var(--ink-secondary); margin-top:8px; padding-top:6px; border-top:1px dashed var(--line);">
                 <b>Department Findings:</b> "${escapeHtml(p.info.remarks)}"
-                ${p.info.officer ? `<span style="color:#64748b; font-size:0.75rem;"> — ${escapeHtml(p.info.officer)} · ${new Date(p.info.decided_at).toLocaleString()}</span>` : ""}
+                ${p.info.officer ? `<span style="color:var(--ink-muted); font-size:0.75rem;"> — ${escapeHtml(p.info.officer)} · ${new Date(p.info.decided_at).toLocaleString()}</span>` : ""}
               </div>`
                   : ""
               }
@@ -1009,6 +1009,120 @@ function setupEventListeners() {
   if (calcCat) calcCat.addEventListener("change", runPsiCalc);
 }
 
+async function loadDeemedApplications() {
+  const tbody = document.getElementById("deemedTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">Fetching statutory SLA status across departments...</td></tr>';
+
+  try {
+    const apps = allApplications.length > 0 ? allApplications : await api("/api/applications");
+    let breachedCount = 0;
+    let eligibleCount = 0;
+
+    const activeApps = apps.filter(a => a.status !== "Rejected");
+
+    if (!activeApps || activeApps.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">No applications found in the statutory queue.</td></tr>';
+      return;
+    }
+
+    const rowsHtml = activeApps.map((app) => {
+      const created = new Date(app.created_at || Date.now());
+      const now = new Date();
+      const diffDays = Math.max(0, Math.floor((now - created) / (1000 * 60 * 60 * 24)));
+      const slaLimit = 30; // RTSA statutory 30-day single window mandate
+      const daysRemaining = Math.max(0, slaLimit - diffDays);
+      const isBreached = diffDays >= slaLimit;
+      const isNearBreach = diffDays >= 20 && !isBreached;
+
+      if (isBreached || isNearBreach) breachedCount++;
+
+      const isEligible = (isBreached || app.sla_escalation?.is_breached) && app.status !== "Approved";
+      if (isEligible) eligibleCount++;
+
+      const pct = Math.min(100, Math.round((diffDays / slaLimit) * 100));
+      const barColor = isBreached ? "#ef4444" : isNearBreach ? "#f59e0b" : "#10b981";
+
+      const appId = app.id || app._id;
+      const appNo = escapeHtml(app.app_no || "APP");
+
+      return `
+        <tr>
+          <td>
+            <b style="color:var(--navy);">${appNo}</b><br/>
+            <span style="font-size:0.8rem; color:var(--ink-light);">${escapeHtml(app.company_name || "Enterprise")}</span>
+          </td>
+          <td style="font-size:0.85rem;">${created.toLocaleDateString("en-IN")}</td>
+          <td><span class="badge blue">${escapeHtml((app.current_stage || "mpcb").toUpperCase())}</span></td>
+          <td>
+            <div style="font-size:0.82rem; margin-bottom:4px; display:flex; justify-content:space-between;">
+              <span><b>${diffDays}</b> days elapsed</span>
+              <span style="color:${isBreached ? '#ef4444' : isNearBreach ? '#d97706' : '#059669'}; font-weight:700;">
+                ${isBreached ? '⚠️ SLA BREACHED' : `${daysRemaining} days left`}
+              </span>
+            </div>
+            <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
+              <div style="width:${pct}%; background:${barColor}; height:100%; transition:width 0.3s ease;"></div>
+            </div>
+          </td>
+          <td>
+            ${
+              isEligible
+                ? '<span class="badge red" style="font-weight:700;">⚡ Deemed Eligible (RTSA §4)</span>'
+                : '<span class="badge yellow">In Normal Scrutiny</span>'
+            }
+          </td>
+          <td>
+            ${
+              app.status === "Approved"
+                ? '<span class="badge green">✓ Approved</span>'
+                : `<button class="btn saffron sm" style="font-size:0.75rem; padding:4px 8px; font-weight:700;" onclick="invokeDeemedApproval('${appId}', '${appNo}')">
+                    ⚡ Deemed Sanction
+                   </button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tbody.innerHTML = rowsHtml;
+    const kpiBreached = document.getElementById("kpiSlaBreached");
+    if (kpiBreached) kpiBreached.textContent = breachedCount;
+    const kpiEligible = document.getElementById("kpiDeemedEligible");
+    if (kpiEligible) kpiEligible.textContent = eligibleCount;
+  } catch (err) {
+    console.error("loadDeemedApplications error:", err);
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:#dc2626;">Failed to load SLA applications: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function invokeDeemedApproval(appId, appNo) {
+  const reason = prompt(
+    `Invoke Statutory Deemed Approval under Section 4 of Maharashtra Right to Public Services Act for Application ${appNo}?\n\nEnter statutory justification:`,
+    "Statutory SLA exceeded 30 days without departmental objection. Fast-track deemed clearance invoked by Apex Approving Authority."
+  );
+  if (!reason) return;
+
+  try {
+    const res = await fetch(`/api/applications/${appId}/deemed-approve`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason }),
+      credentials: "same-origin",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert("Failed to invoke deemed approval: " + (data.error || "Unknown error"));
+      return;
+    }
+    alert(`✓ Deemed approval successfully invoked for ${appNo}!\n\nApplication moved to: ${data.application?.current_stage || 'next stage'}`);
+    await loadApplications();
+    loadDeemedApplications();
+  } catch (err) {
+    alert("Error executing deemed approval: " + err.message);
+  }
+}
+
 window.initMsinsPortal = initMsinsPortal;
 window.loadApplications = loadApplications;
 window.loadEnterprises = loadEnterprises;
@@ -1029,5 +1143,8 @@ window.submitApexFinal = submitApexFinal;
 window.submitApexDecision = submitApexDecision;
 window.resetFilters = resetFilters;
 window.runPsiCalc = runPsiCalc;
+window.loadDeemedApplications = loadDeemedApplications;
+window.invokeDeemedApproval = invokeDeemedApproval;
+
 
 

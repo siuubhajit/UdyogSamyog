@@ -22,30 +22,31 @@
       }
       .dept-stripe { height: 4px; background: linear-gradient(90deg, #1e3a5f, #d97706, #16a34a); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
       .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: #fff7ed; color: #d97706; border: 1.5px solid #d97706; }
-      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; }
+      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; max-width: 100%; box-sizing: border-box; }
       .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
       .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: #e2e8f0; }
-      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #94a3b8; z-index: 1; flex-shrink: 0; }
+      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface-subtle); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); z-index: 1; flex-shrink: 0; }
       .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
       .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
       .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
-      .pipe-label { font-size: .6rem; color: #64748b; text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
+      .pipe-label { font-size: .6rem; color: var(--ink-muted); text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
       .matrix-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; font-size: .68rem; font-weight: 600; margin: 1px 2px; }
-      .matrix-pill.ok { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-      .matrix-pill.pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-      .matrix-pill.flagged { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-      .decision-panel { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin-top: 16px; }
-      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .matrix-pill.ok { background: rgba(22, 163, 74, 0.15); color: var(--emerald, #15803d); border: 1px solid rgba(22, 163, 74, 0.3); }
+      .matrix-pill.pending { background: rgba(217, 119, 6, 0.15); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.3); }
+      .matrix-pill.flagged { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
+      .decision-panel { background: var(--surface-subtle); border: 1.5px solid var(--line); border-radius: 8px; padding: 16px 20px; margin-top: 16px; max-width: 100%; box-sizing: border-box; }
+      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; width: 100%; box-sizing: border-box; }
+      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
       .btn-approve { background: #16a34a; color: #fff; border: none; }
       .btn-approve:hover { background: #15803d; }
       .btn-reject { background: #dc2626; color: #fff; border: none; }
       .btn-reject:hover { background: #b91c1c; }
       .btn-query { background: #d97706; color: #fff; border: none; }
       .btn-query:hover { background: #b45309; }
-      .stage-info-box { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
-      .psi-calc-box { background: #fff; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 18px; margin-top: 20px; }
+      .stage-info-box { background: var(--surface-card); border: 1px solid var(--line); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: var(--ink); }
+      .psi-calc-box { background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 8px; padding: 18px; margin-top: 20px; }
       .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item { font-size: .83rem; color: var(--ink); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
       .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #1e3a8a); margin-top: 2px; flex-shrink: 0; }
     </style>
   </head>
@@ -70,6 +71,7 @@
             </div>
           </div>
           <span class="dept-badge">&#9733; APEX APPROVER AUTHORITY</span>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -86,11 +88,17 @@
           <a href="javascript:void(0)" id="navPsi" onclick="switchView('psi')">
             <span class="sidebar-icon">&#128176;</span> Incentive Schemes Sanction
           </a>
+          <a href="javascript:void(0)" id="navDeemed" onclick="switchView('deemed')">
+            <span class="sidebar-icon">⚖️</span> SLA &amp; Deemed Approvals
+          </a>
           <a href="verification.html">
             <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
           </a>
           <a href="analytics.html">
             <span class="sidebar-icon">&#128202;</span> Service Level Intelligence
+          </a>
+          <a href="/pages/ai-admin.html">
+            <span class="sidebar-icon">⚙️</span> AI Operations Center
           </a>
           <div class="sidebar-footer">
             <b style="color:#ffffff">Maharashtra Single Window Act</b><br/>
@@ -125,7 +133,7 @@
             </div>
 
             <!-- COMPANY NAME SEARCH & LICENSE STATUS CONSOLE -->
-            <div class="panel" style="margin-top:24px; border:2px solid var(--navy); background:linear-gradient(135deg, #ffffff, #f8fafc); border-radius:8px; padding:20px;">
+            <div class="panel" style="margin-top:24px; border:2px solid var(--navy); background:var(--surface-card); border-radius:8px; padding:20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
                 <div>
                   <h2 style="font-size:1.2rem; color:var(--navy); margin:0;">
@@ -137,8 +145,8 @@
                 </div>
                 <span class="badge blue">Live State Dossier Query</span>
               </div>
-              <div style="display:flex; gap:10px; margin-top:8px;">
-                <input type="text" id="companySearchInput" class="search-input" style="flex:1; border-color:#94a3b8;" placeholder="Search by Company Name (e.g. Sahyadri, Mahindra), GSTIN, or App ID..." />
+              <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+                <input type="text" id="companySearchInput" class="search-input" style="flex:1; min-width:220px; border-color:#94a3b8;" placeholder="Search by Company Name (e.g. Sahyadri, Mahindra), GSTIN, or App ID..." />
                 <button class="btn saffron" onclick="loadApplications(document.getElementById('companySearchInput').value)">Search Company</button>
                 <button class="btn outline" onclick="document.getElementById('companySearchInput').value=''; loadApplications();">Reset</button>
               </div>
@@ -205,7 +213,7 @@
               <p class="page-subtitle">Statutory power of the Apex Authority to blacklist non-compliant enterprises and enforce statutory suspensions.</p>
             </div>
 
-            <div class="panel" style="margin-bottom:20px;background:#fff;border-left:5px solid var(--navy)">
+            <div class="panel" style="margin-bottom:20px;background:var(--surface-card);border-left:5px solid var(--navy)">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
                 <div>
                   <h3 style="color:var(--navy);font-size:1.15rem;margin:0">Statutory Blacklist Enforcement &middot; Section 14 EoDB Act</h3>
@@ -273,8 +281,63 @@
                 </label>
               </div>
 
-              <div id="psiResultBox" style="margin-top:16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:6px;padding:16px">
+              <div id="psiResultBox" style="margin-top:16px;background:var(--surface-subtle);border:1.5px solid var(--line);border-radius:6px;padding:16px">
                 <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- STATUTORY SLA & DEEMED APPROVALS SECTION -->
+          <div id="deemedSection" style="display:none">
+            <div class="page-header">
+              <div class="page-pretitle">Maharashtra Right to Public Services Act (RTSA) 2015</div>
+              <h1 class="page-title">⚖️ Statutory SLA Monitoring &amp; Deemed Approvals</h1>
+              <p class="page-subtitle">Statutory oversight console tracking the mandatory 30-day single-window timeline. Intervene and grant deemed clearance for compliant dossiers delayed by inter-departmental bottlenecks.</p>
+            </div>
+
+            <div class="grid" style="margin-bottom:20px;">
+              <div class="card card-kpi saffron">
+                <span class="card-label">Statutory Benchmark</span>
+                <span class="card-value">30 Days</span>
+                <span class="card-sub">Right to Services Mandate</span>
+              </div>
+              <div class="card card-kpi ruby">
+                <span class="card-label">SLA Breached / At Risk</span>
+                <span class="card-value" id="kpiSlaBreached">0</span>
+                <span class="card-sub">Action Required</span>
+              </div>
+              <div class="card card-kpi emerald">
+                <span class="card-label">Eligible for Deemed Approval</span>
+                <span class="card-value" id="kpiDeemedEligible">0</span>
+                <span class="card-sub">Fast-track candidate</span>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                <h2 style="font-size:1.1rem; color:var(--navy); margin:0;">
+                  ⏱️ Active Dossier SLA Tracker &amp; Deemed Action Registry
+                </h2>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn outline sm" onclick="loadDeemedApplications()">🔄 Refresh SLA Data</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>App ID &amp; Enterprise</th>
+                      <th>Submission Date</th>
+                      <th>Current Stage</th>
+                      <th>Days Elapsed &amp; SLA Status</th>
+                      <th>Deemed Clearance Eligibility</th>
+                      <th>Statutory Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="deemedTableBody">
+                    <tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">Loading SLA status...</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -284,12 +347,12 @@
 
     <!-- APEX DECISION MODAL -->
     <div id="decisionModal" class="modal-overlay" style="display:none">
-      <div class="modal-card" style="max-width:640px">
+      <div class="modal-card lg">
         <h2 id="decisionModalTitle" style="color:var(--navy)">&#127963; Apex Authority Decision &middot; Final Statutory Clearance</h2>
         <p id="decisionModalSubtitle" style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Issue Consolidated Single-Window Clearance or forward instructions.</p>
         
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 14px;margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;font-size:.85rem">
+        <div style="background:var(--surface-card-alt);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;flex-wrap:wrap;gap:8px;">
             <span>App No: <b id="decAppNo" style="color:var(--navy)">---</b></span>
             <span>Enterprise: <b id="decCompany">---</b></span>
             <span>District: <b id="decDistrict">---</b></span>
@@ -298,12 +361,12 @@
 
         <div id="miniPipeline" class="pipeline-mini"></div>
 
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;margin-top:14px;">
+        <div style="background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:6px;padding:10px 14px;margin-top:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Apex Statutory Review Checklist:</div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <span id="msinsChecklistCounter" style="font-size:.74rem;font-weight:700;color:#15803d;">0 of 6 verified</span>
-              <button type="button" id="msinsToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('msins', 6, this)">Select All</button>
+              <span id="msinsChecklistCounter" style="font-size:.74rem;font-weight:700;color:var(--ok-ink);">0 of 6 verified</span>
+              <button type="button" id="msinsToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:var(--surface-card);color:var(--ink);border-color:var(--line);" onclick="toggleAllChecklist('msins', 6, this)">Select All</button>
             </div>
           </div>
           <div class="checklist">
@@ -336,7 +399,7 @@
 
         <div style="margin-top:14px">
           <label style="font-size:.85rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
-            Official Decision Remarks / Order Reference <span style="color:#dc2626">*</span>
+            Official Decision Remarks / Order Reference <span style="color:var(--err-ink)">*</span>
           </label>
           <textarea id="decisionRemarks" rows="3"
             placeholder="Record consolidated clearance determination, deemed statutory sanction order, or compliance grounds..."
@@ -361,32 +424,24 @@
       <div class="modal-card">
         <h2 style="color:var(--ruby)">&#128683; Blacklist / Ban Enterprise</h2>
         <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Banning an enterprise prohibits future applications, freezes pending clearances, and revokes permit rights.</p>
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-bottom:14px">
-          <span style="font-size:.78rem;color:#991b1b;font-weight:700">Target Enterprise:</span>
-          <div id="banTargetName" style="font-weight:800;color:#7f1d1d;font-size:1rem;margin-top:2px">---</div>
+        <div style="background:var(--err-bg);border:1px solid var(--err-line);border-radius:6px;padding:10px 14px;margin-bottom:14px">
+          <span style="font-size:.78rem;color:var(--err-ink);font-weight:700">Target Enterprise:</span>
+          <div id="banTargetName" style="font-weight:800;color:var(--err-ink);font-size:1rem;margin-top:2px">---</div>
         </div>
         <label>Statutory Ground / Reason for Blacklist
           <textarea id="banReasonInput" rows="3" placeholder="Specify violations..." style="width:100%;margin-top:6px"></textarea>
         </label>
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-          <span style="font-size:.72rem;color:var(--ink-muted)">Quick grounds:</span>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Hazardous effluent discharge in violation of Pollution Control standards')">Effluent Breach</button>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Unauthorized construction without Industrial Development building permit')">Civil Breach</button>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Non-compliance with factory machinery safety standards')">Safety Breach</button>
-          <button type="button" class="demo-btn" style="padding:2px 8px;font-size:.7rem" onclick="setBanChip('Fraudulent misrepresentation of statutory documents')">Document Fraud</button>
-        </div>
         <div class="modal-actions" style="margin-top:16px">
           <button type="button" class="btn outline sm" onclick="closeBanModal()">Cancel</button>
-          <button type="button" class="btn danger sm" onclick="submitBanEnterprise()">Enforce Blacklist &#128683;</button>
+          <button type="button" class="btn sm" style="background:var(--ruby);color:#fff" onclick="submitBan()">Enforce Permanent Blacklist</button>
         </div>
-        <div id="banModalMsg" class="msg" style="margin-top:10px"></div>
       </div>
     </div>
 
     <!-- APEX INSPECT DOSSIER MODAL (COLLATED PLANS, GENERAL SUPPORTING DOCS & REMARKS) -->
     <div id="apexInspectModal" class="modal-overlay" style="display:none">
-      <div class="modal-card" style="max-width:860px; max-height:90vh; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
+      <div class="modal-card lg">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
           <div>
             <h2 style="margin:0; color:var(--navy); font-size:1.25rem; display:flex; align-items:center; gap:8px;">
               <span>📑</span> Consolidated Statutory Dossier &amp; Blueprint Scrutiny
@@ -402,15 +457,15 @@
         </div>
 
         <!-- Meta info bar -->
-        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 14px; margin-bottom:16px; font-size:0.82rem; color:#475569;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; background:var(--surface-card-alt); border:1px solid var(--line); border-radius:6px; padding:8px 14px; margin-bottom:16px; font-size:0.82rem; color:var(--ink-secondary);">
           <div>Location: <b id="modalInspectLocation">---</b></div>
           <div>Hazard Level: <b id="modalInspectHazard">---</b></div>
           <div>Current Pipeline Phase: <span class="badge blue" id="modalInspectStage">---</span></div>
         </div>
 
         <!-- Section 1: General Statutory Supporting Documents -->
-        <div style="margin-bottom:24px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+        <div style="margin-bottom:24px; background:var(--surface-card); border:1px solid var(--line); border-radius:8px; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid var(--line); padding-bottom:8px;">
             <div>
               <h3 style="margin:0; color:var(--navy); font-size:1.02rem; display:flex; align-items:center; gap:6px;">
                 <span>📁</span> 1. General Statutory Supporting Documents
@@ -434,8 +489,8 @@
         </div>
 
         <!-- Section 2: Mandatory Departmental Statutory Plan Submissions -->
-        <div style="margin-bottom:20px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+        <div style="margin-bottom:20px; background:var(--surface-card); border:1px solid var(--line); border-radius:8px; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid var(--line); padding-bottom:8px;">
             <div>
               <h3 style="margin:0; color:var(--navy); font-size:1.02rem; display:flex; align-items:center; gap:6px;">
                 <span>🏛️</span> 2. Mandatory Departmental Statutory Plan Submissions
@@ -454,7 +509,7 @@
           </div>
         </div>
 
-        <div class="modal-actions" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid #e2e8f0; padding-top:14px; margin-top:16px;">
+        <div class="modal-actions" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line); padding-top:14px; margin-top:16px;">
           <div id="modalApexQuickAction">
             <!-- Loaded dynamically: e.g. Grant Clearance button or status notice -->
           </div>
@@ -493,11 +548,18 @@
         document.getElementById("queueSection").style.display = view === "queue" ? "block" : "none";
         document.getElementById("enterpriseSection").style.display = view === "enterprises" ? "block" : "none";
         document.getElementById("psiSection").style.display = view === "psi" ? "block" : "none";
+        const deemedSec = document.getElementById("deemedSection");
+        if (deemedSec) deemedSec.style.display = view === "deemed" ? "block" : "none";
+
         document.getElementById("navQueue").classList.toggle("active", view === "queue");
         document.getElementById("navEnterprises").classList.toggle("active", view === "enterprises");
         document.getElementById("navPsi").classList.toggle("active", view === "psi");
+        const navDeemed = document.getElementById("navDeemed");
+        if (navDeemed) navDeemed.classList.toggle("active", view === "deemed");
+
         if (view === "enterprises") loadEnterprises();
         else if (view === "psi") runPsiCalc();
+        else if (view === "deemed") loadDeemedApplications();
         else loadApplications();
       }
       document.addEventListener("DOMContentLoaded", initMsinsPortal);

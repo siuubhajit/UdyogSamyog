@@ -411,9 +411,84 @@ node scratch/test_all_portals.js
 
 ---
 
+## 🤖 Intelligent AI Clearance Subsystem (26-Section Blueprint)
+
+Udyog Samyog embeds an enterprise-grade, deterministic-first AI Copilot and Operations Subsystem powered by **Google Gemini models** and a **Statutory Rules Kernel**. The subsystem runs in an isolated Python environment (`ai-service/.venv`), communicating with the Express portal via signed HMAC-SHA256 user context tokens and an automated **Circuit Breaker** with transparent statutory fallbacks.
+
+### Architecture Overview
+```
+┌───────────────────────────┐            ┌────────────────────────────┐
+│   Express Web Portal      │   HMAC     │    Python FastAPI Service  │
+│   (Port 3000)             ├───────────►│    (Port 8000, .venv)      │
+│   • UI Drawers & Modals   │◄───────────┤    • Statutory Rules Engine│
+│   • Circuit Breaker       │   Tokens   │    • TF-IDF Vector KB      │
+│   • Deterministic Fallback│            │    • Gemini Client         │
+└───────────────────────────┘            └────────────────────────────┘
+```
+
+### Module Breakdown
+- **Module A: Applicant Advisor & What-if Simulation:**
+  - Evaluates enterprise investment (MSME Act 2020) and risk tiering (Green/Orange/Red).
+  - Identifies all statutory clearances across 3 phases with clickable legal citations.
+  - Interactive What-If simulation comparing capital/hazard changes.
+- **Module B: Smart Form Assistant:**
+  - Auto-fills form fields based on industrial sector benchmarks.
+  - Pre-submission Completeness Checker with scoring (0.0 to 1.0) and missing blueprint alerts.
+- **Module C: Document Intelligence:**
+  - Multi-page PDF/image OCR parsing and key schema extraction (PAN, GSTIN, Plot Allotment).
+  - Field-level confidence scores with color badges and mandatory Human Review Confirmation modal.
+- **Module D: Officer Scrutiny Copilot:**
+  - Executive Scrutiny Brief synthesizing investment, risk, and verified documents.
+  - Checklist pre-verification with officer manual overrides.
+  - Discrepancy detector (e.g. Red category without ETP blueprint).
+  - 1-Click statutory Deficiency Notice drafter enforcing the legal 7-day cure window.
+- **Module E: Prediction & Analytics:**
+  - Machine learning timeline estimator bounded strictly within the Maharashtra Right to Services 45-day SLA ceiling.
+  - Query risk predictor highlighting bottleneck risks prior to departmental dispatch.
+- **Module F: Integrity & Anomaly Scanner:**
+  - SHA-256 cryptographic hashing to detect duplicate uploads across applications.
+  - Metadata tampering detection and statistical investment outliers.
+  - Public Certificate Verification endpoint validating 64-character SHA-256 digital seals.
+- **Module G: Grounded Conversational Assistant:**
+  - Tri-lingual support (English, Marathi `mr`, Hindi `hi`).
+  - Read-only guardrails with zero autonomous write actions.
+  - Verified government policy citations on all answers.
+- **Module H: Multilingual Accessibility:**
+  - Native Marathi and Hindi language support across chat and advisor recommendations.
+- **Module I: Operations Center & Admin Console (`ai-admin.html`):**
+  - Live module emergency kill-switches with instantaneous portal sync.
+  - Rules Engine & Knowledge Base inspector.
+  - Model registry tracking prompt versions and latencies.
+  - Real-time telemetry: Request volume, error rate, fallback rate, and p95 latency.
+
+### Setup & Running the AI Subsystem
+```bash
+# 1. Navigate to AI service directory
+cd ai-service
+
+# 2. Activate isolated virtual environment
+.\.venv\Scripts\Activate.ps1    # (or .\.venv\Scripts\activate.bat)
+
+# 3. Install dependencies (if not already installed)
+pip install -r requirements.txt
+
+# 4. Launch FastAPI AI Service
+python -m uvicorn app.main:app --port 8000 --host 127.0.0.1
+
+# 5. Run Python Test Suite (23 test scenarios)
+pytest tests/test_ai_service.py
+
+# 6. Run AI Client & Circuit Breaker Integration Suite
+node scratch/test_ai_portal_integration.js
+```
+
+---
+
 ## 🏛️ Government Compliance & Policy Adherence
 
 - **Ease of Doing Business (EoDB):** Eliminates physical visits to government secretariats by providing end-to-end digital clearances.
 - **Maharashtra Single Window Act:** Strictly enforces that specialized bodies scrutinize domain blueprints concurrently during Phase 2 before the Apex Authority issues the consolidated permit.
 - **Right to Public Services:** Embeds Service Level Guarantees with automated breach detection to ensure timely delivery of government services.
 - **Data Sovereignty & Scalability:** Operates with scalable MongoDB document storage, atomic operations, and role-scoped document vaults ensuring citizen and enterprise data remains secure.
+- **Constitutional Due Process:** AI functions strictly as an advisory and scrutiny copilot. All decisions, approvals, and rejections are strictly executed by designated statutory government officers.
+

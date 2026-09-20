@@ -16,6 +16,8 @@
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
+    <script src="/js/components/gis-map.js"></script>
+    <script src="/js/form-autosave.js"></script>
   </head>
   <body>
     <div class="gov-stripe"></div>
@@ -47,6 +49,7 @@
               </div>
             </div>
           </div>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -272,6 +275,14 @@
               </label>
             </div>
 
+            <!-- Spatial GIS Plot Picker Trigger -->
+            <div style="margin: 10px 0 16px 0;">
+              <button type="button" id="btnToggleGis" class="btn" style="background:linear-gradient(135deg, #0284c7, #1e40af); color:#ffffff; font-size:0.85rem; padding:0.45rem 0.9rem; border-radius:6px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem; border:none;">
+                🗺️ Select Plot via Spatial GIS Industrial Map
+              </button>
+              <div id="gisMapContainer" style="display:none; margin-top:14px;"></div>
+            </div>
+
             <div class="formgrid">
               <label
                 >Industrial Water Consumption (KL / Day)
@@ -422,9 +433,24 @@
               </div>
             </div>
 
+            <!-- Statutory Fee Estimation & Challan Preview -->
+            <div id="feePreviewPanel" style="background:var(--surface-subtle); border:1px solid var(--line); border-radius:8px; padding:1.1rem; margin-top:24px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                <h4 style="margin:0; font-size:1rem; color:var(--ink); display:flex; align-items:center; gap:0.5rem;">
+                  💳 Estimated Statutory Scrutiny Fees: <span id="lblEstimatedTotalFee" style="color:var(--navy); font-weight:800; font-size:1.1rem;">₹42,500</span>
+                </h4>
+                <span style="font-size:0.75rem; background:rgba(3, 105, 161, 0.15); color:var(--navy); padding:0.25rem 0.5rem; border-radius:4px; font-weight:600; border:1px solid var(--line);">
+                  Consolidated Government Challan (Bharatkosh / MahaOnline)
+                </span>
+              </div>
+              <p style="margin:0.4rem 0 0 0; font-size:0.8rem; color:var(--ink-secondary); line-height:1.5;">
+                Includes MPCB Consent to Establish fee, MIDC Infrastructure &amp; Town Planning vetting, Fire Safety Scrutiny, and DISH Factory Registration. Official Government Reference Number (GRN) challan generated automatically upon dossier creation.
+              </p>
+            </div>
+
             <div
               style="
-                margin-top: 28px;
+                margin-top: 24px;
                 display: flex;
                 gap: 14px;
                 align-items: center;
@@ -465,8 +491,8 @@
             </div>
 
             <!-- Statutory Departmental Mandatory Document Cards -->
-            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            <div style="background: var(--surface-subtle); border: 1.5px solid var(--line); border-radius: 8px; padding: 18px; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
                 <div>
                   <h3 style="margin: 0; font-size: 1.05rem; color: var(--navy); display: flex; align-items: center; gap: 8px;">
                     <span>📋</span> Mandatory Departmental Statutory Plan Submissions
@@ -482,7 +508,7 @@
 
               <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px;">
                 <!-- 1. Pollution Control Board -->
-                <div id="cardMpcb" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div id="cardMpcb" style="background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <span style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase;">🌿 Phase 1 Gateway</span>
@@ -505,7 +531,7 @@
                 </div>
 
                 <!-- 2. Industrial Development Corporation -->
-                <div id="cardMidc" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div id="cardMidc" style="background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <span style="font-size: 0.72rem; font-weight: 700; color: #1e40af; text-transform: uppercase;">📐 Phase 2 Civil</span>
@@ -528,7 +554,7 @@
                 </div>
 
                 <!-- 3. Industrial Safety and Health -->
-                <div id="cardDish" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div id="cardDish" style="background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <span style="font-size: 0.72rem; font-weight: 700; color: #9a3412; text-transform: uppercase;">🛡️ Phase 2 Safety</span>
@@ -551,7 +577,7 @@
                 </div>
 
                 <!-- 4. Fire Services -->
-                <div id="cardFire" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div id="cardFire" style="background: var(--surface-card); border: 1.5px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <span style="font-size: 0.72rem; font-weight: 700; color: #991b1b; text-transform: uppercase;">🚒 Phase 2 Fire</span>
@@ -810,6 +836,18 @@
         `,
           )
           .join("");
+
+        // Statutory Fee Calculation
+        const costVal = parseFloat(document.getElementById("projectCost")?.value || 0);
+        const landVal = parseFloat(document.getElementById("landSize")?.value || 1);
+        const isHaz = document.getElementById("hazardous")?.checked;
+        let estMpcb = costVal > 100 ? 250000 : costVal > 25 ? 100000 : costVal > 5 ? 50000 : costVal > 1 ? 25000 : 15000;
+        let estMidc = Math.round(5000 + (landVal * 2500));
+        let estFire = isHaz ? 25000 : 12000;
+        let estDish = 10000;
+        const estTotal = estMpcb + estMidc + estFire + estDish;
+        const feeLbl = document.getElementById("lblEstimatedTotalFee");
+        if (feeLbl) feeLbl.textContent = `₹${estTotal.toLocaleString("en-IN")}`;
       }
 
       // Attach input event listeners for live recalculation
@@ -826,6 +864,31 @@
       });
 
       runKnowledgeEngine();
+
+      // Spatial GIS Industrial Plot Selector Initialization
+      let selectedGisPlotData = null;
+      const btnToggleGis = document.getElementById("btnToggleGis");
+      const gisContainer = document.getElementById("gisMapContainer");
+      if (btnToggleGis && gisContainer) {
+        let gisSelectorInstance = null;
+        btnToggleGis.addEventListener("click", () => {
+          const isHidden = gisContainer.style.display === "none";
+          gisContainer.style.display = isHidden ? "block" : "none";
+          btnToggleGis.textContent = isHidden ? "✕ Close Spatial GIS Map" : "🗺️ Select Plot via Spatial GIS Industrial Map";
+          if (isHidden && !gisSelectorInstance && window.GisPlotSelector) {
+            gisSelectorInstance = new GisPlotSelector("gisMapContainer", {
+              onSelect: (plot) => {
+                selectedGisPlotData = plot;
+                if (document.getElementById("location")) document.getElementById("location").value = `${plot.plot_no}, ${plot.park_name}`;
+                if (document.getElementById("district")) document.getElementById("district").value = plot.district;
+                if (document.getElementById("landSize")) document.getElementById("landSize").value = plot.area_acres;
+                runKnowledgeEngine();
+                alert(`Selected Plot ${plot.plot_no} (${plot.area_acres} Acres). Location, district, and land footprint updated!`);
+              }
+            });
+          }
+        });
+      }
 
       function updatePlanType(selectEl) {
         if (!selectEl) return;
@@ -856,6 +919,16 @@
           });
 
           createdAppId = res.id;
+          if (selectedGisPlotData && createdAppId) {
+            try {
+              await api(`/api/applications/${createdAppId}/gis-plot`, {
+                method: "POST",
+                body: JSON.stringify(selectedGisPlotData),
+              });
+            } catch (err) {
+              console.warn("Could not attach GIS plot:", err);
+            }
+          }
           document.getElementById("vaultAppNo").textContent = res.applicationNo;
           document.getElementById("btnGoToTracker").href =
             `tracker.html?id=${createdAppId}`;
@@ -968,20 +1041,23 @@
                 b.textContent = "✅ Uploaded";
               }
               if (c) {
-                c.style.borderColor = "#86efac";
-                c.style.background = "#f0fdf4";
+                c.style.borderColor = "var(--brand-emerald, #10b981)";
+                c.style.background = "rgba(16, 185, 129, 0.08)";
               }
               if (info) {
                 info.innerHTML = `
-                  <div style="font-size:0.75rem; color:#166534; font-weight:600; margin-top:6px; word-break:break-all;">
+                  <div style="font-size:0.75rem; color:var(--emerald, #10b981); font-weight:600; margin-top:6px; word-break:break-all;">
                     📄 ${escapeHtml(doc.original_name || doc.file_name || "Plan.pdf")}
-                    <span style="font-size:0.7rem; color:#64748b;">(${formatBytes(doc.size)})</span>
+                    <span style="font-size:0.7rem; color:var(--ink-muted);">(${formatBytes(doc.size)})</span>
                   </div>
                 `;
               }
               if (action) {
                 action.innerHTML = `
                   <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button type="button" class="btn sm outline" style="flex:1; padding:4px 6px; font-size:0.72rem; color:var(--navy); border-color:var(--navy); font-weight:700;" onclick="if(window.openDocIntelReview) window.openDocIntelReview('${doc.id}', '${escapeHtml(doc.original_name || doc.file_name)}')">
+                      🤖 AI Verify
+                    </button>
                     <a class="btn sm outline" style="flex:1; padding:4px 6px; font-size:0.72rem; text-align:center;" href="/api/documents/${doc.id}/view" target="_blank">
                       ↗ View Inline
                     </a>
@@ -997,8 +1073,8 @@
                 b.textContent = "❌ Required";
               }
               if (c) {
-                c.style.borderColor = "#e2e8f0";
-                c.style.background = "#ffffff";
+                c.style.borderColor = "var(--line)";
+                c.style.background = "var(--surface-card)";
               }
               if (info) info.innerHTML = "";
               if (action) {

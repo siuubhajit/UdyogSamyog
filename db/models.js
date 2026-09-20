@@ -98,6 +98,10 @@ const applicationSchema = new mongoose.Schema(
     parallel_status_json: { type: String, default: "{}" },
     current_stage:        { type: String, default: "mpcb" },
     stage_statuses:       { type: String, default: "{}" },
+    fee_breakdown:        { type: mongoose.Schema.Types.Mixed, default: null },
+    internal_notes:       { type: [mongoose.Schema.Types.Mixed], default: [] },
+    gis_plot:             { type: mongoose.Schema.Types.Mixed, default: null },
+    sla_escalation:       { type: mongoose.Schema.Types.Mixed, default: null },
     created_at:           { type: String, default: () => new Date().toISOString() },
     updated_at:           { type: String, default: () => new Date().toISOString() },
   },
@@ -133,6 +137,7 @@ const querySchema = new mongoose.Schema(
     application_id: { type: mongoose.Schema.Types.ObjectId, ref: "Application", required: true },
     officer_id:     { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     message:        { type: String, required: true },
+    annotation:     { type: mongoose.Schema.Types.Mixed, default: null },
     applicant_reply:String,
     reply_file_id:  mongoose.Schema.Types.ObjectId,
     reply_file_name:String,
@@ -162,6 +167,136 @@ const inspectionSchema = new mongoose.Schema(
 addIdTransform(inspectionSchema);
 const Inspection = mongoose.models.Inspection || mongoose.model("Inspection", inspectionSchema, "inspections");
 
+/* ─── 8. Events (Append-only audit & ML history) ─────────────────── */
+const eventSchema = new mongoose.Schema(
+  {
+    event_type:     { type: String, required: true }, // state_transition | query_raised | query_resolved | doc_upload | doc_verify | inspection | certificate_issued
+    application_id: { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+    user_id:        { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    officer_id:     { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    department:     String,
+    from_state:     String,
+    to_state:       String,
+    details_json:   { type: String, default: "{}" },
+    duration_ms:    Number,
+    created_at:     { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(eventSchema);
+const Event = mongoose.models.Event || mongoose.model("Event", eventSchema, "events");
+
+/* ─── 9. AI Requests (Audit & Telemetry) ─────────────────────────── */
+const aiRequestSchema = new mongoose.Schema(
+  {
+    module:         { type: String, required: true }, // advisor | form | docintel | copilot | predict | integrity | chat
+    user_id:        String,
+    role:           String,
+    application_id: String,
+    input_hash:     String,
+    input_json:     String,
+    output_json:    String,
+    status:         { type: String, default: "ok" }, // ok | fallback | error | blocked
+    engine_version: String,
+    kb_version:     String,
+    model_id:       String,
+    prompt_version: String,
+    latency_ms:     Number,
+    tokens_in:      Number,
+    tokens_out:     Number,
+    created_at:     { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiRequestSchema);
+const AiRequest = mongoose.models.AiRequest || mongoose.model("AiRequest", aiRequestSchema, "ai_requests");
+
+/* ─── 10. AI Feedback ────────────────────────────────────────────── */
+const aiFeedbackSchema = new mongoose.Schema(
+  {
+    request_id: { type: String, required: true },
+    user_id:    { type: String, required: true },
+    rating:     { type: Number, required: true }, // 1 to 5
+    comment:    String,
+    created_at: { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiFeedbackSchema);
+const AiFeedback = mongoose.models.AiFeedback || mongoose.model("AiFeedback", aiFeedbackSchema, "ai_feedback");
+
+/* ─── 11. AI Document Extractions ───────────────────────────────── */
+const aiDocumentExtractionSchema = new mongoose.Schema(
+  {
+    document_id:           { type: mongoose.Schema.Types.ObjectId, ref: "Document", required: true },
+    application_id:        { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+    doc_type:              String,
+    doc_type_confidence:   Number,
+    fields_json:           { type: String, default: "{}" },
+    field_confidence_json: { type: String, default: "{}" },
+    ocr_engine:            String,
+    status:                { type: String, default: "extracted" }, // pending | extracted | needs_review | confirmed | rejected
+    reviewed_by:           String,
+    reviewed_at:           String,
+    created_at:            { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiDocumentExtractionSchema);
+const AiDocumentExtraction =
+  mongoose.models.AiDocumentExtraction ||
+  mongoose.model("AiDocumentExtraction", aiDocumentExtractionSchema, "ai_document_extractions");
+
+/* ─── 12. AI Flags (Integrity & Anomaly Detection) ───────────────── */
+const aiFlagSchema = new mongoose.Schema(
+  {
+    application_id: { type: mongoose.Schema.Types.ObjectId, ref: "Application", required: true },
+    type:           { type: String, required: true }, // duplicate_doc | data_inconsistency | tampering_hint | outlier | certificate_anomaly
+    severity:       { type: String, default: "medium" }, // low | medium | high
+    evidence_json:  { type: String, default: "{}" },
+    status:         { type: String, default: "open" }, // open | dismissed | confirmed
+    reviewed_by:    String,
+    resolution:     String,
+    created_at:     { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiFlagSchema);
+const AiFlag = mongoose.models.AiFlag || mongoose.model("AiFlag", aiFlagSchema, "ai_flags");
+
+/* ─── 13. AI Officer Actions (Copilot feedback tracking) ─────────── */
+const aiOfficerActionSchema = new mongoose.Schema(
+  {
+    request_id:    String,
+    officer_id:    { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    application_id:{ type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+    action:        { type: String, required: true }, // accepted | edited | rejected
+    edited_output: String,
+    created_at:    { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiOfficerActionSchema);
+const AiOfficerAction =
+  mongoose.models.AiOfficerAction ||
+  mongoose.model("AiOfficerAction", aiOfficerActionSchema, "ai_officer_actions");
+
+/* ─── 14. AI Kill Switches & Ops Toggles ─────────────────────────── */
+const aiKillSwitchSchema = new mongoose.Schema(
+  {
+    module:     { type: String, required: true, unique: true }, // global | advisor | form | docintel | copilot | predict | integrity | chat
+    enabled:    { type: Boolean, default: true },
+    updated_by: String,
+    reason:     String,
+    updated_at: { type: String, default: () => new Date().toISOString() },
+  },
+  { timestamps: false }
+);
+addIdTransform(aiKillSwitchSchema);
+const AiKillSwitch =
+  mongoose.models.AiKillSwitch ||
+  mongoose.model("AiKillSwitch", aiKillSwitchSchema, "ai_kill_switches");
+
 /* ─── DB Connection ──────────────────────────────────────────────── */
 async function connectDB(uri) {
   const MONGO_URI = uri || process.env.MONGODB_URI || "mongodb://localhost:27017/udyog_samyog";
@@ -171,5 +306,22 @@ async function connectDB(uri) {
   console.log(`[MongoDB] Connected to ${MONGO_URI.replace(/\/\/.*@/, "//***@")}`);
 }
 
-module.exports = { connectDB, User, ResetToken, Otp, Application, Document, Query, Inspection };
+module.exports = {
+  connectDB,
+  User,
+  ResetToken,
+  Otp,
+  Application,
+  Document,
+  Query,
+  Inspection,
+  Event,
+  AiRequest,
+  AiFeedback,
+  AiDocumentExtraction,
+  AiFlag,
+  AiOfficerAction,
+  AiKillSwitch,
+};
+
 

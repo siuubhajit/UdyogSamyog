@@ -16,21 +16,27 @@
     </script>
     <style>
       :root {
-        --dept-color: #9a3412;
+        --dept-color: #c2410c;
         --dept-light: #ffedd5;
         --dept-accent: #ea580c;
       }
-      .dept-stripe { height: 4px; background: #9a3412; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+      [data-theme="dark"] {
+        --dept-color: #fb923c;
+        --dept-light: rgba(234, 88, 12, 0.18);
+        --dept-accent: #fdba74;
+      }
+      .dept-stripe { height: 4px; background: #c2410c; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
       .dept-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: var(--dept-light); color: var(--dept-color); border: 1.5px solid var(--dept-color); }
-      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; }
+      .pipeline-mini { display: flex; align-items: flex-start; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; max-width: 100%; box-sizing: border-box; }
       .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 82px; position: relative; }
-      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: #e2e8f0; }
-      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #94a3b8; z-index: 1; flex-shrink: 0; }
+      .pipe-step:not(:last-child)::after { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); width: calc(100% - 28px); height: 2px; background: var(--line, #e2e8f0); }
+      .pipe-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line, #cbd5e1); background: var(--surface-subtle, #f8fafc); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-light, #94a3b8); z-index: 1; flex-shrink: 0; }
       .pipe-dot.done { background: #16a34a; border-color: #16a34a; color: #fff; }
       .pipe-dot.active { background: var(--dept-color); border-color: var(--dept-color); color: #fff; }
       .pipe-dot.rejected { background: #dc2626; border-color: #dc2626; color: #fff; }
-      .pipe-label { font-size: .6rem; color: #64748b; text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
-      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .pipe-label { font-size: .6rem; color: var(--ink-muted, #64748b); text-align: center; margin-top: 4px; font-weight: 600; max-width: 78px; line-height: 1.2; }
+      .decision-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; width: 100%; box-sizing: border-box; }
+      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
       .btn-approve { background: #16a34a; color: #fff; border: none; }
       .btn-approve:hover { background: #15803d; }
       .btn-reject { background: #dc2626; color: #fff; border: none; }
@@ -38,10 +44,10 @@
       .btn-query { background: #d97706; color: #fff; border: none; }
       .btn-query:hover { background: #b45309; }
       .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-      .checklist-item { font-size: .83rem; color: #334155; padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
+      .checklist-item { font-size: .83rem; color: var(--ink, #334155); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; user-select: none; }
       .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--dept-color, #c2410c); margin-top: 2px; flex-shrink: 0; }
-      .stage-info-box { background: linear-gradient(135deg, var(--dept-light), #fff); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: #1e293b; }
-      .dish-tool-card { background: #fff; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 18px; margin-top: 20px; }
+      .stage-info-box { background: linear-gradient(135deg, var(--dept-light), var(--surface-card, #fff)); border-left: 4px solid var(--dept-color); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: .86rem; color: var(--ink, #1e293b); max-width: 100%; box-sizing: border-box; }
+      .dish-tool-card { background: var(--surface-card, #fff); border: 1.5px solid var(--line, #fed7aa); border-radius: 8px; padding: 18px; margin-top: 20px; max-width: 100%; box-sizing: border-box; }
     </style>
   </head>
   <body>
@@ -65,6 +71,7 @@
             </div>
           </div>
           <span class="dept-badge">Industrial Safety &amp; Health</span>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -160,7 +167,7 @@
                 </label>
               </div>
 
-              <div id="dishCalcResult" style="margin-top:18px;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:6px;padding:16px">
+              <div id="dishCalcResult" style="margin-top:18px;background:var(--surface-subtle);border:1.5px solid var(--line);border-radius:6px;padding:16px">
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px">
                   <div>
                     <div style="font-size:.72rem;color:var(--ink-light);font-weight:700">Air Space Per Worker (Section 16)</div>
@@ -183,7 +190,7 @@
     <!-- SAFETY INSPECT DOSSIER MODAL -->
     <div id="safetyInspectModal" class="modal modal-overlay">
       <div class="modal-card" style="max-width:760px">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:14px;">
           <div>
             <h2 style="margin:0; color:var(--dept-color); font-size:1.2rem;">&#9881;&#65039; Factory Safety Blueprint &amp; Hazard Scrutiny</h2>
             <div style="font-size:0.8rem; color:var(--ink-light); margin-top:2px;">
@@ -193,7 +200,7 @@
           <button class="btn outline sm" onclick="closeModals()">✕ Close</button>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:14px; font-size:0.82rem;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; background:var(--surface-subtle); padding:10px 14px; border-radius:6px; border:1px solid var(--line); margin-bottom:14px; font-size:0.82rem;">
           <div>Hazard Level: <b id="modalInspectHazard" style="color:#b91c1c;">---</b></div>
           <div>Workforce: <b id="modalInspectWorkers">---</b></div>
         </div>
@@ -217,12 +224,12 @@
           Record factory layout appraisal under Factories Act 1948 for <b id="safetyModalAppNo">---</b> (<span id="safetyModalCompany">---</span>).
         </p>
 
-        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:10px 14px;margin-bottom:12px">
+        <div style="background:rgba(234,88,12,0.08);border:1px solid rgba(234,88,12,0.25);border-radius:6px;padding:10px 14px;margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-weight:700;font-size:.82rem;color:var(--navy)">Hazard Assessment: <span id="safetyModalHazard" style="color:#c2410c;">---</span></div>
             <div style="display:flex;align-items:center;gap:8px;">
               <span id="dishChecklistCounter" style="font-size:.74rem;font-weight:700;color:#c2410c;">0 of 4 verified</span>
-              <button type="button" id="dishToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:#fff;" onclick="toggleAllChecklist('dish', 4, this)">Select All</button>
+              <button type="button" id="dishToggleBtn" class="btn outline sm" style="font-size:.7rem;padding:2px 8px;background:var(--surface-card);" onclick="toggleAllChecklist('dish', 4, this)">Select All</button>
             </div>
           </div>
           <div class="checklist">
@@ -254,7 +261,7 @@
             style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
         </div>
 
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
+        <div class="decision-btn-row">
           <button class="btn" style="background:#16a34a; color:#fff;" onclick="submitSafetyDecision('Approved')">
             &#10003; Endorse Safety Blueprint
           </button>

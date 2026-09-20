@@ -1,0 +1,39 @@
+{
+  "test-doc-001": {
+    "document_id": "test-doc-001",
+    "doc_type": "PAN Card",
+    "doc_type_confidence": 0.96,
+    "fields": {
+      "pan_number": "ABCDE1234F",
+      "entity_name": "Test Firm",
+      "jurisdiction": "Income Tax Department, India"
+    },
+    "field_confidences": {
+      "pan_number": 1.0,
+      "entity_name": 1.0,
+      "jurisdiction": 0.99
+    },
+    "status": "confirmed",
+    "summary": "Identified as PAN Card with 96% confidence. Extracted 3 key attributes.",
+    "is_fallback": false,
+    "reviewed_by": "officer_101"
+  },
+  "doc-99": {
+    "document_id": "doc-99",
+    "doc_type": "PAN Card",
+    "doc_type_confidence": 0.96,
+    "fields": {
+      "pan_number": "ABCDE1234F",
+      "entity_name": "Declared Enterprise Private Limited",
+      "jurisdiction": "Income Tax Department, India"
+    },
+    "field_confidences": {
+      "pan_number": 0.8,
+      "entity_name": 0.85,
+      "jurisdiction": 0.99
+    },
+    "status": "extracted",
+    "summary": "Identified as PAN Card with 96% confidence. Extracted 3 key attributes.",
+    "is_fallback": false
+  }
+}

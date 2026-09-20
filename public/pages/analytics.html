@@ -47,6 +47,7 @@
               </div>
             </div>
           </div>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -240,7 +241,7 @@
           document.getElementById("bottleneckList").innerHTML = bottlenecks
             .map(
               (b, i) => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--line); border-radius: var(--radius-sm); margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--surface-subtle); border: 1px solid var(--line); border-radius: var(--radius-sm); margin-bottom: 10px;">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-weight: 800; color: var(--navy);">${i + 1}.</span>
                 <div>

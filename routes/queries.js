@@ -3,12 +3,12 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const { User, Application, Document, Query } = require("../db/models");
-const { auth, official, upload, toObjectId } = require("../utils/helpers");
+const { auth, official, upload, toObjectId, emitEvent } = require("../utils/helpers");
 
 // Officer Raises Query
 router.post("/api/applications/:id/query", auth, official, async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, annotation } = req.body;
     if (!message || !message.trim()) {
       return res.status(400).json({ error: "Query message cannot be blank." });
     }
@@ -16,7 +16,7 @@ router.post("/api/applications/:id/query", auth, official, async (req, res) => {
     const appId = toObjectId(req.params.id);
     if (!appId) return res.status(404).json({ error: "Application not found." });
 
-    const appRow = await Application.findById(appId, "status").lean();
+    const appRow = await Application.findById(appId).lean();
     if (!appRow) {
       return res.status(404).json({ error: "Application not found." });
     }
@@ -26,10 +26,11 @@ router.post("/api/applications/:id/query", auth, official, async (req, res) => {
       });
     }
 
-    await Query.create({
+    const newQuery = await Query.create({
       application_id: appId,
       officer_id: req.session.user.id,
       message: message.trim(),
+      annotation: annotation || null,
       status: "Open",
       created_at: new Date().toISOString(),
     });
@@ -44,9 +45,21 @@ router.post("/api/applications/:id/query", auth, official, async (req, res) => {
       },
     );
 
+    emitEvent({
+      event_type: "query_raised",
+      application_id: appId,
+      user_id: appRow.user_id,
+      officer_id: req.session.user.id,
+      department: req.session.user.deptCode,
+      from_state: appRow.status,
+      to_state: "Flagged",
+      details: { query_id: newQuery._id, message: message.trim() },
+    });
+
     res.json({
       ok: true,
       message: "Query raised. Applicant notified for clarification.",
+      query: newQuery,
     });
   } catch (err) {
     res.status(500).json({ error: "Failed to record query" });
@@ -141,6 +154,17 @@ router.post(
         },
       );
 
+      emitEvent({
+        event_type: "query_resolved",
+        application_id: q.application_id,
+        user_id: req.session.user.id,
+        details: {
+          query_id: queryId,
+          reply: reply || "Revised document and clarifications submitted.",
+          reply_file_name: fileName,
+        },
+      });
+
       const openQueries = await Query.countDocuments({
         application_id: q.application_id,
         status: "Open",
@@ -156,6 +180,14 @@ router.post(
             },
           },
         );
+
+        emitEvent({
+          event_type: "state_transition",
+          application_id: q.application_id,
+          from_state: "Flagged",
+          to_state: "In Progress",
+          details: { reason: "All open queries resolved by applicant." },
+        });
       }
 
       res.json({ ok: true, message: "Clarification submitted successfully." });

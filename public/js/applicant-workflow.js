@@ -45,8 +45,8 @@ function renderWorkflowCard(data) {
   const hazardText = data.hazardLevel || (data.hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
 
   container.innerHTML = `
-    <div class="panel" style="border: 1.5px solid #cbd5e1; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
+    <div class="panel" style="border: 1.5px solid var(--line); background: var(--surface-card); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:16px;">
         <div>
           <h2 style="margin:0; font-size:1.25rem; color:var(--navy);">
             🏛️ Maharashtra Single-Window Statutory Clearance Pipeline
@@ -63,21 +63,21 @@ function renderWorkflowCard(data) {
       </div>
 
       <!-- Phase 1: Environmental Review First -->
-      <div style="background:${mpcbApproved ? '#f0fdf4' : '#fffbeb'}; border:1.5px solid ${mpcbApproved ? '#86efac' : '#fde047'}; border-radius:8px; padding:16px; margin-bottom:18px;">
+      <div style="background:${mpcbApproved ? 'var(--ok-bg)' : 'var(--warn-bg)'}; border:1.5px solid ${mpcbApproved ? 'var(--ok-line)' : 'var(--warn-line)'}; border-radius:8px; padding:16px; margin-bottom:18px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.2rem;">🌿</span>
-              <h3 style="margin:0; font-size:1.05rem; color:#1e293b;">Phase 1: Maharashtra Pollution Control Board · Environmental Clearance</h3>
+              <h3 style="margin:0; font-size:1.05rem; color:var(--ink);">Phase 1: Maharashtra Pollution Control Board · Environmental Clearance</h3>
               <span class="badge ${mpcbApproved ? 'green' : 'yellow'}">
                 ${mpcbApproved ? '✓ Cleared by Environment Officer' : 'Phase 1 Under Active Scrutiny'}
               </span>
             </div>
-            <div style="font-size:0.75rem; color:#0f766e; font-weight:600; margin-top:2px;">Statutory Environmental Clearance under Water &amp; Air Pollution Control Acts</div>
-            <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
+            <div style="font-size:0.75rem; color:var(--ok-ink); font-weight:600; margin-top:2px;">Statutory Environmental Clearance under Water &amp; Air Pollution Control Acts</div>
+            <p style="font-size:0.82rem; color:var(--ink-secondary); margin:6px 0 0 0;">
               Statutory review: Environmental Management Plan, Effluent Treatment Scheme, and Air Emission mitigation.
             </p>
-            ${mpcb.remarks ? `<div style="font-size:0.82rem; color:#0f766e; background:#f0fdfa; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Officer Remarks:</b> "${typeof escapeHtml === 'function' ? escapeHtml(mpcb.remarks) : mpcb.remarks}"</div>` : ''}
+            ${mpcb.remarks ? `<div style="font-size:0.82rem; color:var(--ok-ink); background:var(--ok-bg); border:1px solid var(--ok-line); padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Officer Remarks:</b> "${typeof escapeHtml === 'function' ? escapeHtml(mpcb.remarks) : mpcb.remarks}"</div>` : ''}
           </div>
           <div>
             ${envDoc ? `<a class="btn outline sm" href="/api/documents/${envDoc.id}/view" target="_blank">📄 View Environmental Plan PDF</a>` : '<span class="badge gray">No Plan Attached</span>'}
@@ -86,7 +86,7 @@ function renderWorkflowCard(data) {
       </div>
 
       <!-- Phase 2: Simultaneous Departmental Scrutiny -->
-      <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:18px;">
+      <div style="background:var(--surface-card-alt); border:1.5px solid var(--line); border-radius:8px; padding:16px; margin-bottom:18px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:1.2rem;">⚡</span>
@@ -104,46 +104,46 @@ function renderWorkflowCard(data) {
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
           <!-- 1. Civil Infrastructure -->
-          <div style="background:#ffffff; border:1px solid ${midcApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
+          <div style="background:var(--surface-card); border:1px solid ${midcApproved ? 'var(--ok-line)' : 'var(--line)'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <b style="color:var(--navy);">📐 Industrial Development Corporation · Civil Infrastructure</b>
               <span class="badge ${midcApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${midcApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
-            <div style="font-size:0.72rem; color:#1e40af; font-weight:600; margin-top:2px;">Maharashtra Industrial Development Corporation</div>
-            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Floor Space Index, building setbacks & vehicle driveway access under Regional and Town Planning standards.</div>
-            ${midc.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(midc.remarks) : midc.remarks}"</div>` : ''}
-            ${civilDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${civilDoc.id}/view" target="_blank">📄 View Civil Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
+            <div style="font-size:0.72rem; color:var(--info-ink); font-weight:600; margin-top:2px;">Maharashtra Industrial Development Corporation</div>
+            <div style="font-size:0.78rem; color:var(--ink-muted); margin:6px 0;">Floor Space Index, building setbacks & vehicle driveway access under Regional and Town Planning standards.</div>
+            ${midc.remarks ? `<div style="font-size:0.75rem; color:var(--ok-ink); background:var(--ok-bg); border:1px solid var(--ok-line); padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(midc.remarks) : midc.remarks}"</div>` : ''}
+            ${civilDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${civilDoc.id}/view" target="_blank">📄 View Civil Plan PDF</a>` : '<span style="font-size:0.75rem; color:var(--ink-muted);">Plan Pending</span>'}
           </div>
 
           <!-- 2. Factory Safety -->
-          <div style="background:#ffffff; border:1px solid ${dishApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
+          <div style="background:var(--surface-card); border:1px solid ${dishApproved ? 'var(--ok-line)' : 'var(--line)'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <b style="color:var(--navy);">🛡️ Directorate of Industrial Safety & Health · Factory Safety</b>
               <span class="badge ${dishApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${dishApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
-            <div style="font-size:0.72rem; color:#9a3412; font-weight:600; margin-top:2px;">Directorate of Industrial Safety & Health</div>
+            <div style="font-size:0.72rem; color:var(--warn-ink); font-weight:600; margin-top:2px;">Directorate of Industrial Safety & Health</div>
             <div style="margin:4px 0;"><span class="badge ${hazardText.includes('Chemical') ? 'red' : 'blue'}" style="font-size:0.7rem;">${hazardText}</span></div>
-            <div style="font-size:0.78rem; color:#64748b; margin-bottom:6px;">Worker density (14.2 m³ air space), machine guarding & emergency egress under Factories Act 1948.</div>
-            ${dish.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(dish.remarks) : dish.remarks}"</div>` : ''}
-            ${dishDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${dishDoc.id}/view" target="_blank">📄 View Safety Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
+            <div style="font-size:0.78rem; color:var(--ink-muted); margin-bottom:6px;">Worker density (14.2 m³ air space), machine guarding & emergency egress under Factories Act 1948.</div>
+            ${dish.remarks ? `<div style="font-size:0.75rem; color:var(--ok-ink); background:var(--ok-bg); border:1px solid var(--ok-line); padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(dish.remarks) : dish.remarks}"</div>` : ''}
+            ${dishDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${dishDoc.id}/view" target="_blank">📄 View Safety Plan PDF</a>` : '<span style="font-size:0.75rem; color:var(--ink-muted);">Plan Pending</span>'}
           </div>
 
           <!-- 3. Fire Services -->
-          <div style="background:#ffffff; border:1px solid ${fireApproved ? '#bbf7d0' : '#e2e8f0'}; border-radius:6px; padding:14px;">
+          <div style="background:var(--surface-card); border:1px solid ${fireApproved ? 'var(--ok-line)' : 'var(--line)'}; border-radius:6px; padding:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <b style="color:var(--navy);">🚒 Directorate of Maharashtra Fire Services</b>
               <span class="badge ${fireApproved ? 'green' : isParallelActive ? 'yellow' : 'gray'}">${fireApproved ? 'Approved' : isParallelActive ? 'In Scrutiny' : 'Queued'}</span>
             </div>
-            <div style="font-size:0.72rem; color:#991b1b; font-weight:600; margin-top:2px;">Directorate of Maharashtra Fire Services</div>
-            <div style="font-size:0.78rem; color:#64748b; margin:6px 0;">Static water storage (100–250 kL), 2280+ LPM pump rating & peripheral tender access for Life Safety Clearance.</div>
-            ${fire.remarks ? `<div style="font-size:0.75rem; color:#15803d; background:#f0fdf4; padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(fire.remarks) : fire.remarks}"</div>` : ''}
-            ${fireDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${fireDoc.id}/view" target="_blank">📄 View Fire Plan PDF</a>` : '<span style="font-size:0.75rem; color:#94a3b8;">Plan Pending</span>'}
+            <div style="font-size:0.72rem; color:var(--err-ink); font-weight:600; margin-top:2px;">Directorate of Maharashtra Fire Services</div>
+            <div style="font-size:0.78rem; color:var(--ink-muted); margin:6px 0;">Static water storage (100–250 kL), 2280+ LPM pump rating & peripheral tender access for Life Safety Clearance.</div>
+            ${fire.remarks ? `<div style="font-size:0.75rem; color:var(--ok-ink); background:var(--ok-bg); border:1px solid var(--ok-line); padding:4px 8px; border-radius:4px; margin-bottom:8px;">"${typeof escapeHtml === 'function' ? escapeHtml(fire.remarks) : fire.remarks}"</div>` : ''}
+            ${fireDoc ? `<a class="btn outline sm" style="font-size:0.75rem; padding:4px 8px;" href="/api/documents/${fireDoc.id}/view" target="_blank">📄 View Fire Plan PDF</a>` : '<span style="font-size:0.75rem; color:var(--ink-muted);">Plan Pending</span>'}
           </div>
         </div>
       </div>
 
       <!-- Phase 3: Final Single-Window Clearance (Apex Authority) -->
-      <div style="background:${msinsApproved ? '#f0fdf4' : '#eff6ff'}; border:1.5px solid ${msinsApproved ? '#86efac' : '#bfdbfe'}; border-radius:8px; padding:16px;">
+      <div style="background:${msinsApproved ? 'var(--ok-bg)' : 'var(--info-bg)'}; border:1.5px solid ${msinsApproved ? 'var(--ok-line)' : 'var(--info-line)'}; border-radius:8px; padding:16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -155,11 +155,11 @@ function renderWorkflowCard(data) {
                 ${msinsApproved ? '★ Sanctioned & Cleared' : isApexActive ? 'Final Apex Decision Pending' : 'Awaiting Confirming Clearances'}
               </span>
             </div>
-            <div style="font-size:0.75rem; color:#1e3a8a; font-weight:600; margin-top:2px;">Maharashtra State Innovation Society (Department of Industries, Government of Maharashtra)</div>
-            <p style="font-size:0.82rem; color:#475569; margin:6px 0 0 0;">
+            <div style="font-size:0.75rem; color:var(--info-ink); font-weight:600; margin-top:2px;">Maharashtra State Innovation Society (Department of Industries, Government of Maharashtra)</div>
+            <p style="font-size:0.82rem; color:var(--ink-secondary); margin:6px 0 0 0;">
               Consolidates all departmental clearances into an official Government of Maharashtra Single-Window Master Permit with digital verification QR code &amp; cryptographic hash.
             </p>
-            ${msins.remarks ? `<div style="font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Apex Decision:</b> "${typeof escapeHtml === 'function' ? escapeHtml(msins.remarks) : msins.remarks}"</div>` : ''}
+            ${msins.remarks ? `<div style="font-size:0.82rem; color:var(--ok-ink); background:var(--ok-bg); border:1px solid var(--ok-line); padding:6px 10px; border-radius:4px; margin-top:8px;"><b>Apex Decision:</b> "${typeof escapeHtml === 'function' ? escapeHtml(msins.remarks) : msins.remarks}"</div>` : ''}
           </div>
           <div>
             ${msinsApproved ? `

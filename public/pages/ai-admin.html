@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Operations Center & Control Panel | Udyog Samyog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
+        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+    <style>
+      .admin-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .admin-metric-card {
+        background: var(--surface, #ffffff);
+        border: 1px solid var(--line, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      }
+      .metric-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ink-light, #64748b);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .metric-val {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--ink, #0b2545);
+        margin-top: 4px;
+      }
+      .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line, #e2e8f0);
+      }
+      .toggle-row:last-child { border-bottom: none; }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #cbd5e1;
+        transition: 0.2s;
+        border-radius: 24px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.2s;
+        border-radius: 50%;
+      }
+      input:checked + .slider { background-color: #15803d; }
+      input:checked + .slider:before { transform: translateX(20px); }
+      .admin-tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid var(--line, #e2e8f0);
+        margin-bottom: 20px;
+      }
+      .admin-tab {
+        padding: 10px 18px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        color: var(--ink-light, #64748b);
+      }
+      .admin-tab.active {
+        color: #134074;
+        border-bottom-color: #134074;
+      }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; }
+    </style>
+  </head>
+  <body>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">🏛️</div>
+          <div class="brand-text">
+            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
+            <div class="brand-tag">AI Operations Center & System Control Panel</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar">A</div>
+            <div>
+              <div style="font-weight:700;line-height:1.2" data-user-name>Admin Officer</div>
+              <div style="font-size:0.7rem;color:var(--ink-light)">Directorate of Industries</div>
+            </div>
+          </div>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">System Administration</div>
+          <a href="/pages/officer-dashboard-msins.html">
+            <span class="sidebar-icon">📊</span> Apex Dashboard
+          </a>
+          <a href="/pages/ai-admin.html" class="active">
+            <span class="sidebar-icon">⚙️</span> AI Control Center
+          </a>
+          <a href="/pages/analytics.html">
+            <span class="sidebar-icon">📈</span> Portal Analytics
+          </a>
+        </aside>
+
+        <main class="content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h2 style="margin:0;color:#0b2545;">AI Operations Center & Governance</h2>
+              <p style="margin:4px 0 0 0;color:#64748b;font-size:0.88rem;">Live telemetry, circuit breaker metrics, statutory rule definitions, and module kill-switches</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn outline sm" id="btnRefreshMetrics">🔄 Refresh Telemetry</button>
+            </div>
+          </div>
+
+          <!-- Telemetry KPI Cards -->
+          <div class="admin-card-grid">
+            <div class="admin-metric-card">
+              <div class="metric-label">Total AI Requests</div>
+              <div class="metric-val" id="metricTotalReqs">0</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-label">Avg / P95 Latency</div>
+              <div class="metric-val" id="metricLatency">-- ms</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-label">Fallback Rate</div>
+              <div class="metric-val" id="metricFallback">0%</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-label">Guardrail Blocks</div>
+              <div class="metric-val" id="metricViolations" style="color:#b91c1c;">0</div>
+            </div>
+          </div>
+
+          <!-- Navigation Tabs -->
+          <div class="admin-tabs">
+            <div class="admin-tab active" data-target="tabKillSwitches">Kill Switches & Toggles</div>
+            <div class="admin-tab" data-target="tabRules">Statutory Rules Engine</div>
+            <div class="admin-tab" data-target="tabKB">Knowledge Corpus</div>
+            <div class="admin-tab" data-target="tabModels">Model Registry & SLA</div>
+          </div>
+
+          <!-- Tab 1: Kill Switches -->
+          <div class="tab-content active" id="tabKillSwitches">
+            <div class="card" style="padding:0;overflow:hidden;">
+              <div style="padding:16px 20px;background:var(--surface-subtle);border-bottom:1px solid var(--line);">
+                <h4 style="margin:0;font-size:1rem;color:var(--navy);">Module Emergency Kill-Switches</h4>
+                <p style="margin:4px 0 0 0;font-size:0.8rem;color:var(--ink-secondary);">Instantly disable AI modules. When disabled, the portal routes queries seamlessly to deterministic statutory rule fallbacks without downtime.</p>
+              </div>
+
+              <div id="switchesContainer"></div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Statutory Rules Engine -->
+          <div class="tab-content" id="tabRules">
+            <div class="card">
+              <h4 style="margin:0 0 12px 0;">Active Statutory Rules (Maharashtra Industrial Policies)</h4>
+              <div id="rulesListContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Knowledge Base -->
+          <div class="tab-content" id="tabKB">
+            <div class="card">
+              <h4 style="margin:0 0 12px 0;">Indexed Statutory Knowledge Base Chunks</h4>
+              <div id="kbListContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Model Registry -->
+          <div class="tab-content" id="tabModels">
+            <div class="card">
+              <h4 style="margin:0 0 16px 0;">Active AI & Machine Learning Model Registry</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;">
+                <div style="background:var(--surface-subtle);border:1px solid var(--line);padding:14px;border-radius:8px;">
+                  <div style="font-weight:700;color:var(--navy);">Primary Generative LLM</div>
+                  <div style="font-size:0.85rem;margin-top:4px;">Google Gemini 1.5 Flash (REST API)</div>
+                  <div style="font-size:0.75rem;color:#15803d;font-weight:700;margin-top:4px;" id="geminiStatus">● Active / Key Configured</div>
+                </div>
+
+                <div style="background:var(--surface-subtle);border:1px solid var(--line);padding:14px;border-radius:8px;">
+                  <div style="font-weight:700;color:var(--navy);">Deterministic Policy Fallback</div>
+                  <div style="font-size:0.85rem;margin-top:4px;">RulesEngine v2026.09.1 (Python / Scikit)</div>
+                  <div style="font-size:0.75rem;color:#15803d;font-weight:700;margin-top:4px;">● Zero-Fail Guarantee</div>
+                </div>
+
+                <div style="background:var(--surface-subtle);border:1px solid var(--line);padding:14px;border-radius:8px;">
+                  <div style="font-weight:700;color:var(--navy);">Timeline & SLA Estimator</div>
+                  <div style="font-size:0.85rem;margin-top:4px;">Gradient-Boost-v1.0 (Stage Scrutiny)</div>
+                  <div style="font-size:0.75rem;color:#15803d;font-weight:700;margin-top:4px;">● 45-Day Statutory SLA Target</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/ai-admin.js"></script>
+  </body>
+</html>
+

@@ -18,7 +18,7 @@
       :root { --dept-color: #1e3a5f; --dept-light: #e8eaf6; }
       .dept-stripe { height:4px; background:var(--dept-color); position:fixed; top:0; left:0; right:0; z-index:1000; }
       .dept-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; background:var(--dept-light); color:var(--dept-color); border:1.5px solid var(--dept-color); }
-      .pipeline-mini { display:flex; align-items:flex-start; gap:0; margin:12px 0; overflow-x:auto; padding:4px 0; }
+      .pipeline-mini { display:flex; align-items:flex-start; gap:0; margin:12px 0; overflow-x:auto; padding:4px 0; max-width: 100%; box-sizing: border-box; }
       .pipe-step { display:flex; flex-direction:column; align-items:center; min-width:82px; position:relative; }
       .pipe-step:not(:last-child)::after { content:""; position:absolute; top:14px; left:calc(50% + 14px); width:calc(100% - 28px); height:2px; background:#e2e8f0; }
       .pipe-dot { width:28px; height:28px; border-radius:50%; border:2px solid #cbd5e1; background:#f8fafc; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#94a3b8; z-index:1; flex-shrink:0; }
@@ -26,9 +26,10 @@
       .pipe-dot.active { background:var(--dept-color); border-color:var(--dept-color); color:#fff; }
       .pipe-dot.rejected { background:#dc2626; border-color:#dc2626; color:#fff; }
       .pipe-label { font-size:.6rem; color:#64748b; text-align:center; margin-top:4px; font-weight:600; max-width:78px; line-height:1.2; }
-      .decision-panel { background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; padding:16px 20px; margin-top:16px; }
+      .decision-panel { background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; padding:16px 20px; margin-top:16px; max-width: 100%; box-sizing: border-box; }
       .decision-panel h4 { margin:0 0 4px; font-size:.95rem; color:var(--navy); }
-      .decision-btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+      .decision-btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; width: 100%; box-sizing: border-box; }
+      .decision-btn-row .btn, .decision-btn-row button { white-space: normal; max-width: 100%; word-break: break-word; }
       .btn-approve { background:#16a34a; color:#fff; border:none; }
       .btn-approve:hover { background:#15803d; }
       .btn-reject { background:#dc2626; color:#fff; border:none; }
@@ -38,7 +39,7 @@
       .checklist { list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:6px; }
       .checklist-item { font-size:.83rem; color:#334155; padding:3px 0; display:flex; align-items:flex-start; gap:8px; cursor:pointer; user-select:none; }
       .checklist-item input[type="checkbox"] { width:16px; height:16px; cursor:pointer; accent-color:var(--dept-color, #1e40af); margin-top:2px; flex-shrink:0; }
-      .stage-info-box { background:linear-gradient(135deg,var(--dept-light),#fff); border-left:4px solid var(--dept-color); border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:.84rem; color:#334155; }
+      .stage-info-box { background:linear-gradient(135deg,var(--dept-light),#fff); border-left:4px solid var(--dept-color); border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:.84rem; color:#334155; max-width: 100%; box-sizing: border-box; }
     </style>
   </head>
   <body>
@@ -62,6 +63,7 @@
             </div>
           </div>
           <span class="dept-badge" id="deptBadge">Loading</span>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -146,7 +148,7 @@
           </div>
 
           <div id="enterpriseSection" style="display:none">
-            <div class="panel" style="margin-bottom:20px;background:#fff;border-left:5px solid var(--navy)">
+            <div class="panel" style="margin-bottom:20px;background:var(--surface-card);border-left:5px solid var(--navy)">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
                 <div>
                   <h3 style="color:var(--navy);font-size:1.25rem">Enterprise Registry &amp; Statutory Blacklist Management</h3>
@@ -176,7 +178,7 @@
         <h2 id="decisionModalTitle" style="color:var(--navy);margin-bottom:4px">Stage Decision</h2>
         <p id="decisionModalSubtitle" style="font-size:.84rem;color:var(--ink-light);margin-bottom:8px">Record your department decision.</p>
         <div id="miniPipeline" class="pipeline-mini"></div>
-        <div style="background:#f1f5f9;border-radius:6px;padding:10px 14px;font-size:.84rem;margin-bottom:8px">
+        <div style="background:var(--surface-subtle);border:1px solid var(--line);border-radius:6px;padding:10px 14px;font-size:.84rem;margin-bottom:8px">
           <b id="decAppNo" style="color:var(--navy)">APP NO</b> &middot;
           <span id="decCompany">Company</span> &middot;
           <span id="decDistrict">District</span> &middot;
@@ -187,7 +189,7 @@
             <h4 id="checklistTitle" style="margin:0;">Verification Checklist</h4>
             <div style="display:flex; align-items:center; gap:8px;">
               <span id="genChecklistCounter" style="font-size:.74rem; font-weight:700; color:var(--dept-color, #1e40af);">0 verified</span>
-              <button type="button" id="genToggleBtn" class="btn outline sm" style="font-size:.7rem; padding:2px 8px; background:#fff;" onclick="toggleAllChecklist('gen', window._curChecklistCount || 6, this)">Select All</button>
+              <button type="button" id="genToggleBtn" class="btn outline sm" style="font-size:.7rem; padding:2px 8px; background:var(--surface-subtle); border:1px solid var(--line); color:var(--ink);" onclick="toggleAllChecklist('gen', window._curChecklistCount || 6, this)">Select All</button>
             </div>
           </div>
           <p style="font-size:.78rem;color:var(--ink-light);margin:4px 0 8px">Ensure all statutory items are verified before approving.</p>
@@ -219,9 +221,9 @@
       <div class="modal-card">
         <h2 style="color:var(--ruby)">&#128683; Blacklist / Ban Enterprise</h2>
         <p style="font-size:.85rem;color:var(--ink-light);margin-bottom:14px">Banning an enterprise prohibits future applications and revokes permit eligibility.</p>
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-bottom:14px">
-          <span style="font-size:.78rem;color:#991b1b;font-weight:700">Target Enterprise:</span>
-          <div id="banTargetName" style="font-weight:800;color:#7f1d1d;font-size:1rem;margin-top:2px">---</div>
+        <div style="background:rgba(220, 38, 38, 0.1);border:1px solid rgba(220, 38, 38, 0.25);border-radius:6px;padding:10px 14px;margin-bottom:14px">
+          <span style="font-size:.78rem;color:#ef4444;font-weight:700">Target Enterprise:</span>
+          <div id="banTargetName" style="font-weight:800;color:var(--ruby);font-size:1rem;margin-top:2px">---</div>
         </div>
         <label>Statutory Ground / Reason for Blacklist
           <textarea id="banReasonInput" rows="3" placeholder="Specify violations..." style="width:100%;margin-top:6px"></textarea>

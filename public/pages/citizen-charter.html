@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citizen's Charter & SLA Transparency | Udyog Samyog</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script>
+    /* Zero-FOUC: apply theme before first paint */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
+      if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+  <style>
+    .charter-hero {
+      background: linear-gradient(135deg, #0c2340 0%, #153d6e 100%);
+      color: #ffffff;
+      padding: 3.5rem 1.5rem;
+      text-align: center;
+      border-radius: 0 0 28px 28px;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    [data-theme="dark"] .charter-hero {
+      background: linear-gradient(135deg, #091322 0%, #0d213a 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .kpi-card {
+      background: var(--surface-card);
+      padding: 1.5rem;
+      border-radius: var(--r-md);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      transition: transform var(--t-base), box-shadow var(--t-base);
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .kpi-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin: 0.25rem 0;
+      letter-spacing: -0.02em;
+    }
+    .kpi-lbl {
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .league-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface-card);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      min-width: 680px;
+    }
+    .league-table th {
+      background: var(--surface-card-alt);
+      color: var(--ink);
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    .league-table td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+    .badge-gold { background: var(--warn-bg); color: var(--warn-ink); font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--warn-line); }
+    .badge-silver { background: var(--surface-card-alt); color: var(--ink-secondary); font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--line); }
+    .badge-bronze { background: var(--rev-bg); color: var(--rev-ink); font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--rev-line); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="topbar" style="border-bottom:1px solid var(--line); justify-content:space-between; display:flex; align-items:center;">
+    <a href="/" style="text-decoration:none; display:flex; align-items:center; gap:0.75rem;">
+      <span style="font-size:1.5rem;">🏛️</span>
+      <div>
+        <span style="font-weight:800; font-size:1.15rem; color:var(--ink);">उद्योग संयोग</span>
+        <span style="font-size:0.8rem; color:var(--ink-muted); margin-left:6px; font-weight:600;">Udyog Samyog</span>
+      </div>
+    </a>
+    <div style="display:flex; gap:1rem; align-items:center; font-size:0.9rem; font-weight:600;">
+      <a href="/pages/tracker.html" style="color:var(--navy); text-decoration:none;">Application Tracker</a>
+      <a href="/pages/citizen-charter.html" style="color:var(--brand-saffron); text-decoration:none; border-bottom:2px solid var(--brand-saffron); padding-bottom:0.2rem;">Citizen's Charter</a>
+      
+      <!-- Theme Toggle Button -->
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()">
+        <span class="toggle-icon">🌙</span>
+      </button>
+
+      <a href="/pages/login.html" class="btn primary sm" style="text-decoration:none;">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- Hero Header -->
+  <header class="charter-hero">
+    <div style="max-width:850px; margin:0 auto; padding: 0 16px;">
+      <span style="background:rgba(255,255,255,0.15); color:#ffffff; padding:0.35rem 0.85rem; border-radius:20px; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; border: 1px solid rgba(255,255,255,0.25);">
+        Statutory Governance Guarantee
+      </span>
+      <h1 style="font-size:2.2rem; font-weight:800; margin:1rem 0 0.6rem 0; letter-spacing:-0.02em; color:#ffffff;">
+        Industrial Citizen's Charter & Service Level Guarantee
+      </h1>
+      <p style="font-size:1.02rem; color:rgba(255,255,255,0.88); line-height:1.6; margin:0;">
+        Under the <strong>Maharashtra Right to Public Services Act, 2015</strong>, every industrial applicant is legally guaranteed time-bound clearances within a statutory ceiling of 45 working days, reinforced by automated escalation and deemed approval protocols.
+      </p>
+    </div>
+  </header>
+
+  <main style="max-width:1120px; margin:0 auto; padding:0 1.5rem 4rem 1.5rem;">
+    <!-- Live KPIs -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-lbl">Statutory SLA Ceiling</div>
+        <div class="kpi-val">45 <span style="font-size:1.1rem; font-weight:600;">Days</span></div>
+        <div style="font-size:0.75rem; color:var(--ink-muted);">Enforced by Maharashtra Act XXXI</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Statewide Compliance</div>
+        <div class="kpi-val" style="color:var(--brand-emerald);" id="lblCompliance">94.8%</div>
+        <div style="font-size:0.75rem; color:var(--ink-muted);">Clearances granted within statutory window</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Average Clearance Time</div>
+        <div class="kpi-val" style="color:var(--brand-saffron);" id="lblAvgDays">22.1 <span style="font-size:1.1rem; font-weight:600;">Days</span></div>
+        <div style="font-size:0.75rem; color:var(--ink-muted);">All 3 Scrutiny Phases Combined</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Grievance Redressal Window</div>
+        <div class="kpi-val" style="color:var(--brand-gold);">7 <span style="font-size:1.1rem; font-weight:600;">Days</span></div>
+        <div style="font-size:0.75rem; color:var(--ink-muted);">Mandatory appellate authority decision</div>
+      </div>
+    </section>
+
+    <!-- District League Table -->
+    <section style="margin-bottom:3rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h2 style="margin:0; font-size:1.35rem; font-weight:800; color:var(--ink);">Maharashtra District Clearance Performance League</h2>
+          <p style="margin:0.25rem 0 0 0; color:var(--ink-secondary); font-size:0.85rem;">Live operational metrics tracking competitive federalism and ease of doing business across state industrial zones.</p>
+        </div>
+        <span style="font-size:0.8rem; color:var(--ink-muted);" id="lblLastUpdated">Live Updated</span>
+      </div>
+
+      <div class="table-container">
+        <table class="league-table">
+          <thead>
+            <tr>
+              <th>Rank & District</th>
+              <th>Industrial Zone</th>
+              <th>Avg Turnaround</th>
+              <th>First-Pass Approval</th>
+              <th>SLA Adherence</th>
+              <th>Active Investment</th>
+              <th>Performance Tier</th>
+            </tr>
+          </thead>
+          <tbody id="districtTableBody">
+            <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--ink-muted);">Loading statutory performance telemetry...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Citizen Rights & Deemed Clearances Section -->
+    <section class="card" style="padding:2rem;">
+      <h3 style="margin:0 0 1.25rem 0; font-size:1.2rem; color:var(--navy); display:flex; align-items:center; gap:0.5rem;">
+        ⚖️ Statutory Citizen Rights & Deemed Clearance Provisions
+      </h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; color:var(--ink-secondary); font-size:0.9rem; line-height:1.6;">
+        <div style="background:var(--surface-card-alt); border:1px solid var(--line); border-radius:var(--r-md); padding:16px;">
+          <h4 style="margin:0 0 0.4rem 0; color:var(--navy); font-size:1rem;">1. Simultaneous Scrutiny Mandate</h4>
+          <p style="margin:0;">Under the Maharashtra Single Window Clearance Act, Phase 2 approvals (MIDC Land Planning, DISH Factory Safety, and Fire Services) must be evaluated <strong>concurrently</strong> within a parallel window of 21 days rather than sequentially.</p>
+        </div>
+        <div style="background:var(--surface-card-alt); border:1px solid var(--line); border-radius:var(--r-md); padding:16px;">
+          <h4 style="margin:0 0 0.4rem 0; color:var(--navy); font-size:1rem;">2. Statutory Deemed Approval</h4>
+          <p style="margin:0;">If any regulatory department fails to communicate a decision or statutory deficiency notice within 15 working days, the <strong>Lead Approving Officer (Maharashtra State Innovation Society / Industries Apex Authority)</strong> is empowered to issue a deemed sanction.</p>
+        </div>
+        <div style="background:var(--surface-card-alt); border:1px solid var(--line); border-radius:var(--r-md); padding:16px;">
+          <h4 style="margin:0 0 0.4rem 0; color:var(--navy); font-size:1rem;">3. One-Time Deficiency Protocol</h4>
+          <p style="margin:0;">Statutory scrutiny bodies are legally barred from raising piecemeal queries. All observations must be consolidated into a single formal deficiency notice providing the applicant a 7-day cure window.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="background:var(--surface-sidebar); color:var(--ink-muted); text-align:center; padding:2.5rem 1rem; font-size:0.85rem; border-top:1px solid var(--line-strong);">
+    <div style="color:var(--ink-inverse); font-weight:700;">Government of Maharashtra · Directorate of Industries & State Innovation Society</div>
+    <div style="margin-top:0.4rem; font-size:0.75rem;">Maintained under the Maharashtra Right to Public Services Act, 2015</div>
+  </footer>
+
+  <script src="/js/common.js"></script>
+  <script>
+    async function loadCitizenCharterData() {
+      try {
+        const res = await fetch("/api/analytics/citizen-charter");
+        if (!res.ok) throw new Error("Network error");
+        const data = await res.json();
+
+        if (data.state_metrics) {
+          document.getElementById("lblCompliance").textContent = data.state_metrics.sla_compliance_overall || "94.8%";
+          document.getElementById("lblAvgDays").innerHTML = `${data.state_metrics.statewide_avg_days || 22.1} <span style="font-size:1.1rem; font-weight:600;">Days</span>`;
+        }
+
+        const tbody = document.getElementById("districtTableBody");
+        if (data.districts && data.districts.length > 0) {
+          tbody.innerHTML = data.districts.map((d, i) => `
+            <tr>
+              <td><strong>#${i + 1} ${escapeHtml(d.district)}</strong></td>
+              <td>${escapeHtml(d.zone)}</td>
+              <td><strong>${d.avg_clearance_days} Days</strong></td>
+              <td><span style="color:var(--brand-emerald); font-weight:700;">${d.first_pass_approval_rate}</span></td>
+              <td><span style="color:var(--navy); font-weight:700;">${d.sla_adherence_rate}</span></td>
+              <td>₹${d.active_investments_cr} Cr</td>
+              <td>
+                <span class="badge-${(d.tier || 'Gold').toLowerCase()}">
+                  ${d.tier === 'Gold' ? '🥇' : d.tier === 'Silver' ? '🥈' : '🥉'} ${d.tier} Tier
+                </span>
+              </td>
+            </tr>
+          `).join("");
+        }
+
+        if (data.last_updated) {
+          document.getElementById("lblLastUpdated").textContent = `Last synchronized: ${new Date(data.last_updated).toLocaleDateString()}`;
+        }
+      } catch (err) {
+        console.warn("Failed to load citizen charter metrics:", err);
+      }
+    }
+
+    loadCitizenCharterData();
+  </script>
+</body>
+</html>

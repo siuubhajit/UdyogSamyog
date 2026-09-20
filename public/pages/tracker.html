@@ -47,6 +47,7 @@
               </div>
             </div>
           </div>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -147,6 +148,9 @@
               </div>
             </div>
           </div>
+
+          <!-- AI Timeline & Bottleneck Predictor -->
+          <div id="aiTimelinePredictorContainer" style="margin-bottom: 24px;"></div>
 
           <!-- 3-Phase Statutory Clearance Matrix -->
           <div id="applicantWorkflowContainer" style="margin-bottom: 24px"></div>
@@ -282,58 +286,58 @@
 
               <!-- State When Approved: Consolidated Master Clearance & Certificate Card -->
               <div id="certContainer" style="display: none">
-                <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);">
-                  <div style="text-align: center; border-bottom: 1.5px dashed #bbf7d0; padding-bottom: 14px; margin-bottom: 14px;">
+                <div style="background: var(--ok-bg); border: 2px solid var(--ok-line); border-radius: 8px; padding: 20px; box-shadow: var(--shadow-sm);">
+                  <div style="text-align: center; border-bottom: 1.5px dashed var(--ok-line); padding-bottom: 14px; margin-bottom: 14px;">
                     <div style="font-size: 2.2rem; margin-bottom: 4px;">🏛️</div>
-                    <div style="font-size: 0.78rem; font-weight: 800; color: #b45309; letter-spacing: 0.08em; text-transform: uppercase;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: var(--brand-gold); letter-spacing: 0.08em; text-transform: uppercase;">
                       Government of Maharashtra
                     </div>
                     <div style="font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-top: 2px;">
                       Consolidated Master Industrial Clearance
                     </div>
-                    <div style="font-size: 0.76rem; color: #15803d; font-weight: 700; text-transform: uppercase; margin-top: 2px;">
+                    <div style="font-size: 0.76rem; color: var(--ok-ink); font-weight: 700; text-transform: uppercase; margin-top: 2px;">
                       ★ Digitally Signed &amp; Statutorily Sanctioned
                     </div>
                   </div>
 
-                  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; font-size: 0.84rem; margin-bottom: 14px;">
+                  <div style="background: var(--surface-card); border: 1px solid var(--line); border-radius: 6px; padding: 14px; font-size: 0.84rem; margin-bottom: 14px;">
                     <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Certificate No:</span><br /><b id="certNo" style="font-family: monospace; color: #b45309;">---</b></div>
-                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Enterprise:</span><br /><b id="certCompany">---</b></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Certificate No:</span><br /><b id="certNo" style="font-family: monospace; color: var(--brand-gold);">---</b></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Enterprise:</span><br /><b id="certCompany" style="color: var(--ink);">---</b></div>
                       <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">GSTIN / Reg No:</span><br /><span id="certReg">---</span></div>
                       <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Industrial Site:</span><br /><span id="certLocation">---</span></div>
-                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Statutory Validity:</span><br /><span id="certValid" style="color: #166534; font-weight: 700;">Valid Permanent / 5 Years</span></div>
+                      <div><span style="color: var(--ink-light); font-size: 0.75rem; text-transform: uppercase;">Statutory Validity:</span><br /><span id="certValid" style="color: var(--ok-ink); font-weight: 700;">Valid Permanent / 5 Years</span></div>
                     </div>
                   </div>
 
                   <div style="margin-bottom: 14px;">
                     <div style="font-size: 0.78rem; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Confirming Departments Cleared:</div>
                     <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
                         <span>🌿 Pollution Control Board (Phase 1)</span>
                         <span class="badge green" style="font-size: 0.68rem;">✓ Cleared</span>
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
                         <span>📐 Industrial Development Corp (Phase 2)</span>
                         <span class="badge green" style="font-size: 0.68rem;">✓ Sanctioned</span>
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
                         <span>🛡️ Industrial Safety &amp; Health (Phase 2)</span>
                         <span class="badge green" style="font-size: 0.68rem;">✓ Endorsed</span>
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
                         <span>🚒 Maharashtra Fire Services (Phase 2)</span>
                         <span class="badge green" style="font-size: 0.68rem;">✓ Cleared</span>
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
                         <span>🏆 State Innovation Society (Apex Sanction)</span>
                         <span class="badge green" style="font-size: 0.68rem;">✓ Approved</span>
                       </div>
                     </div>
                   </div>
 
-                  <div style="background: #f1f5f9; padding: 8px 10px; border-radius: 4px; font-size: 0.68rem; font-family: monospace; color: #475569; word-break: break-all; margin-bottom: 14px;">
-                    <span style="font-weight: 700; color: #0f172a;">DIGITAL HASH:</span> <span id="certHash">---</span>
+                  <div style="background: var(--surface-card-alt); border: 1px solid var(--line); padding: 8px 10px; border-radius: 4px; font-size: 0.68rem; font-family: monospace; color: var(--ink); word-break: break-all; margin-bottom: 14px;">
+                    <span style="font-weight: 700; color: var(--ink);">DIGITAL HASH:</span> <span id="certHash">---</span>
                   </div>
 
                   <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -363,7 +367,7 @@
                   <!-- Dynamically updated in renderCertificate -->
                 </div>
 
-                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; font-size: 0.78rem; color: #1e40af; line-height: 1.5;">
+                <div style="background: var(--info-bg); border: 1px solid var(--info-line); border-radius: 6px; padding: 12px; font-size: 0.78rem; color: var(--info-ink); line-height: 1.5;">
                   <b>🛡️ Service Level Guarantee:</b> Under the Maharashtra Single Window Act, statutory departments are mandated to process simultaneous reviews within stipulated service targets. As soon as Apex approval is logged, your tamper-proof certificate will activate above.
                 </div>
               </div>
@@ -502,6 +506,9 @@
           const riskBadge = document.getElementById("bannerRiskBadge");
           riskBadge.textContent = `${app.risk_tier} Risk`;
           riskBadge.className = `risk-tag ${app.risk_tier === "Red" ? "risk-red" : app.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
+
+          // AI Timeline & Bottleneck Predictor
+          renderAiTimeline(app);
 
           // 3-Phase Statutory Clearance Matrix
           if (typeof loadApplicantWorkflow === "function") {
@@ -776,6 +783,61 @@
           }
         }
       }
+
+      async function renderAiTimeline(app) {
+        const container = document.getElementById("aiTimelinePredictorContainer");
+        if (!container) return;
+
+        try {
+          const resp = await fetch("/api/ai/predict/timeline", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ application: app }),
+          });
+          const pred = await resp.json();
+
+          const [minDays, maxDays] = pred.estimated_days_interval || [15, 28];
+          const sla = pred.statutory_sla_days || 45;
+
+          container.innerHTML = `
+            <div class="panel no-print" style="border-left:4px solid #134074;background:#f8fafc;padding:16px 20px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:#134074;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:800;">AI ANALYTICS</span>
+                    <span style="font-weight:700;font-size:0.95rem;color:#0b2545;">Predictive Approval Timeline & SLA Monitor</span>
+                  </div>
+                  <div style="font-size:0.82rem;color:#64748b;margin-top:2px;">Grounded in statutory turnaround averages under Maharashtra Right to Public Services Act 2015</div>
+                </div>
+
+                <div style="display:flex;gap:12px;align-items:center;">
+                  <div style="text-align:right;">
+                    <div style="font-size:0.72rem;color:#64748b;text-transform:uppercase;font-weight:700;">Est. Time to Clear</div>
+                    <div style="font-size:1.2rem;font-weight:800;color:#134074;">${minDays} – ${maxDays} Days</div>
+                  </div>
+                  <div style="border-left:1px solid #cbd5e1;padding-left:12px;text-align:right;">
+                    <div style="font-size:0.72rem;color:#64748b;text-transform:uppercase;font-weight:700;">Statutory SLA</div>
+                    <div style="font-size:1.2rem;font-weight:800;color:#15803d;">${sla} Days</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stage Breakdown Progress Bar -->
+              <div style="margin-top:14px;background:#fff;border:1px solid #e2e8f0;padding:10px 14px;border-radius:8px;">
+                <div style="font-size:0.78rem;font-weight:700;color:#334155;margin-bottom:6px;">Departmental Scrutiny Intervals:</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:8px;font-size:0.78rem;">
+                  <div style="background:#f1f5f9;padding:6px 10px;border-radius:4px;">🌱 MPCB Review: <strong>14–24 Days</strong></div>
+                  <div style="background:#f1f5f9;padding:6px 10px;border-radius:4px;">📐 MIDC / DISH / Fire: <strong>7–14 Days</strong></div>
+                  <div style="background:#f1f5f9;padding:6px 10px;border-radius:4px;">🏆 MSINS Apex Permit: <strong>2–5 Days</strong></div>
+                </div>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          console.warn("Could not load AI timeline prediction:", e);
+        }
+      }
+
 
       init();
     </script>

@@ -290,13 +290,13 @@ function apexOfficial(req, res, next) {
 }
 
 // Regulatory Knowledge & Schemes Recommendation Engine
-function evaluateRegulatoryChecklist(data) {
-  const land = parseFloat(data.landSize || 0);
-  const water = parseFloat(data.waterUse || 0);
-  const power = parseFloat(data.electricity || 0);
+function evaluateRegulatoryChecklist(data = {}) {
+  const land = parseFloat(data.landSize || data.land_size || 0);
+  const water = parseFloat(data.waterUse || data.water_use || 0);
+  const power = parseFloat(data.electricity || data.power_requirement || 0);
   const isHazardous = !!data.hazardous;
-  const cost = parseFloat(data.projectCost || 0);
-  const category = data.industryCategory || "Light Engineering";
+  const cost = parseFloat(data.projectCost || data.project_cost || 0);
+  const category = data.industryCategory || data.industry_category || "Light Engineering";
 
   // 1. Determine Enterprise Classification under Micro, Small and Medium Enterprises Development Act 2020
   let msme = "Micro";
@@ -576,6 +576,37 @@ function toObjectId(id) {
   return null;
 }
 
+async function emitEvent({
+  event_type,
+  application_id,
+  user_id,
+  officer_id,
+  department,
+  from_state,
+  to_state,
+  details = {},
+  duration_ms,
+}) {
+  try {
+    const { Event } = require("../db/models");
+    if (!Event) return;
+    await Event.create({
+      event_type,
+      application_id: toObjectId(application_id),
+      user_id: toObjectId(user_id),
+      officer_id: toObjectId(officer_id),
+      department,
+      from_state,
+      to_state,
+      details_json: typeof details === "string" ? details : JSON.stringify(details),
+      duration_ms,
+      created_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.warn("[Event Emitter Warning]:", err.message);
+  }
+}
+
 module.exports = {
   uploadsDir,
   envPath,
@@ -596,5 +627,6 @@ module.exports = {
   getDocumentDepartment,
   serialize,
   toObjectId,
+  emitEvent,
 };
 

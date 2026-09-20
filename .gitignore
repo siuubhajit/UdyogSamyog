@@ -69,3 +69,20 @@ desktop.ini
 coverage/
 .nyc_output/
 *.lcov
+
+# ── Python & AI Service ────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+ai-service/.venv/
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+ai-service/.pytest_cache/
+ai-service/.env
+ai-service/logs/
+
