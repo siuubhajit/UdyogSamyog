@@ -299,28 +299,28 @@ UdyogSamyog/
     ├── css/
     │   └── style.css                  # Professional government theme, glassmorphic topbar, responsive layout & dark mode tokens
     ├── js/
-    │   ├── common.js                  # Shared fetch wrapper, Zero-FOUC theme switcher, navigation guards & UI helpers
+    │   ├── common.js                  # Shared fetch wrapper, Zero-FOUC theme switcher, Modal API & conditional AI loader
     │   ├── auth.js                    # Authentication controller, OTP timer, live complexity & Gmail config modal
     │   ├── applicant-workflow.js      # Enterprise applicant workflow card and multi-agency clearance matrix
+    │   ├── clearance-timeline.js      # Unified clearance timeline component (compact, detailed, officer)
     │   ├── officer-msins.js           # Apex Officer controller: search console, registry, banning, PSI calculator
-    │   ├── officer-midc.js            # Civil Officer controller: cluster zoning, setbacks, site blueprints
-    │   ├── officer-mpcb.js            # Environmental Officer controller: risk tiering, effluent, Consent to Establish
-    │   ├── officer-dish.js            # Factory Safety Officer controller: machinery layout, chemical hazard review
-    │   └── officer-fire.js            # Fire Services Officer controller: hydrant network, reservoir checks
+    │   └── officer/                   # Modular Officer Workspace Controllers & Statutory Calculators
+    │       ├── workspace.js           # Unified departmental workspace master controller
+    │       ├── department-config.js   # Dynamic departmental metadata, checklist criteria & calculator bindings
+    │       ├── application-table.js   # Reusable applications table & mobile responsive cards
+    │       ├── decision-panel.js      # Shared statutory decision controller & checklist validator
+    │       └── calculators/           # Statutory Engineering Calculators (MPCB, MIDC, DISH, FIRE)
     └── pages/
         ├── login.html                 # State Innovation Society gateway: login, register with OTP, forgot password
-        ├── applicant-dashboard.html   # Enterprise applicant portal, active applications, alerts, query inbox
-        ├── application.html           # 4-step clearance application wizard with dynamic Regulatory Knowledge Engine
-        ├── tracker.html               # Real-time multi-department clearance tracker, query reply, certificate view
-        ├── verification.html          # Split-screen dossier scrutiny console with embedded browser PDF inspector
+        ├── applicant-dashboard.html   # Enterprise applicant portal: top active table, KPIs, timeline & mobile cards
+        ├── application.html           # 5-step clearance application wizard with dynamic Regulatory Knowledge Engine
+        ├── tracker.html               # Real-time multi-department clearance tracker with detailed phase drill-down
+        ├── verification.html          # Split-screen dossier scrutiny console with fixed PDF viewer & tabbed review panel
         ├── analytics.html             # Service Level Guarantee intelligence, bottleneck analysis, district heatmap
         ├── reset-password.html        # Secure password reset page with token/OTP validation
+        ├── officer-workspace.html     # Unified configurable Departmental Officer Workspace (?dept=mpcb|midc|dish|fire)
         ├── officer-dashboard.html     # Unified officer routing gateway
-        ├── officer-dashboard-msins.html  # Maharashtra State Innovation Society Apex Authority Console
-        ├── officer-dashboard-midc.html   # Maharashtra Industrial Development Corporation Civil Console
-        ├── officer-dashboard-mpcb.html   # Maharashtra Pollution Control Board Environmental Console
-        ├── officer-dashboard-dish.html   # Directorate of Industrial Safety and Health Safety Console
-        └── officer-dashboard-fire.html   # Directorate of Maharashtra Fire Services Safety Console
+        └── officer-dashboard-msins.html  # Maharashtra State Innovation Society Apex Authority Console
 ```
 
 ---

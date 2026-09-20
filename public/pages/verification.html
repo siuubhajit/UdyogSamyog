@@ -458,289 +458,319 @@
             <!-- Draggable Splitter Handle -->
             <div class="dossier-splitter" id="dossierSplitter" title="Drag horizontally to resize document canvas"></div>
 
-            <!-- RIGHT COLUMN: Statutory Clearances, Queries & Joint Inspection -->
+            <!-- RIGHT COLUMN: Tabbed Scrutiny Actions -->
             <div class="dossier-pane-right" id="dossierPaneRight">
-              <!-- 0. Department-Specific Scrutiny & Clearance Action -->
-              <div
-                class="scrutiny-card"
-                id="deptScrutinyCard"
-                style="border: 2px solid var(--navy)"
-              >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 8px;
-                  "
-                >
-                  <h3
-                    style="
-                      margin: 0;
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                    "
-                  >
-                    <span id="deptIcon">🏢</span>
-                    <span id="deptScrutinyTitle"
-                      >Departmental Scrutiny Action</span
-                    >
-                  </h3>
-                  <span id="deptRoleBadge" class="badge blue"
-                    >Department Review</span
-                  >
-                </div>
-                <p
-                  id="deptScrutinyDesc"
-                  style="
-                    font-size: 0.8rem;
-                    color: var(--ink-light);
-                    margin-bottom: 12px;
-                  "
-                >
-                  Review domain-specific submissions and update statutory
-                  milestone clearance.
-                </p>
-
-                <div id="deptActionContainer">
-                  <!-- Dynamically rendered -->
-                </div>
-                <div
-                  id="deptClearanceMsg"
-                  class="msg"
-                  style="margin-top: 10px"
-                ></div>
+              <!-- Scrutiny Tabs Navigation -->
+              <div class="scrutiny-tabs-nav" role="tablist" aria-label="Scrutiny Panes" style="display:flex; gap:6px; border-bottom:2px solid var(--line); margin-bottom:14px; padding-bottom:6px; overflow-x:auto;">
+                <button type="button" class="btn sm scrutiny-tab-btn active" id="tabBtnChecklist" onclick="switchScrutinyTab('checklist')" role="tab" aria-selected="true" aria-controls="tabPaneChecklist" style="font-weight:700;">
+                  📋 Checklist
+                </button>
+                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnQueries" onclick="switchScrutinyTab('queries')" role="tab" aria-selected="false" aria-controls="tabPaneQueries" style="font-weight:700;">
+                  ✉️ Queries <span class="badge gray sm" id="tabBadgeQueries" style="margin-left:4px; font-size:0.7rem;">0</span>
+                </button>
+                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnNotes" onclick="switchScrutinyTab('notes')" role="tab" aria-selected="false" aria-controls="tabPaneNotes" style="font-weight:700;">
+                  🔒 Notes <span class="badge blue sm" id="tabBadgeNotes" style="margin-left:4px; font-size:0.7rem;">0</span>
+                </button>
+                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnInspection" onclick="switchScrutinyTab('inspection')" role="tab" aria-selected="false" aria-controls="tabPaneInspection" style="font-weight:700;">
+                  📅 Inspection
+                </button>
+                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnDecision" onclick="switchScrutinyTab('decision')" role="tab" aria-selected="false" aria-controls="tabPaneDecision" style="font-weight:700;">
+                  ⚖️ Decision
+                </button>
               </div>
 
-              <!-- 1. Parallel Departmental Approvals Checklist -->
-              <div class="scrutiny-card">
-                <h3>
-                  <span>Parallel Departmental Clearances</span>
-                  <span class="badge gray" id="clearancesCount"
-                    >5 Required</span
-                  >
-                </h3>
-                <div id="clearanceItemsList">
-                  <!-- Dynamically populated -->
-                </div>
-              </div>
-
-              <!-- 2. Interactive Clarification Query Console -->
-              <div class="scrutiny-card">
-                <h3>
-                  <span>Clarification Queries & Grievances</span>
-                  <span id="queryCountBadge" class="badge gray">0 Queries</span>
-                </h3>
-                <p
-                  style="
-                    font-size: 0.8rem;
-                    color: var(--ink-light);
-                    margin-bottom: 10px;
-                  "
+              <!-- TAB 1: CHECKLIST & CLEARANCES -->
+              <div id="tabPaneChecklist" class="scrutiny-tab-pane">
+                <!-- 0. Department-Specific Scrutiny & Clearance Action -->
+                <div
+                  class="scrutiny-card"
+                  id="deptScrutinyCard"
+                  style="border: 2px solid var(--navy)"
                 >
-                  Raise formal queries to the applicant. The dossier will be
-                  marked as "Flagged" until the applicant provides
-                  clarifications.
-                </p>
-
-                <!-- Query History List -->
-                <div class="query-thread" id="queriesThread">
                   <div
                     style="
-                      text-align: center;
-                      color: var(--ink-muted);
-                      font-size: 0.8rem;
-                      padding: 20px;
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 8px;
                     "
                   >
-                    No queries raised yet.
+                    <h3
+                      style="
+                        margin: 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                      "
+                    >
+                      <span id="deptIcon">🏢</span>
+                      <span id="deptScrutinyTitle"
+                        >Departmental Scrutiny Action</span
+                      >
+                    </h3>
+                    <span id="deptRoleBadge" class="badge blue"
+                      >Department Review</span
+                    >
                   </div>
-                </div>
-
-                <!-- Raise Query Form -->
-                <div
-                  style="
-                    margin-top: 16px;
-                    padding-top: 16px;
-                    border-top: 1px solid var(--line);
-                  "
-                >
-                  <label
-                    >Raise New Query / Document Request
-                    <textarea
-                      id="queryMessage"
-                      placeholder="Specify clearly the missing information, layout discrepancy, or required statutory document..."
-                    ></textarea>
-                  </label>
-
-                  <!-- Visual Blueprint Annotation Tool -->
-                  <div style="background:var(--surface-subtle); border:1px dashed var(--line); border-radius:6px; padding:8px 12px; margin:8px 0;">
-                    <div style="font-size:0.75rem; font-weight:700; color:var(--ink); margin-bottom:4px; display:flex; justify-content:space-between;">
-                      <span>📍 Visual Blueprint Annotation Callout (Optional)</span>
-                      <label style="font-weight:normal; font-size:0.72rem; cursor:pointer;">
-                        <input type="checkbox" id="chkEnableAnnotation" onchange="toggleAnnotationInputs(this.checked)"> Attach Box Callout
-                      </label>
-                    </div>
-                    <div id="annotationInputs" style="display:none; grid-template-columns: repeat(4, 1fr); gap:6px; font-size:0.75rem;">
-                      <div><span style="color:var(--ink-muted);">Page</span><input type="number" id="annPage" value="1" min="1" style="padding:2px 4px; width:100%;"></div>
-                      <div><span style="color:var(--ink-muted);">X (px)</span><input type="number" id="annX" value="120" style="padding:2px 4px; width:100%;"></div>
-                      <div><span style="color:var(--ink-muted);">Y (px)</span><input type="number" id="annY" value="280" style="padding:2px 4px; width:100%;"></div>
-                      <div><span style="color:var(--ink-muted);">Width</span><input type="number" id="annW" value="180" style="padding:2px 4px; width:100%;"></div>
-                    </div>
-                  </div>
-
-                  <button class="btn rust sm" onclick="raiseOfficerQuery()">
-                    ✉ Send Formal Query to Applicant
-                  </button>
-                  <div id="queryMsg" class="msg"></div>
-                </div>
-              </div>
-
-              <!-- 2.5 Inter-Departmental Joint Coordination Thread -->
-              <div class="scrutiny-card" id="internalNotesCard" style="border:1.5px solid #0284c7; background:var(--surface-card);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                  <h3 style="margin:0; font-size:1rem; color:var(--ink); display:flex; align-items:center; gap:6px;">
-                    <span>🔒</span> <span>Inter-Agency Joint Scrutiny Notes</span>
-                  </h3>
-                  <span class="badge blue" style="font-size:0.7rem;">Confidential · Officer Only</span>
-                </div>
-                <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:10px;">
-                  Internal technical collaboration between MIDC, MPCB, DISH, and Fire Directorate during Phase 2. Hidden from applicant.
-                </p>
-
-                <div id="internalNotesThread" style="max-height:160px; overflow-y:auto; background:var(--surface-subtle); border:1px solid var(--line); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.82rem;">
-                  <div style="color:var(--ink-muted); text-align:center; padding:12px;">Loading internal agency notes...</div>
-                </div>
-
-                <div style="display:flex; gap:6px;">
-                  <input type="text" id="internalNoteInput" placeholder="Post internal observation to other scrutiny officers..." style="font-size:0.82rem; padding:6px 10px; flex:1; border:1px solid var(--line); border-radius:4px;">
-                  <button type="button" class="btn sm" style="background:#0284c7; color:#fff; font-size:0.8rem; padding:6px 12px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="postInternalNote()">
-                    Post Note
-                  </button>
-                </div>
-                <div id="internalNoteMsg" style="font-size:0.75rem; margin-top:4px;"></div>
-              </div>
-
-              <!-- 3. Joint On-Site Inspection Scheduler -->
-              <div class="scrutiny-card">
-                <h3>
-                  <span>Joint Multi-Departmental Inspection</span>
-                </h3>
-                <p
-                  style="
-                    font-size: 0.8rem;
-                    color: var(--ink-light);
-                    margin-bottom: 10px;
-                  "
-                >
-                  Coordinate simultaneous inspection with Pollution Control Board, Directorate of Industrial Safety &amp; Health, and Fire
-                  Services to avoid repetitive site visits.
-                </p>
-
-                <div id="inspectionsList" style="margin-bottom: 12px">
-                  <!-- Dynamically loaded -->
-                </div>
-
-                <div class="formgrid">
-                  <label
-                    >Department / Agency
-                    <select id="inspDept">
-                      <option
-                        value="Combined Joint Committee (Pollution Control + Industrial Safety + Fire)"
-                      >
-                        Joint Committee (Pollution Control + Industrial Safety + Fire)
-                      </option>
-                      <option
-                        value="Directorate of Industrial Safety & Health"
-                      >
-                        Directorate of Industrial Safety &amp; Health
-                      </option>
-                      <option
-                        value="Maharashtra Pollution Control Board"
-                      >
-                        Maharashtra Pollution Control Board
-                      </option>
-                      <option value="Maharashtra Fire Services">
-                        Maharashtra Fire Services
-                      </option>
-                      <option value="Industrial Development Corporation Engineering Wing">
-                        Industrial Development Corporation Engineering Wing
-                      </option>
-                    </select>
-                  </label>
-                  <label
-                    >Scheduled Inspection Date
-                    <input type="date" id="inspDate" />
-                  </label>
-                </div>
-                <div class="formgrid">
-                  <label
-                    >Lead Inspector Name
-                    <input
-                      type="text"
-                      id="inspName"
-                      placeholder="e.g. Er. V. A. Shinde, Dy Director"
-                    />
-                  </label>
-                  <label
-                    >Inspection Notes
-                    <input
-                      type="text"
-                      id="inspNotes"
-                      placeholder="Machinery layout & egress validation"
-                    />
-                  </label>
-                </div>
-                <button
-                  class="btn outline sm"
-                  style="margin-top: 8px"
-                  onclick="scheduleInspection()"
-                >
-                  📅 Schedule Joint Inspection
-                </button>
-                <div id="inspMsg" class="msg"></div>
-              </div>
-
-              <!-- 4. Final Statutory Decision Panel -->
-              <div
-                class="panel"
-                style="
-                  background: #f8fafc;
-                  border: 2px solid var(--line-strong);
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 8px;
-                  "
-                >
-                  <h3 style="color: var(--navy); margin: 0">
-                    Final Clearance Decision
-                  </h3>
-                  <span id="finalDecisionBadge" class="badge blue"
-                    >Apex Authority</span
+                  <p
+                    id="deptScrutinyDesc"
+                    style="
+                      font-size: 0.8rem;
+                      color: var(--ink-light);
+                      margin-bottom: 12px;
+                    "
                   >
+                    Review domain-specific submissions and update statutory
+                    milestone clearance.
+                  </p>
+
+                  <div id="deptActionContainer">
+                    <!-- Dynamically rendered -->
+                  </div>
+                  <div
+                    id="deptClearanceMsg"
+                    class="msg"
+                    style="margin-top: 10px"
+                  ></div>
                 </div>
-                <p
+
+                <!-- 1. Parallel Departmental Approvals Checklist -->
+                <div class="scrutiny-card" style="margin-top: 14px;">
+                  <h3>
+                    <span>Parallel Departmental Clearances</span>
+                    <span class="badge gray" id="clearancesCount"
+                      >5 Required</span
+                    >
+                  </h3>
+                  <div id="clearanceItemsList">
+                    <!-- Dynamically populated -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 2: QUERIES & CLARIFICATIONS -->
+              <div id="tabPaneQueries" class="scrutiny-tab-pane" style="display: none;">
+                <div class="scrutiny-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h3 style="margin: 0;">Clarification Queries &amp; Grievances</h3>
+                    <span id="queryCountBadge" class="badge gray">0 Queries</span>
+                  </div>
+                  <p
+                    style="
+                      font-size: 0.8rem;
+                      color: var(--ink-light);
+                      margin-bottom: 12px;
+                    "
+                  >
+                    Raise formal queries to the applicant. The dossier will be
+                    marked as "Flagged" until the applicant provides
+                    clarifications.
+                  </p>
+
+                  <!-- Query History List -->
+                  <div class="query-thread" id="queriesThread">
+                    <div
+                      style="
+                        text-align: center;
+                        color: var(--ink-muted);
+                        font-size: 0.8rem;
+                        padding: 20px;
+                      "
+                    >
+                      No queries raised yet.
+                    </div>
+                  </div>
+
+                  <!-- Raise Query Form -->
+                  <div
+                    style="
+                      margin-top: 16px;
+                      padding-top: 16px;
+                      border-top: 1px solid var(--line);
+                    "
+                  >
+                    <label
+                      >Raise New Query / Document Request
+                      <textarea
+                        id="queryMessage"
+                        placeholder="Specify clearly the missing information, layout discrepancy, or required statutory document..."
+                      ></textarea>
+                    </label>
+
+                    <!-- Visual Blueprint Annotation Tool -->
+                    <div style="background:var(--surface-subtle); border:1px dashed var(--line); border-radius:6px; padding:8px 12px; margin:8px 0;">
+                      <div style="font-size:0.75rem; font-weight:700; color:var(--ink); margin-bottom:4px; display:flex; justify-content:space-between;">
+                        <span>📍 Visual Blueprint Annotation Callout (Optional)</span>
+                        <label style="font-weight:normal; font-size:0.72rem; cursor:pointer;">
+                          <input type="checkbox" id="chkEnableAnnotation" onchange="toggleAnnotationInputs(this.checked)"> Attach Box Callout
+                        </label>
+                      </div>
+                      <div id="annotationInputs" style="display:none; grid-template-columns: repeat(4, 1fr); gap:6px; font-size:0.75rem;">
+                        <div><span style="color:var(--ink-muted);">Page</span><input type="number" id="annPage" value="1" min="1" style="padding:2px 4px; width:100%;"></div>
+                        <div><span style="color:var(--ink-muted);">X (px)</span><input type="number" id="annX" value="120" style="padding:2px 4px; width:100%;"></div>
+                        <div><span style="color:var(--ink-muted);">Y (px)</span><input type="number" id="annY" value="280" style="padding:2px 4px; width:100%;"></div>
+                        <div><span style="color:var(--ink-muted);">Width</span><input type="number" id="annW" value="180" style="padding:2px 4px; width:100%;"></div>
+                      </div>
+                    </div>
+
+                    <button class="btn rust sm" onclick="raiseOfficerQuery()">
+                      ✉ Send Formal Query to Applicant
+                    </button>
+                    <div id="queryMsg" class="msg"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 3: INTER-AGENCY NOTES -->
+              <div id="tabPaneNotes" class="scrutiny-tab-pane" style="display: none;">
+                <div class="scrutiny-card" id="internalNotesCard" style="border:1.5px solid #0284c7; background:var(--surface-card);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h3 style="margin:0; font-size:1rem; color:var(--ink); display:flex; align-items:center; gap:6px;">
+                      <span>🔒</span> <span>Inter-Agency Joint Scrutiny Notes</span>
+                    </h3>
+                    <span class="badge blue" style="font-size:0.7rem;">Confidential · Officer Only</span>
+                  </div>
+                  <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:10px;">
+                    Internal technical collaboration between MIDC, MPCB, DISH, and Fire Directorate during Phase 2. Hidden from applicant.
+                  </p>
+
+                  <div id="internalNotesThread" style="max-height:220px; overflow-y:auto; background:var(--surface-subtle); border:1px solid var(--line); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.82rem;">
+                    <div style="color:var(--ink-muted); text-align:center; padding:12px;">Loading internal agency notes...</div>
+                  </div>
+
+                  <div style="display:flex; gap:6px;">
+                    <input type="text" id="internalNoteInput" placeholder="Post internal observation to other scrutiny officers..." style="font-size:0.82rem; padding:6px 10px; flex:1; border:1px solid var(--line); border-radius:4px;">
+                    <button type="button" class="btn sm" style="background:#0284c7; color:#fff; font-size:0.8rem; padding:6px 12px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="postInternalNote()">
+                      Post Note
+                    </button>
+                  </div>
+                  <div id="internalNoteMsg" style="font-size:0.75rem; margin-top:4px;"></div>
+                </div>
+              </div>
+
+              <!-- TAB 4: INSPECTION SCHEDULER -->
+              <div id="tabPaneInspection" class="scrutiny-tab-pane" style="display: none;">
+                <div class="scrutiny-card">
+                  <h3>
+                    <span>Joint Multi-Departmental Inspection</span>
+                  </h3>
+                  <p
+                    style="
+                      font-size: 0.8rem;
+                      color: var(--ink-light);
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Coordinate simultaneous inspection with Pollution Control Board, Directorate of Industrial Safety &amp; Health, and Fire
+                    Services to avoid repetitive site visits.
+                  </p>
+
+                  <div id="inspectionsList" style="margin-bottom: 12px">
+                    <!-- Dynamically loaded -->
+                  </div>
+
+                  <div class="formgrid">
+                    <label
+                      >Department / Agency
+                      <select id="inspDept">
+                        <option
+                          value="Combined Joint Committee (Pollution Control + Industrial Safety + Fire)"
+                        >
+                          Joint Committee (Pollution Control + Industrial Safety + Fire)
+                        </option>
+                        <option
+                          value="Directorate of Industrial Safety & Health"
+                        >
+                          Directorate of Industrial Safety &amp; Health
+                        </option>
+                        <option
+                          value="Maharashtra Pollution Control Board"
+                        >
+                          Maharashtra Pollution Control Board
+                        </option>
+                        <option value="Maharashtra Fire Services">
+                          Maharashtra Fire Services
+                        </option>
+                        <option value="Industrial Development Corporation Engineering Wing">
+                          Industrial Development Corporation Engineering Wing
+                        </option>
+                      </select>
+                    </label>
+                    <label
+                      >Scheduled Inspection Date
+                      <input type="date" id="inspDate" />
+                    </label>
+                  </div>
+                  <div class="formgrid">
+                    <label
+                      >Lead Inspector Name
+                      <input
+                        type="text"
+                        id="inspName"
+                        placeholder="e.g. Er. V. A. Shinde, Dy Director"
+                      />
+                    </label>
+                    <label
+                      >Inspection Notes
+                      <input
+                        type="text"
+                        id="inspNotes"
+                        placeholder="Machinery layout & egress validation"
+                      />
+                    </label>
+                  </div>
+                  <button
+                    class="btn outline sm"
+                    style="margin-top: 8px"
+                    onclick="scheduleInspection()"
+                  >
+                    📅 Schedule Joint Inspection
+                  </button>
+                  <div id="inspMsg" class="msg"></div>
+                </div>
+              </div>
+
+              <!-- TAB 5: FINAL DECISION -->
+              <div id="tabPaneDecision" class="scrutiny-tab-pane" style="display: none;">
+                <div
+                  class="panel"
                   style="
-                    font-size: 0.82rem;
-                    color: var(--ink-light);
-                    margin-bottom: 14px;
+                    background: var(--surface-card);
+                    border: 2px solid var(--line-strong);
                   "
                 >
-                  Consolidated single-window statutory approval. All
-                  departmental reports streamline here for final single-window
-                  sign-off.
-                </p>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <h3 style="color: var(--navy); margin: 0">
+                      Final Clearance Decision
+                    </h3>
+                    <span id="finalDecisionBadge" class="badge blue"
+                      >Apex Authority</span
+                    >
+                  </div>
+                  <p
+                    style="
+                      font-size: 0.82rem;
+                      color: var(--ink-light);
+                      margin-bottom: 14px;
+                    "
+                  >
+                    Consolidated single-window statutory approval. All
+                    departmental reports streamline here for final single-window
+                    sign-off.
+                  </p>
 
-                <div id="finalDecisionContainer">
-                  <!-- Populated dynamically based on Apex authority -->
+                  <div id="finalDecisionContainer">
+                    <!-- Populated dynamically based on Apex authority -->
+                  </div>
+                  <div id="decisionMsg" class="msg"></div>
                 </div>
-                <div id="decisionMsg" class="msg"></div>
               </div>
             </div>
           </div>
@@ -755,6 +785,28 @@
       let activeDocId = null;
       let currentUser = null;
       let activeFolderKey = "all";
+
+      function switchScrutinyTab(tabName) {
+        const tabs = ["checklist", "queries", "notes", "inspection", "decision"];
+        tabs.forEach((t) => {
+          const capitalized = t.charAt(0).toUpperCase() + t.slice(1);
+          const pane = document.getElementById(`tabPane${capitalized}`);
+          const btn = document.getElementById(`tabBtn${capitalized}`);
+          if (pane) pane.style.display = t === tabName ? "block" : "none";
+          if (btn) {
+            if (t === tabName) {
+              btn.classList.add("active");
+              btn.classList.remove("outline");
+              btn.setAttribute("aria-selected", "true");
+            } else {
+              btn.classList.remove("active");
+              btn.classList.add("outline");
+              btn.setAttribute("aria-selected", "false");
+            }
+          }
+        });
+      }
+      window.switchScrutinyTab = switchScrutinyTab;
 
       const STATUTORY_FOLDERS = [
         {
@@ -833,11 +885,7 @@
 
         const queueLink = document.getElementById("sidebarQueueLink");
         if (queueLink) {
-          if (currentUser.deptCode === "mpcb") queueLink.href = "officer-dashboard-mpcb.html";
-          else if (currentUser.deptCode === "midc") queueLink.href = "officer-dashboard-midc.html";
-          else if (currentUser.deptCode === "dish") queueLink.href = "officer-dashboard-dish.html";
-          else if (currentUser.deptCode === "fire") queueLink.href = "officer-dashboard-fire.html";
-          else if (currentUser.isApex) queueLink.href = "officer-dashboard-msins.html";
+          queueLink.href = typeof getOfficerDashboardUrl === "function" ? getOfficerDashboardUrl(currentUser) : "officer-dashboard.html";
         }
 
         if (currentUser.isApex || currentUser.deptCode === "msins" || currentUser.role === "super_admin") {
@@ -1544,6 +1592,8 @@
         const thread = document.getElementById("queriesThread");
         document.getElementById("queryCountBadge").textContent =
           `${queries.length} Queries`;
+        const tabBadge = document.getElementById("tabBadgeQueries");
+        if (tabBadge) tabBadge.textContent = queries.length;
 
         if (queries.length === 0) {
           thread.innerHTML = `<div style="text-align: center; color: var(--ink-muted); font-size: 0.82rem; padding: 20px;">No queries currently active for this application.</div>`;
@@ -1643,7 +1693,10 @@
         if (!thread || !currentAppId) return;
         try {
           const res = await api(`/api/applications/${currentAppId}/internal-notes`);
-          if (!res.internal_notes || res.internal_notes.length === 0) {
+          const notes = res.internal_notes || [];
+          const tabBadge = document.getElementById("tabBadgeNotes");
+          if (tabBadge) tabBadge.textContent = notes.length;
+          if (notes.length === 0) {
             thread.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:12px;">No internal agency notes yet. Post observations to collaborate across departments.</div>`;
             return;
           }

@@ -27,15 +27,14 @@ async function logout() {
 }
 
 function getOfficerDashboardUrl(user) {
-  if (!user) return "/pages/officer-dashboard.html";
+  if (!user) return "/pages/officer-workspace.html";
   const dept = (user.deptCode || "").toLowerCase();
   if (user.isApex || dept === "msins" || dept === "industries") {
     return "/pages/officer-dashboard-msins.html";
   }
-  if (dept === "midc") return "/pages/officer-dashboard-midc.html";
-  if (dept === "mpcb") return "/pages/officer-dashboard-mpcb.html";
-  if (dept === "fire") return "/pages/officer-dashboard-fire.html";
-  if (dept === "dish") return "/pages/officer-dashboard-dish.html";
+  if (["midc", "mpcb", "fire", "dish"].includes(dept)) {
+    return `/pages/officer-workspace.html?dept=${dept}`;
+  }
   return "/pages/officer-dashboard-msins.html";
 }
 
@@ -106,13 +105,13 @@ function updateSidebarUser(user) {
     } catch (_) {}
   }
 
-  const rawName = (user && (user.contactPerson || user.companyName || user.name || user.email)) || "Subhajit Majee";
-  const name = String(rawName).toUpperCase();
-  const email = (user && user.email) || "siuubhajit@gmail.com";
+  const displayName = user?.contactPerson || user?.companyName || user?.name || "Portal User";
+  const name = String(displayName).toUpperCase();
+  const email = user?.email || "";
   const dept =
-    (user && (user.department || (user.role === "official" ? "Govt of Maharashtra" : user.companyName))) ||
-    "B. P. Poddar Institute of Management & Tech";
-  const initial = rawName.charAt(0).toUpperCase() || "S";
+    user?.department ||
+    (user?.role === "official" ? "Govt of Maharashtra" : (user?.companyName || "Enterprise"));
+  const initial = displayName.charAt(0).toUpperCase() || "P";
 
   document.querySelectorAll("[data-sidebar-name]").forEach((el) => {
     el.textContent = name;
@@ -310,132 +309,180 @@ if (typeof window !== "undefined") {
     mountThemeToggleButtons();
   }
 
-  // Automatically mount AI modules across all portal pages
-  [
-    "/js/ai-chat.js",
-    "/js/ai-advisor.js",
-    "/js/ai-form-assist.js",
-    "/js/ai-doc-intel.js",
-    "/js/ai-copilot.js",
-  ].forEach((src) => {
+  // Conditional AI Script Loader based on page context and role
+  function loadScript(src) {
+    if (document.querySelector(`script[src="${src}"]`)) return;
     const s = document.createElement("script");
     s.src = src;
     s.defer = true;
     document.head.appendChild(s);
-  });
+  }
+
+  function initConditionalAILoader() {
+    const path = (window.location.pathname || "").toLowerCase();
+    const page = document.body ? (document.body.dataset.page || "") : "";
+    const isAppPage = path.includes("application") || page === "application";
+    const isVerifPage = path.includes("verification") || page === "verification";
+    const isApplicantDash = path.includes("applicant-dashboard");
+
+    // Global AI assistant chat
+    loadScript("/js/ai-chat.js");
+
+    // Contextual modules
+    if (isApplicantDash || isAppPage) {
+      loadScript("/js/ai-advisor.js");
+    }
+    if (isAppPage) {
+      loadScript("/js/ai-form-assist.js");
+    }
+    if (isVerifPage) {
+      loadScript("/js/ai-doc-intel.js");
+      loadScript("/js/ai-copilot.js");
+    }
+  }
+  initConditionalAILoader();
 
   /* ═══════════════════════════════════════════════════════════════
-     MODAL & WINDOWING CONTROLLER
-     - Body scroll locking when modals/drawers open
-     - Backdrop click outside detection to close active dialogs
-     - Keyboard Escape (ESC) dismiss
-     - Mutation observer for dynamic programmatic modal triggers
+     UNIFIED ACCESSIBLE MODAL SYSTEM (Modal.open, close, closeTop)
+     - Full focus trapping (Tab, Shift+Tab)
+     - Focus restore to triggering element on dismissal
+     - aria-labelledby, aria-describedby, aria-modal="true"
+     - Escape key & backdrop dismissal
      ═══════════════════════════════════════════════════════════════ */
+  const Modal = {
+    stack: [],
+    focusableSelectors:
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
 
-  function isModalVisible(el) {
-    if (!el) return false;
-    if (el.classList.contains("open")) return true;
-    const style = window.getComputedStyle ? window.getComputedStyle(el) : el.style;
-    return style && style.display !== "none" && style.visibility !== "hidden";
-  }
+    open(id, triggerEl) {
+      const modal = typeof id === "string" ? document.getElementById(id) : id;
+      if (!modal) return null;
 
-  function getOpenModals() {
-    const list = document.querySelectorAll(
-      ".modal-overlay, .modal, .advisor-modal-overlay, #ai-advisor-modal, #vcModal"
-    );
-    return Array.from(list).filter(isModalVisible);
-  }
+      const trigger = triggerEl || document.activeElement;
+      modal.classList.add("open");
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+      if (!modal.getAttribute("role")) modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
 
-  let isSyncing = false;
-  function syncBodyModalLock() {
-    if (isSyncing) return;
-    isSyncing = true;
-    try {
-      const openModals = getOpenModals();
-      const shouldLock = openModals.length > 0;
-      const isLocked = document.body ? document.body.classList.contains("modal-open") : false;
-      if (shouldLock && !isLocked) {
-        document.body.classList.add("modal-open");
-      } else if (!shouldLock && isLocked) {
-        document.body.classList.remove("modal-open");
+      const heading = modal.querySelector(".modal-title, .dialog-title, h2, h3");
+      if (heading && !modal.getAttribute("aria-labelledby")) {
+        if (!heading.id) heading.id = "modal-title-" + Math.random().toString(36).slice(2, 7);
+        modal.setAttribute("aria-labelledby", heading.id);
       }
-    } finally {
-      isSyncing = false;
-    }
-  }
 
-  function closeTopModal() {
-    const openModals = getOpenModals();
-    if (openModals.length > 0) {
-      const top = openModals[openModals.length - 1];
-      top.style.display = "none";
-      top.classList.remove("open");
-      syncBodyModalLock();
-      return true;
-    }
-    return false;
-  }
+      this.stack.push({ modal, trigger });
+      this.syncLock();
 
-  // Global Backdrop Click
-  document.addEventListener("click", (e) => {
-    const target = e.target;
-    if (
-      target.classList.contains("modal-overlay") ||
-      target.classList.contains("modal") ||
-      target.classList.contains("advisor-modal-overlay")
-    ) {
-      if (!target.closest(".modal-card") && !target.closest(".advisor-modal")) {
-        target.style.display = "none";
-        target.classList.remove("open");
-        syncBodyModalLock();
+      // Focus first interactive control or heading
+      const focusables = Array.from(modal.querySelectorAll(this.focusableSelectors)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusables.length > 0) {
+        focusables[0].focus();
+      } else if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus();
       }
-    }
-  });
+      return modal;
+    },
 
-  // Global Escape (ESC) Key
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" || e.key === "Esc") {
-      closeTopModal();
-    }
-  });
+    close(id) {
+      const modal = typeof id === "string" ? document.getElementById(id) : id;
+      if (!modal) return;
 
-  // Safe MutationObserver: only watches modal containers, completely ignores document.body to prevent infinite loops
-  if (typeof MutationObserver !== "undefined") {
-    let mutDebounce = null;
-    const observer = new MutationObserver((mutations) => {
-      const hasModalChange = mutations.some((m) => {
-        if (!m.target || m.target === document.body) return false;
-        return (
-          m.target.matches &&
-          m.target.matches(
-            ".modal-overlay, .modal, .advisor-modal-overlay, #ai-advisor-modal, #vcModal, .modal-card"
-          )
-        );
-      });
-      if (hasModalChange) {
-        clearTimeout(mutDebounce);
-        mutDebounce = setTimeout(syncBodyModalLock, 50);
+      modal.classList.remove("open");
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+
+      const idx = this.stack.findIndex((item) => item.modal === modal);
+      if (idx !== -1) {
+        const entry = this.stack.splice(idx, 1)[0];
+        if (entry.trigger && typeof entry.trigger.focus === "function") {
+          try { entry.trigger.focus(); } catch (_) {}
+        }
       }
-    });
+      this.syncLock();
+    },
 
-    const setupObserver = () => {
+    closeTop() {
+      if (this.stack.length > 0) {
+        const top = this.stack[this.stack.length - 1];
+        this.close(top.modal);
+        return true;
+      }
+      return false;
+    },
+
+    syncLock() {
+      const shouldLock = this.stack.length > 0;
       if (document.body) {
-        observer.observe(document.body, {
-          attributes: true,
-          subtree: true,
-          attributeFilter: ["style", "class"],
-        });
+        document.body.classList.toggle("modal-open", shouldLock);
       }
-    };
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", setupObserver);
-    } else {
-      setupObserver();
     }
-  }
+  };
 
-  window.syncBodyModalLock = syncBodyModalLock;
-  window.closeTopModal = closeTopModal;
+  // Global Keydown Handler: Escape to close, Tab to trap focus
+  document.addEventListener("keydown", (e) => {
+    if (Modal.stack.length === 0) return;
+    const current = Modal.stack[Modal.stack.length - 1];
+    const modal = current.modal;
+
+    if (e.key === "Escape" || e.key === "Esc") {
+      e.preventDefault();
+      Modal.closeTop();
+      return;
+    }
+
+    if (e.key === "Tab") {
+      const focusables = Array.from(modal.querySelectorAll(Modal.focusableSelectors)).filter(
+        (el) => el.offsetParent !== null && !el.disabled
+      );
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
+
+  // Global Backdrop Click Handler
+  document.addEventListener("click", (e) => {
+    if (Modal.stack.length === 0) return;
+    const top = Modal.stack[Modal.stack.length - 1];
+    const modal = top.modal;
+    if (
+      e.target === modal ||
+      (e.target.classList.contains("modal-overlay") &&
+        !e.target.closest(".modal-card, .advisor-modal, .udyog-dialog-card"))
+    ) {
+      Modal.closeTop();
+    }
+  });
+
+  window.Modal = Modal;
+  window.closeTopModal = () => Modal.closeTop();
+  window.closeModals = () => {
+    while (Modal.stack.length > 0) Modal.closeTop();
+    document.querySelectorAll(".modal-overlay, .modal, .advisor-modal-overlay").forEach((m) => {
+      m.classList.remove("open");
+      m.style.display = "none";
+      m.setAttribute("aria-hidden", "true");
+    });
+    if (document.body) document.body.classList.remove("modal-open");
+  };
+  window.syncBodyModalLock = () => Modal.syncLock();
 }
 
 /* ═══════════════════════════════════════════════════════════════

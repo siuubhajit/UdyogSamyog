@@ -378,6 +378,7 @@
     </div>
 
     <script src="/js/common.js"></script>
+    <script src="/js/clearance-timeline.js"></script>
     <script src="/js/applicant-workflow.js"></script>
     <script>
       function escapeHtml(str) {
@@ -510,8 +511,10 @@
           // AI Timeline & Bottleneck Predictor
           renderAiTimeline(app);
 
-          // 3-Phase Statutory Clearance Matrix
-          if (typeof loadApplicantWorkflow === "function") {
+          // 3-Phase Statutory Clearance Matrix (Unified Timeline)
+          if (typeof renderClearanceTimeline === "function") {
+            renderClearanceTimeline(app, { mode: "detailed", container: "applicantWorkflowContainer" });
+          } else if (typeof loadApplicantWorkflow === "function") {
             loadApplicantWorkflow(id);
           }
 

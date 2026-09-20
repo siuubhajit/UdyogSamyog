@@ -221,136 +221,28 @@
             </div>
           </div>
 
-          <!-- KPI Summary Cards -->
-          <div class="grid">
-            <div class="card card-kpi">
-              <span class="card-label">Applications Submitted</span>
-              <span class="card-value" id="total">0</span>
-              <span class="card-sub">Total Units Filed</span>
-            </div>
-            <div class="card card-kpi saffron">
-              <span class="card-label">Under Scrutiny</span>
-              <span class="card-value" id="pending">0</span>
-              <span class="card-sub">Parallel Dept. Review</span>
-            </div>
-            <div class="card card-kpi ruby">
-              <span class="card-label">Queries / Action Required</span>
-              <span class="card-value" id="flagged">0</span>
-              <span class="card-sub">Pending Enterprise Reply</span>
-            </div>
-            <div class="card card-kpi emerald">
-              <span class="card-label">Approved Clearances / Licenses</span>
-              <span class="card-value" id="approved">0</span>
-              <span class="card-sub">Active Statutory Clearances</span>
-            </div>
-          </div>
-
-          <!-- Live 3-Phase Statutory Clearance Matrix -->
-          <div id="applicantWorkflowContainer"></div>
-
-          <!-- Statutory Authorities Directory -->
-          <div class="panel" style="margin-top: 24px; border: 1.5px solid var(--line); background: var(--surface-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
-              <div>
-                <h3 style="font-size: 1.1rem; color: var(--navy); margin: 0; display: flex; align-items: center; gap: 8px;">
-                  <span>🏛️</span> Maharashtra Statutory Authorities &amp; Clearances Directory
-                </h3>
-                <p style="font-size: 0.8rem; color: var(--ink-light); margin: 3px 0 0 0;">
-                  Quick reference to statutory departments, reviewing bodies, and approval terminology under the Maharashtra Single Window Act.
-                </p>
-              </div>
-              <span class="badge blue">Statutory Directory</span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-              <div style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.25); border-radius: 8px; padding: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-size: 1.2rem;">🌿</span>
-                  <div>
-                    <b style="color: var(--emerald, #16a34a); font-size: 0.9rem;">Maharashtra Pollution Control Board</b>
-                    <div style="font-size: 0.72rem; color: var(--ink-secondary); font-weight: 600;">Environmental Review Authority</div>
-                  </div>
-                </div>
-                <p style="font-size: 0.78rem; color: var(--ink); margin: 0; line-height: 1.4;">
-                  <b>Phase 1 Gateway:</b> Primary environmental review body issuing <b>Consent to Establish</b> and <b>Consent to Operate</b> under Water &amp; Air Pollution Control Acts. Regulates effluent treatment, air emissions, and hazardous waste.
-                </p>
-              </div>
-
-              <div style="background: rgba(30, 64, 175, 0.1); border: 1px solid rgba(30, 64, 175, 0.25); border-radius: 8px; padding: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-size: 1.2rem;">🏗️</span>
-                  <div>
-                    <b style="color: var(--navy, #2563eb); font-size: 0.9rem;">Maharashtra Industrial Development Corporation</b>
-                    <div style="font-size: 0.72rem; color: var(--ink-secondary); font-weight: 600;">Civil &amp; Infrastructure Wing</div>
-                  </div>
-                </div>
-                <p style="font-size: 0.78rem; color: var(--ink); margin: 0; line-height: 1.4;">
-                  <b>Phase 2 Review:</b> Regulates industrial plot allotments, zoning, building masterplans, road widths, and <b>Floor Space Index</b> under the Maharashtra Regional &amp; Town Planning Act 1966.
-                </p>
-              </div>
-
-              <div style="background: rgba(194, 65, 12, 0.1); border: 1px solid rgba(194, 65, 12, 0.25); border-radius: 8px; padding: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-size: 1.2rem;">⚙️</span>
-                  <div>
-                    <b style="color: var(--rust, #ea580c); font-size: 0.9rem;">Directorate of Industrial Safety &amp; Health</b>
-                    <div style="font-size: 0.72rem; color: var(--ink-secondary); font-weight: 600;">Factory Safety Administration</div>
-                  </div>
-                </div>
-                <p style="font-size: 0.78rem; color: var(--ink); margin: 0; line-height: 1.4;">
-                  <b>Phase 2 Review:</b> Enforces <b>The Factories Act, 1948</b>. Evaluates machinery layout, hazard classifications (Chemical, Thermal, etc.), hazardous material containment, ventilation, and worker safety safeguards.
-                </p>
-              </div>
-
-              <div style="background: rgba(185, 28, 28, 0.1); border: 1px solid rgba(185, 28, 28, 0.25); border-radius: 8px; padding: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-size: 1.2rem;">🚒</span>
-                  <div>
-                    <b style="color: var(--ruby, #dc2626); font-size: 0.9rem;">Directorate of Maharashtra Fire Services</b>
-                    <div style="font-size: 0.72rem; color: var(--ink-secondary); font-weight: 600;">Life Safety &amp; Fire Prevention</div>
-                  </div>
-                </div>
-                <p style="font-size: 0.78rem; color: var(--ink); margin: 0; line-height: 1.4;">
-                  <b>Phase 2 Review:</b> Issues <b>Provisional &amp; Final Fire Safety Clearance Certificates</b> under the Maharashtra Fire Prevention &amp; Life Safety Measures Act 2006. Inspects hydrant networks, static water storage, and emergency evacuation egress.
-                </p>
-              </div>
-
-              <div style="background: var(--surface-subtle); border: 1px solid var(--line); border-radius: 8px; padding: 14px; grid-column: 1 / -1;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
-                  <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                      <span style="font-size: 1.2rem;">🏛️</span>
-                      <div>
-                        <b style="color: var(--navy); font-size: 0.9rem;">Maharashtra State Innovation Society (Apex Lead Authority)</b>
-                        <span style="font-size: 0.72rem; color: var(--ink-light); font-weight: 600; margin-left: 6px;">Department of Industries, Government of Maharashtra</span>
-                      </div>
-                    </div>
-                    <p style="font-size: 0.78rem; color: var(--ink-secondary); margin: 0; line-height: 1.4;">
-                      <b>Phase 3 Final Sanction:</b> Apex Single-Window approving authority synthesizing confirming clearances from Pollution Control Board, Industrial Development Corporation, Directorate of Industrial Safety &amp; Health, and Fire Services to grant the final consolidated industrial license and single-window sanction.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Active Applications Table -->
+          <!-- 1. Active Applications Table (Primary Dashboard Focus) -->
           <div
             class="panel"
-            style="margin-top: 24px; padding: 0; overflow: hidden"
+            style="margin-top: 8px; padding: 0; overflow: hidden"
           >
             <div
               style="
-                padding: 20px 24px;
+                padding: 18px 24px;
                 border-bottom: 1px solid var(--line);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
               "
             >
-              <h2 style="font-size: 1.25rem">
-                Active Industrial Clearance Dossiers
-              </h2>
+              <div>
+                <h2 style="font-size: 1.25rem; margin: 0;">
+                  Active Industrial Clearance Dossiers
+                </h2>
+                <p style="font-size: 0.78rem; color: var(--ink-light); margin: 3px 0 0 0;">
+                  Monitor your clearance milestones, inspect review stages, and download approved certificates.
+                </p>
+              </div>
               <span class="badge blue">Live Single Window Status</span>
             </div>
             <div class="table-container" style="border: none">
@@ -381,6 +273,87 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div id="mobileRows" class="mobile-apps-view" style="display:none;padding:12px;"></div>
+          </div>
+
+          <!-- 2. KPI Summary Cards -->
+          <div class="grid" style="margin-top: 24px;">
+            <div class="card card-kpi">
+              <span class="card-label">Applications Submitted</span>
+              <span class="card-value" id="total">0</span>
+              <span class="card-sub">Total Units Filed</span>
+            </div>
+            <div class="card card-kpi saffron">
+              <span class="card-label">Under Scrutiny</span>
+              <span class="card-value" id="pending">0</span>
+              <span class="card-sub">Parallel Dept. Review</span>
+            </div>
+            <div class="card card-kpi ruby">
+              <span class="card-label">Queries / Action Required</span>
+              <span class="card-value" id="flagged">0</span>
+              <span class="card-sub">Pending Enterprise Reply</span>
+            </div>
+            <div class="card card-kpi emerald">
+              <span class="card-label">Approved Clearances / Licenses</span>
+              <span class="card-value" id="approved">0</span>
+              <span class="card-sub">Active Statutory Clearances</span>
+            </div>
+          </div>
+
+          <!-- 3. Live 3-Phase Statutory Clearance Matrix -->
+          <div id="applicantWorkflowContainer"></div>
+
+          <!-- 4. Compact Expandable: How Approvals Work -->
+          <div class="panel" style="margin-top: 24px; border: 1.5px solid var(--line); background: var(--surface-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 1.05rem; color: var(--navy); margin: 0; display: flex; align-items: center; gap: 8px;">
+                  <span>🏛️</span> How Single-Window Approvals Work
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--ink-light); margin: 3px 0 0 0;">
+                  Three statutory phases: Phase 1 Environmental &rarr; Phase 2 Civil, Safety &amp; Fire &rarr; Phase 3 Apex Final Sanction.
+                </p>
+              </div>
+              <button type="button" class="btn sm outline" id="toggleGuideBtn" onclick="toggleApprovalGuide()">
+                View Department Details
+              </button>
+            </div>
+
+            <!-- Collapsed by default -->
+            <div id="collapsedGuideContent" style="display: none; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+                <div style="background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.2); border-radius: 8px; padding: 12px;">
+                  <b style="color: var(--emerald, #16a34a); font-size: 0.88rem;">🌿 Phase 1: Environmental Review (MPCB)</b>
+                  <p style="font-size: 0.76rem; color: var(--ink); margin: 4px 0 0 0; line-height: 1.4;">
+                    Pollution Control Board reviews effluent sizing, hazardous waste management, and chimney emissions to issue <b>Consent to Establish</b>.
+                  </p>
+                </div>
+                <div style="background: rgba(30, 64, 175, 0.08); border: 1px solid rgba(30, 64, 175, 0.2); border-radius: 8px; padding: 12px;">
+                  <b style="color: var(--navy, #2563eb); font-size: 0.88rem;">🏗️ Phase 2: Civil &amp; Infrastructure (MIDC)</b>
+                  <p style="font-size: 0.76rem; color: var(--ink); margin: 4px 0 0 0; line-height: 1.4;">
+                    Industrial Development Corporation examines site layout drawings, Floor Space Index (FSI &le; 1.0), and municipal road access.
+                  </p>
+                </div>
+                <div style="background: rgba(194, 65, 12, 0.08); border: 1px solid rgba(194, 65, 12, 0.2); border-radius: 8px; padding: 12px;">
+                  <b style="color: var(--rust, #ea580c); font-size: 0.88rem;">⚙️ Phase 2: Factory Safety (DISH)</b>
+                  <p style="font-size: 0.76rem; color: var(--ink); margin: 4px 0 0 0; line-height: 1.4;">
+                    Directorate of Industrial Safety &amp; Health verifies machine guarding, hazardous containment, and minimum 14.2 m³ worker air space.
+                  </p>
+                </div>
+                <div style="background: rgba(185, 28, 28, 0.08); border: 1px solid rgba(185, 28, 28, 0.2); border-radius: 8px; padding: 12px;">
+                  <b style="color: var(--ruby, #dc2626); font-size: 0.88rem;">🚒 Phase 2: Fire Prevention (Fire Services)</b>
+                  <p style="font-size: 0.76rem; color: var(--ink); margin: 4px 0 0 0; line-height: 1.4;">
+                    Maharashtra Fire Services certifies underground water storage reservoirs, ring-main hydrants, and 6m perimeter tender access.
+                  </p>
+                </div>
+                <div style="background: var(--surface-subtle); border: 1px solid var(--line); border-radius: 8px; padding: 12px; grid-column: 1 / -1;">
+                  <b style="color: var(--navy); font-size: 0.88rem;">🏛️ Phase 3: Consolidated Final Sanction (MSINS Apex Lead Authority)</b>
+                  <p style="font-size: 0.76rem; color: var(--ink-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+                    Directorate of Industries &amp; State Innovation Society synthesizes confirming clearances from MPCB, MIDC, DISH, and Fire Services to grant the final consolidated industrial license certificate.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1187,12 +1160,54 @@
             `;
             })
             .join("");
+
+          // Mobile Cards View (< 768px)
+          const mobileContainer = document.getElementById("mobileRows");
+          if (mobileContainer) {
+            mobileContainer.innerHTML = a.map((x) => {
+              let badgeClass = "orange";
+              if (x.status === "Approved") badgeClass = "green";
+              else if (x.status === "Flagged" || x.status === "Rejected") badgeClass = "red";
+
+              return `
+                <div class="mobile-app-card" style="background:var(--surface-card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                      <b style="color:var(--navy);font-size:0.86rem;">${x.application_no}</b>
+                      <div style="font-size:0.72rem;color:var(--ink-muted);">${new Date(x.created_at).toLocaleDateString()}</div>
+                    </div>
+                    <span class="badge ${badgeClass}">${x.status}</span>
+                  </div>
+                  <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">${x.company_name}</div>
+                  <div style="font-size:0.78rem;color:var(--ink-light);margin-bottom:10px;">
+                    ${x.industry_category || "Manufacturing"} · ${x.district || "Maharashtra"}
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    ${x.status === "Approved" ? `<a class="btn emerald sm" href="/pages/certificate.html?id=${x.id}" target="_blank" style="flex:1;text-align:center;">📜 Certificate</a>` : ""}
+                    <a class="btn saffron sm" href="tracker.html?id=${x.id}" style="flex:1;text-align:center;">View &amp; Respond &rarr;</a>
+                    <button class="btn outline sm" style="flex:1;" onclick="loadApplicantWorkflow('${x.id}')">Matrix</button>
+                  </div>
+                </div>
+              `;
+            }).join("");
+          }
         } catch (err) {
           console.error(err);
           document.getElementById("rows").innerHTML =
             `<tr><td colspan="7" style="color:red; text-align:center; padding: 20px;">Failed to load applications: ${err.message}</td></tr>`;
         }
       })();
+
+      function toggleApprovalGuide() {
+        const content = document.getElementById("collapsedGuideContent");
+        const btn = document.getElementById("toggleGuideBtn");
+        if (!content) return;
+        const isHidden = content.style.display === "none";
+        content.style.display = isHidden ? "block" : "none";
+        if (btn) btn.textContent = isHidden ? "Hide Department Details" : "View Department Details";
+      }
+      window.toggleApprovalGuide = toggleApprovalGuide;
     </script>
+    <script src="/js/clearance-timeline.js"></script>
   </body>
 </html>

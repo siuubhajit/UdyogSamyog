@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Officer Workspace | Udyog Samyog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      (function() {
+        var t = localStorage.getItem("udyog_theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+    <style>
+      .calculator-drawer {
+        background: var(--color-surface-card, #ffffff);
+        border: 1.5px solid var(--color-border, #e2e8f0);
+        border-radius: var(--r-md, 12px);
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        animation: slideDown 0.25s ease-out;
+      }
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .calculator-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 16px 0;
+      }
+      .calculator-results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .result-box {
+        background: var(--color-surface-page, #f8fafc);
+        border: 1px solid var(--color-border, #e2e8f0);
+        border-radius: 8px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .result-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--color-text-secondary, #64748b);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .result-value {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--color-text-primary, #0f172a);
+      }
+      .result-note {
+        font-size: 0.72rem;
+        color: var(--color-text-secondary, #64748b);
+      }
+      .cluster-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .cluster-chip {
+        background: var(--color-surface-card, #ffffff);
+        border: 1px solid var(--color-border, #cbd5e1);
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--color-text-primary, #1e293b);
+      }
+      .cluster-chip:hover {
+        border-color: var(--navy);
+        background: var(--color-surface-page, #f1f5f9);
+      }
+      .cluster-chip.active {
+        background: var(--navy);
+        color: #ffffff;
+        border-color: var(--navy);
+      }
+      .mobile-cards-view {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        .table-container { display: none; }
+        .mobile-cards-view { display: block; }
+      }
+    </style>
+  </head>
+  <body data-role="official">
+    <div class="dept-stripe" id="deptStripe"></div>
+    <div class="gov-stripe"></div>
+    <div class="shell">
+      <!-- Topbar with Product Identity -->
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-emblem">🏛️</div>
+          <div class="brand-text">
+            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
+            <div class="brand-tag">Departmental Scrutiny Console · Govt. of Maharashtra</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="user-pill">
+            <div class="user-pill-avatar" data-user-initial>O</div>
+            <div>
+              <div style="font-weight:700;line-height:1.2" data-user-name>Government Official</div>
+              <div style="font-size:.7rem;color:var(--ink-light)" data-user-dept>Maharashtra Industries</div>
+            </div>
+          </div>
+          <button class="btn outline sm" onclick="logout()">Sign Out</button>
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()">
+            <span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+          <div class="sidebar-header">Officer Workspace</div>
+          <a href="#queue" class="active">
+            <span class="sidebar-icon">&#128203;</span> Work Queue
+          </a>
+          <a href="verification.html">
+            <span class="sidebar-icon">&#128269;</span> Dossier Scrutiny &amp; Vault
+          </a>
+          <a href="analytics.html">
+            <span class="sidebar-icon">&#128202;</span> Service Level Intelligence
+          </a>
+          <div class="sidebar-footer">
+            <b style="color:var(--color-text-primary, #0f172a)">Maharashtra Single Window Act</b><br/>
+            Sequential and parallel clearance pipeline. Every department certifies dossiers before forwarding.
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main">
+          <div class="page-header">
+            <div class="page-pretitle" id="workspacePretitle">Government of Maharashtra</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+              <h1 class="page-title" id="workspaceTitle" style="margin:0;">Department Scrutiny Console</h1>
+              <span id="workspacePhaseBadge" class="badge navy">Phase 2</span>
+            </div>
+            <p class="page-subtitle" id="workspaceSubtitle" style="margin-top:6px;">Review applications assigned to your departmental stage.</p>
+          </div>
+
+          <!-- Stage Explanation Box with Integrated Tool Button -->
+          <div class="stage-info-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+              <div style="flex:1;min-width:280px;">
+                <div id="workspaceStageInfoText">Applications in review stage. Ensure all statutory criteria are checked.</div>
+              </div>
+              <div>
+                <button type="button" id="toggleCalculatorBtn" class="btn sm outline" style="font-weight:700;border-color:currentColor;" onclick="toggleCalculatorDrawer()">
+                  📐 Open Calculation Tool
+                </button>
+              </div>
+            </div>
+            <div class="cluster-pills" id="filterChipsContainer"></div>
+          </div>
+
+          <!-- Collapsible Calculator Tool Drawer -->
+          <div id="calculatorDrawerSection" class="calculator-drawer" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid var(--color-border, #e2e8f0);padding-bottom:8px;">
+              <h3 style="margin:0;font-size:1.05rem;color:var(--color-text-primary, #0f172a);">Department Statutory Engineering Calculator</h3>
+              <button type="button" class="btn sm outline" onclick="toggleCalculatorDrawer()">✕ Close Tool</button>
+            </div>
+            <div id="calculatorDrawerContent"></div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="grid" style="margin-top:20px;">
+            <div class="card card-kpi saffron">
+              <span class="card-label">Pending Scrutiny</span>
+              <span class="card-value" id="kpiPendingCount">0</span>
+              <span class="card-sub">Awaiting Decision</span>
+            </div>
+            <div class="card card-kpi emerald">
+              <span class="card-label">Stage Approved</span>
+              <span class="card-value" id="kpiApprovedCount">0</span>
+              <span class="card-sub">Clearance Issued</span>
+            </div>
+            <div class="card card-kpi">
+              <span class="card-label">Total Assigned</span>
+              <span class="card-value" id="kpiTotalCount">0</span>
+              <span class="card-sub">All Dossiers</span>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="filter-bar" style="margin-top:24px;">
+            <input type="text" id="workspaceSearchInput" class="search-input" placeholder="Search by App No., Enterprise, Plot, Location..." />
+            <button class="btn saffron sm" onclick="applyWorkspaceFilters()">Search</button>
+            <button class="btn outline sm" onclick="document.getElementById('workspaceSearchInput').value=''; filterWorkspace('all');">Reset</button>
+          </div>
+
+          <!-- Applications Table (Desktop) -->
+          <div class="panel" style="padding:0;overflow:hidden;margin-top:16px;">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Application No.</th>
+                    <th>Enterprise / Unit</th>
+                    <th>Technical Parameters</th>
+                    <th>Investment &amp; Power</th>
+                    <th>Stage Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationsTableBody">
+                  <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--color-text-secondary, #64748b);">Loading statutory clearance queue&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Cards View (< 768px) -->
+            <div class="mobile-cards-view" id="applicationsCardsBody" style="padding:12px;"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Dossier Inspection Modal -->
+    <div id="dossierInspectModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal-card" style="max-width:760px;width:95%;max-height:90vh;overflow-y:auto;">
+        <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--color-border, #e2e8f0);padding-bottom:12px;margin-bottom:16px;">
+          <div>
+            <h3 class="modal-title" id="inspectModalTitle" style="margin:0;">Application Dossier</h3>
+            <div id="inspectModalCompany" style="font-size:0.85rem;color:var(--color-text-secondary, #64748b);margin-top:2px;">Enterprise Name</div>
+          </div>
+          <button type="button" class="modal-close-btn" onclick="Modal.close('dossierInspectModal')" aria-label="Close modal">&times;</button>
+        </div>
+        <div id="inspectModalMeta" style="background:var(--color-surface-page, #f8fafc);border:1px solid var(--color-border, #e2e8f0);border-radius:8px;padding:12px 14px;margin-bottom:16px;"></div>
+        <h4 style="margin:0 0 10px;font-size:0.92rem;color:var(--color-text-primary, #0f172a);">Uploaded Digital Dossier Documents</h4>
+        <div id="inspectModalDocuments"></div>
+        <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+          <button type="button" class="btn outline sm" onclick="Modal.close('dossierInspectModal')">Close Dossier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Department Decision Modal -->
+    <div id="departmentDecisionModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal-card" style="max-width:620px;width:95%;max-height:90vh;overflow-y:auto;">
+        <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--color-border, #e2e8f0);padding-bottom:12px;margin-bottom:16px;">
+          <div>
+            <h3 class="modal-title" id="decisionModalTitle" style="margin:0;">Statutory Stage Decision</h3>
+            <div id="decisionModalSubtitle" style="font-size:0.82rem;color:var(--color-text-secondary, #64748b);margin-top:2px;">Application Details</div>
+          </div>
+          <button type="button" class="modal-close-btn" onclick="Modal.close('departmentDecisionModal')" aria-label="Close modal">&times;</button>
+        </div>
+
+        <!-- Verification Checklist -->
+        <div style="background:var(--color-surface-page, #f8fafc);border:1px solid var(--color-border, #e2e8f0);border-radius:10px;padding:14px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <b style="font-size:0.85rem;color:var(--color-text-primary, #0f172a);">Mandatory Statutory Verification Checklist</b>
+            <button type="button" id="decisionToggleAllBtn" class="btn outline sm" style="padding:2px 8px;font-size:0.72rem;" onclick="toggleAllDecisionChecklist()">Select All</button>
+          </div>
+          <div id="decisionChecklistContainer" style="display:flex;flex-direction:column;gap:4px;"></div>
+          <div id="decisionChecklistCounter" style="margin-top:8px;font-size:0.75rem;font-weight:700;color:var(--color-warning, #b45309);">0 of 4 verified</div>
+        </div>
+
+        <!-- Remarks -->
+        <label class="form-label" style="display:block;margin-bottom:16px;">
+          <span style="font-weight:700;font-size:0.85rem;color:var(--color-text-primary, #0f172a);">Officer Remarks / Query Description:</span>
+          <textarea id="decisionRemarksInput" class="form-control" rows="3" style="width:100%;margin-top:6px;box-sizing:border-box;font-family:inherit;" placeholder="Provide statutory observations or specific query clarifications..."></textarea>
+          <span style="font-size:0.72rem;color:var(--color-text-secondary, #64748b);margin-top:4px;display:block;">* Mandatory when raising a Query or rejecting clearance.</span>
+        </label>
+
+        <!-- Actions -->
+        <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;border-top:1px solid var(--color-border, #e2e8f0);padding-top:14px;">
+          <button type="button" class="btn outline sm" onclick="Modal.close('departmentDecisionModal')">Cancel</button>
+          <button type="button" class="btn danger sm" style="background:#dc2626;color:#fff;" onclick="submitDepartmentDecision({ decision: 'Rejected' })">Refuse Clearance</button>
+          <button type="button" class="btn warning sm" style="background:#d97706;color:#fff;" onclick="submitDepartmentDecision({ decision: 'Query' })">Raise Formal Query</button>
+          <button type="button" class="btn success sm" style="background:#059669;color:#fff;font-weight:700;" onclick="submitDepartmentDecision({ decision: 'Approved' })">✓ Grant Stage Clearance</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/common.js"></script>
+    <script src="/js/officer/department-config.js"></script>
+    <script src="/js/officer/calculators/mpcb-calculator.js"></script>
+    <script src="/js/officer/calculators/midc-calculator.js"></script>
+    <script src="/js/officer/calculators/dish-calculator.js"></script>
+    <script src="/js/officer/calculators/fire-calculator.js"></script>
+    <script src="/js/officer/application-table.js"></script>
+    <script src="/js/officer/decision-panel.js"></script>
+    <script src="/js/officer/workspace.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        initOfficerWorkspace();
+      });
+    </script>
+  </body>
+</html>
+

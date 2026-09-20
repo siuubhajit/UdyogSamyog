@@ -549,13 +549,10 @@
 
       guard("official").then(user => {
         if (!user) return;
-        const params = new URLSearchParams(location.search);
-        if (params.get("redirect") === "1") {
-          const target = getOfficerDashboardUrl(user);
-          if (target && !target.endsWith("officer-dashboard.html")) {
-            location.replace(target);
-            return;
-          }
+        const target = typeof getOfficerDashboardUrl === "function" ? getOfficerDashboardUrl(user) : null;
+        if (target && !target.endsWith("officer-dashboard.html")) {
+          location.replace(target);
+          return;
         }
         currentOfficer = user;
         setupDeptUI(user);
