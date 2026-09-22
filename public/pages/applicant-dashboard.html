@@ -66,38 +66,12 @@
       <!-- Topbar Header -->
       <header class="topbar">
         <div class="brand-group">
-          <div class="brand-emblem">🏛️</div>
-          <div class="brand-text">
-            <div class="brand-title">उद्योग संयोग | UDYOG SAMYOG</div>
-            <div class="brand-tag">
-              Enterprise Portal · Maharashtra Single Window System
-            </div>
-          </div>
+          <a href="#" class="brand-link" data-brand-home title="Return to Dashboard / Refresh">
+            <div class="brand-emblem"><img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" class="brand-emblem-img" /></div>
+            <div class="brand-title">महाराष्ट्र शासन | GOVT. OF MAHARASHTRA</div>
+          </a>
         </div>
         <div class="topbar-actions">
-          <div
-            class="user-pill"
-            style="cursor: pointer"
-            onclick="
-              document
-                .getElementById('profileSection')
-                ?.scrollIntoView({ behavior: 'smooth' })
-            "
-            title="View Company Profile & Security Settings"
-          >
-            <div class="user-pill-avatar" data-user-initial>E</div>
-            <div>
-              <div style="font-weight: 700; line-height: 1.2" data-user-name>
-                Enterprise Applicant
-              </div>
-              <div
-                style="font-size: 0.7rem; color: var(--ink-light)"
-                data-company
-              >
-                Sahyadri Engineering
-              </div>
-            </div>
-          </div>
           <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
@@ -127,11 +101,6 @@
           >
             <span class="sidebar-icon">🏢</span> Company Profile & Security
           </a>
-          <div class="sidebar-footer">
-            <b style="color: #ffffff">Maharashtra State Innovation Society Support</b><br />
-            Subsidies, interest subvention, and single window licenses processed
-            digitally.
-          </div>
         </aside>
 
         <!-- Main Workspace -->
@@ -221,64 +190,8 @@
             </div>
           </div>
 
-          <!-- 1. Active Applications Table (Primary Dashboard Focus) -->
-          <div
-            class="panel"
-            style="margin-top: 8px; padding: 0; overflow: hidden"
-          >
-            <div
-              style="
-                padding: 18px 24px;
-                border-bottom: 1px solid var(--line);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <div>
-                <h2 style="font-size: 1.25rem; margin: 0;">
-                  Active Industrial Clearance Dossiers
-                </h2>
-                <p style="font-size: 0.78rem; color: var(--ink-light); margin: 3px 0 0 0;">
-                  Monitor your clearance milestones, inspect review stages, and download approved certificates.
-                </p>
-              </div>
-              <span class="badge blue">Live Single Window Status</span>
-            </div>
-            <div class="table-container" style="border: none">
-              <table data-sortable="true">
-                <thead>
-                  <tr>
-                    <th>Application ID</th>
-                    <th>Enterprise / Unit</th>
-                    <th>Sector & Category</th>
-                    <th>District</th>
-                    <th>Risk Tier</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="rows">
-                  <tr>
-                    <td
-                      colspan="7"
-                      style="
-                        text-align: center;
-                        padding: 30px;
-                        color: var(--ink-light);
-                      "
-                    >
-                      Fetching enterprise applications...
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div id="mobileRows" class="mobile-apps-view" style="display:none;padding:12px;"></div>
-          </div>
-
-          <!-- 2. KPI Summary Cards -->
-          <div class="grid" style="margin-top: 24px;">
+          <!-- 1. KPI Summary Cards (Overview Focus) -->
+          <div class="grid" style="margin-top: 8px; margin-bottom: 24px;">
             <div class="card card-kpi">
               <span class="card-label">Applications Submitted</span>
               <span class="card-value" id="total">0</span>
@@ -301,8 +214,88 @@
             </div>
           </div>
 
-          <!-- 3. Live 3-Phase Statutory Clearance Matrix -->
-          <div id="applicantWorkflowContainer"></div>
+          <!-- 2. Permitted & Licensed Establishments (Dashboard Primary Focus) -->
+          <div
+            class="panel"
+            style="margin-top: 8px; padding: 0; overflow: hidden; border: 1.5px solid var(--line);"
+          >
+            <div
+              style="
+                padding: 18px 24px;
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+              "
+            >
+              <div>
+                <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+                  <span>🏛️</span> Permitted &amp; Licensed Industrial Establishments
+                </h2>
+                <p style="font-size: 0.78rem; color: var(--ink-light); margin: 3px 0 0 0;">
+                  Statutorily sanctioned enterprises, active operating licenses, and verifiable Single-Window certificates.
+                </p>
+              </div>
+              <span class="badge green">✓ Official Statutory Permits</span>
+            </div>
+            <div class="table-container" style="border: none">
+              <table data-sortable="true">
+                <thead>
+                  <tr>
+                    <th>License / Application ID</th>
+                    <th>Enterprise / Unit</th>
+                    <th>Sector &amp; Category</th>
+                    <th>District</th>
+                    <th>Status</th>
+                    <th>Statutory Action</th>
+                  </tr>
+                </thead>
+                <tbody id="rows">
+                  <tr>
+                    <td
+                      colspan="6"
+                      style="
+                        text-align: center;
+                        padding: 30px;
+                        color: var(--ink-light);
+                      "
+                    >
+                      Loading permitted enterprises...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="mobileRows" class="mobile-apps-view" style="display:none;padding:12px;"></div>
+          </div>
+
+          <!-- 3. In-Progress & Under Scrutiny Clearance Dossiers Link Banner -->
+          <div
+            class="panel"
+            style="
+              margin-top: 24px;
+              background: var(--surface-card);
+              border: 1.5px solid var(--line);
+              border-left: 4px solid var(--saffron);
+              padding: 18px 24px;
+            "
+          >
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                  <span>📋</span> In-Progress &amp; Under Scrutiny Clearance Dossiers
+                </h3>
+                <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--ink-light);">
+                  Applications undergoing concurrent review across MPCB (Pollution), MIDC (Civil), DISH (Safety), and Fire Services. Inspect live review timelines, upload blueprints, or resolve departmental queries in the dedicated tracker.
+                </p>
+              </div>
+              <a href="tracker.html" class="btn saffron sm" style="white-space: nowrap; font-weight: 700;">
+                Open Approval &amp; License Tracker &rarr;
+              </a>
+            </div>
+          </div>
 
           <!-- 4. Compact Expandable: How Approvals Work -->
           <div class="panel" style="margin-top: 24px; border: 1.5px solid var(--line); background: var(--surface-card);">
@@ -879,7 +872,6 @@
     </div>
 
     <script src="/js/common.js"></script>
-    <script src="/js/applicant-workflow.js"></script>
     <script>
       let accountProfile = null;
 
@@ -1043,158 +1035,99 @@
               `tracker.html?id=${flaggedList[0].id}`;
           }
 
-          if (a.length > 0 && typeof loadApplicantWorkflow === "function") {
-            loadApplicantWorkflow(a[0].id);
-          }
-
-          // Pipeline tracker constants
-          const PIPELINE_STAGES = ["mpcb","midc","dish","fire","msins"];
-          const STAGE_NAMES = {
-            mpcb: "Pollution Control Board\n🌿 Phase 1 Env",
-            midc: "Industrial Development Corporation\n📐 Phase 2 Civil",
-            dish: "Industrial Safety & Health\n⚙️ Phase 2 Safety",
-            fire: "Fire Services Directorate\n🚒 Phase 2 Fire",
-            msins: "State Innovation Society\n🏛️ Phase 3 Sanction"
-          };
-
-          function buildPipelineTracker(currentStage, stageStatuses, overallStatus) {
-            stageStatuses = stageStatuses || {};
-            const isParallel = currentStage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(currentStage);
-            const isApex = currentStage === "msins";
-            const isCompleted = currentStage === "completed" || overallStatus === "Approved";
-            const stageIdx = PIPELINE_STAGES.indexOf(currentStage);
-
-            return '<div class="pipeline-tracker">' +
-              PIPELINE_STAGES.map((s, i) => {
-                const ss = stageStatuses[s];
-                let dotCls = "pt-dot", stepCls = "pt-step", statusText = "Waiting", statusCls = "";
-
-                if (overallStatus === "Rejected" && ss && ss.decision === "Rejected") {
-                  dotCls += " rejected"; statusText = "Rejected"; statusCls = "rejected";
-                } else if (isCompleted || (ss && ss.decision === "Approved")) {
-                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
-                } else if (s === currentStage) {
-                  dotCls += " active"; statusText = overallStatus === "Flagged" ? "Query Raised" : "Under Review"; statusCls = "active";
-                } else if (isParallel && ["midc", "dish", "fire"].includes(s)) {
-                  dotCls += " active"; statusText = overallStatus === "Flagged" ? "Query Raised" : "Under Review"; statusCls = "active";
-                } else if (isParallel && s === "mpcb") {
-                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
-                } else if (isApex && s !== "msins") {
-                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
-                } else if (stageIdx !== -1 && i < stageIdx) {
-                  dotCls += " done"; stepCls += " pt-done"; statusText = "Approved"; statusCls = "done";
-                }
-
-                const icon = (dotCls.includes("done") && !dotCls.includes("rejected")) ? "\u2713"
-                  : dotCls.includes("rejected") ? "\u2715"
-                  : (i + 1).toString();
-
-                const name = STAGE_NAMES[s] || s.toUpperCase();
-                return '<div class="' + stepCls + '">' +
-                  '<div class="' + dotCls + '">' + icon + '</div>' +
-                  '<div class="pt-name">' + name.replace('\n','<br>') + '</div>' +
-                  '<div class="pt-status ' + statusCls + '">' + statusText + '</div>' +
-                  '</div>';
-              }).join("") +
-            '</div>';
-          }
-
+          const permitted = a.filter((x) => x.status === "Approved");
           const tbody = document.getElementById("rows");
-          if (a.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--ink-light);">No applications submitted yet. Click "+ Apply for New Industrial Permit" to start.</td></tr>`;
-            return;
-          }
 
-          tbody.innerHTML = a
-            .map((x) => {
-              let stageStatuses = {};
-              try { stageStatuses = JSON.parse(x.stage_statuses || "{}"); } catch(_) {}
-              const currentStage = x.current_stage || "mpcb";
-
-              const riskClass =
-                x.risk_tier === "Red" ? "risk-red" : x.risk_tier === "Orange" ? "risk-orange" : "risk-green";
-              let badgeClass = "orange";
-              if (x.status === "Approved") badgeClass = "green";
-              else if (x.status === "Flagged" || x.status === "Rejected") badgeClass = "red";
-
-              const tracker = buildPipelineTracker(currentStage, stageStatuses, x.status);
-
-              return `
+          if (permitted.length === 0) {
+            tbody.innerHTML = `
               <tr>
-                <td>
-                  <b style="color: var(--navy); font-size: 0.85rem;">${x.application_no}</b>
-                  <div style="font-size:.72rem; color:var(--ink-muted)">${new Date(x.created_at).toLocaleDateString()}</div>
-                </td>
-                <td><b>${x.company_name}</b></td>
-                <td>
-                  <div>${x.industry_category || "Manufacturing"}</div>
-                  <span class="badge gray" style="font-size: 0.65rem;">${x.msme_category || "MSME"}</span>
-                </td>
-                <td>${x.district || "Pune"}</td>
-                <td><span class="risk-tag ${riskClass}">${x.risk_tier || "Standard"}</span></td>
-                <td><span class="badge ${badgeClass}">${x.status}</span></td>
-                <td>
-                  ${
-                    x.status === "Approved"
-                      ? `<a class="btn emerald sm" href="/pages/certificate.html?id=${x.id}" target="_blank" style="display:inline-block; margin-bottom:4px; font-size:0.75rem; padding:4px 8px; width:100%; font-weight:700; text-align:center;">
-                           📜 View Certificate &rarr;
-                         </a>`
-                      : ""
-                  }
-                  <a class="btn saffron sm" href="tracker.html?id=${x.id}" style="display:inline-block; margin-bottom:4px; font-size:0.75rem; padding:4px 8px; width:100%; text-align:center;">
-                    View &amp; Respond &rarr;
-                  </a>
-                  <button class="btn outline sm" style="display:inline-block; font-size:0.75rem; padding:4px 8px; width:100%;" onclick="loadApplicantWorkflow('${x.id}')">
-                    🏛️ Clearance Matrix
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="7" style="padding: 0 16px 12px; border-top:none">
-                  <div style="font-size:.72rem; color:var(--ink-light); font-weight:600; margin-bottom:2px; padding-left:4px">
-                    Clearance Pipeline
+                <td colspan="6" style="text-align: center; padding: 40px 20px; color: var(--ink-light);">
+                  <div style="font-size: 2.2rem; margin-bottom: 8px;">🏛️</div>
+                  <div style="font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 4px;">
+                    No Statutorily Permitted Licenses Issued Yet
                   </div>
-                  ${tracker}
+                  <p style="font-size: 0.84rem; max-width: 520px; margin: 0 auto 16px auto; color: var(--ink-light); line-height: 1.5;">
+                    You currently have <b>${a.length}</b> industrial application(s) actively undergoing scrutiny across MPCB, MIDC, DISH, and Fire Services. Once confirming clearances are completed, your official Single-Window Permits will appear here.
+                  </p>
+                  <a href="tracker.html" class="btn saffron sm" style="font-weight: 700;">
+                    Open Approval &amp; License Tracker &rarr;
+                  </a>
                 </td>
               </tr>
             `;
-            })
-            .join("");
+          } else {
+            tbody.innerHTML = permitted
+              .map((x) => {
+                return `
+                  <tr>
+                    <td>
+                      <b style="color: var(--navy); font-size: 0.88rem;">${escapeHtml(x.application_no)}</b>
+                      <div style="font-size:.72rem; color:var(--ink-muted)">Sanctioned: ${new Date(x.created_at).toLocaleDateString()}</div>
+                    </td>
+                    <td>
+                      <b>${escapeHtml(x.company_name)}</b>
+                      <div style="font-size: 0.72rem; color: var(--emerald, #16a34a); font-weight: 600;">✓ Digitally Certified Establishment</div>
+                    </td>
+                    <td>
+                      <div>${escapeHtml(x.industry_category || "Manufacturing")}</div>
+                      <span class="badge gray" style="font-size: 0.65rem;">${escapeHtml(x.msme_category || "MSME")}</span>
+                    </td>
+                    <td>${escapeHtml(x.district || "Maharashtra")}</td>
+                    <td><span class="badge green">✓ Statutorily Permitted</span></td>
+                    <td style="white-space: nowrap;">
+                      <a class="btn emerald sm" href="/pages/certificate.html?id=${x.id}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:0.78rem;">
+                        📜 View Certificate &rarr;
+                      </a>
+                      <a class="btn outline sm" href="tracker.html?id=${x.id}" style="font-size:0.75rem; margin-left:4px;">
+                        Track
+                      </a>
+                    </td>
+                  </tr>
+                `;
+              })
+              .join("");
+          }
 
           // Mobile Cards View (< 768px)
           const mobileContainer = document.getElementById("mobileRows");
           if (mobileContainer) {
-            mobileContainer.innerHTML = a.map((x) => {
-              let badgeClass = "orange";
-              if (x.status === "Approved") badgeClass = "green";
-              else if (x.status === "Flagged" || x.status === "Rejected") badgeClass = "red";
-
-              return `
-                <div class="mobile-app-card" style="background:var(--surface-card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;">
-                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-                    <div>
-                      <b style="color:var(--navy);font-size:0.86rem;">${x.application_no}</b>
-                      <div style="font-size:0.72rem;color:var(--ink-muted);">${new Date(x.created_at).toLocaleDateString()}</div>
-                    </div>
-                    <span class="badge ${badgeClass}">${x.status}</span>
-                  </div>
-                  <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">${x.company_name}</div>
-                  <div style="font-size:0.78rem;color:var(--ink-light);margin-bottom:10px;">
-                    ${x.industry_category || "Manufacturing"} · ${x.district || "Maharashtra"}
-                  </div>
-                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                    ${x.status === "Approved" ? `<a class="btn emerald sm" href="/pages/certificate.html?id=${x.id}" target="_blank" style="flex:1;text-align:center;">📜 Certificate</a>` : ""}
-                    <a class="btn saffron sm" href="tracker.html?id=${x.id}" style="flex:1;text-align:center;">View &amp; Respond &rarr;</a>
-                    <button class="btn outline sm" style="flex:1;" onclick="loadApplicantWorkflow('${x.id}')">Matrix</button>
-                  </div>
+            if (permitted.length === 0) {
+              mobileContainer.innerHTML = `
+                <div style="text-align:center; padding: 24px 12px; color: var(--ink-light); background: var(--surface-card); border-radius: 8px; border: 1px dashed var(--line);">
+                  <div style="font-size:1.8rem; margin-bottom:6px;">🏛️</div>
+                  <div style="font-weight:700; color:var(--navy); margin-bottom:4px;">No Permitted Licenses Yet</div>
+                  <p style="font-size:0.78rem; margin-bottom:12px;">Active dossiers are in progress. Track your reviews in the tracker.</p>
+                  <a href="tracker.html" class="btn saffron sm">Open Tracker &rarr;</a>
                 </div>
               `;
-            }).join("");
+            } else {
+              mobileContainer.innerHTML = permitted
+                .map((x) => `
+                  <div class="mobile-app-card" style="background:var(--surface-card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                      <div>
+                        <b style="color:var(--navy);font-size:0.86rem;">${escapeHtml(x.application_no)}</b>
+                        <div style="font-size:0.72rem;color:var(--ink-muted);">${new Date(x.created_at).toLocaleDateString()}</div>
+                      </div>
+                      <span class="badge green">✓ Permitted</span>
+                    </div>
+                    <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">${escapeHtml(x.company_name)}</div>
+                    <div style="font-size:0.78rem;color:var(--ink-light);margin-bottom:10px;">
+                      ${escapeHtml(x.industry_category || "Manufacturing")} · ${escapeHtml(x.district || "Maharashtra")}
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                      <a class="btn emerald sm" href="/pages/certificate.html?id=${x.id}" target="_blank" style="flex:1;text-align:center;font-weight:700;">📜 Certificate</a>
+                      <a class="btn outline sm" href="tracker.html?id=${x.id}" style="flex:1;text-align:center;">Track</a>
+                    </div>
+                  </div>
+                `)
+                .join("");
+            }
           }
         } catch (err) {
           console.error(err);
           document.getElementById("rows").innerHTML =
-            `<tr><td colspan="7" style="color:red; text-align:center; padding: 20px;">Failed to load applications: ${err.message}</td></tr>`;
+            `<tr><td colspan="6" style="color:red; text-align:center; padding: 20px;">Failed to load applications: ${err.message}</td></tr>`;
         }
       })();
 

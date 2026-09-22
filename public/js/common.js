@@ -53,15 +53,25 @@ async function guard(role) {
       return null;
     }
 
-    // Update dashboard links to officer's dedicated portal
+    // Update dashboard links to role's dedicated portal
+    const dashUrl =
+      user.role === "official"
+        ? getOfficerDashboardUrl(user)
+        : "/pages/applicant-dashboard.html";
+
     if (user.role === "official") {
-      const dashUrl = getOfficerDashboardUrl(user);
       document
         .querySelectorAll(
           "a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]"
         )
         .forEach((a) => a.setAttribute("href", dashUrl));
     }
+
+    document
+      .querySelectorAll("[data-brand-home], .brand-link")
+      .forEach((a) => a.setAttribute("href", dashUrl));
+
+    initBrandHomeNavigation();
 
     // Populate user identity indicators
     document
@@ -623,23 +633,15 @@ function initSidebarController() {
   const sidebar = document.querySelector(".sidebar");
   if (!sidebar) return;
 
-  // 1. Desktop Rail Collapse State Restoration
+  // 1. Initial State: Always open window in expanded situation
+  document.body.classList.remove("sidebar-collapsed");
   let isCollapsed = false;
-  try {
-    isCollapsed = localStorage.getItem("sidebar_collapsed") === "true";
-  } catch (_) {}
-
-  if (isCollapsed) {
-    document.body.classList.add("sidebar-collapsed");
-  } else {
-    document.body.classList.remove("sidebar-collapsed");
-  }
 
   // Exact reference icons for squircle toggle
   const ICON_COLLAPSE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><line x1="9" y1="3" x2="9" y2="21"></line><polyline points="15 9 12 12 15 15"></polyline></svg>`;
   const ICON_EXPAND = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><line x1="9" y1="3" x2="9" y2="21"></line><polyline points="13 9 16 12 13 15"></polyline></svg>`;
 
-  // 2. Mount Top Section if missing
+  // 2. Mount Top Section if missing (without redundant brand badge, with squircle toggle)
   let topSection = sidebar.querySelector(".sidebar-top-section");
   if (!topSection) {
     topSection = document.createElement("div");
@@ -647,13 +649,7 @@ function initSidebarController() {
 
     topSection.innerHTML = `
       <div class="sidebar-header-row">
-        <a href="/" class="sidebar-brand">
-          <span class="sidebar-brand-emblem">🏛️</span>
-          <div class="sidebar-brand-text">
-            <span class="sidebar-brand-title">उद्योग संयोग</span>
-            <span class="sidebar-brand-tag">Govt. of Maharashtra</span>
-          </div>
-        </a>
+        <span class="sidebar-header-title">Navigation</span>
         <button type="button" class="sidebar-rail-toggle" aria-label="Toggle sidebar rail" title="Collapse/Expand Sidebar Rail">
           ${isCollapsed ? ICON_EXPAND : ICON_COLLAPSE}
         </button>
@@ -666,11 +662,6 @@ function initSidebarController() {
         </div>
         <div class="sidebar-user-email" data-sidebar-email>siuubhajit@gmail.com</div>
         <div class="sidebar-user-dept" data-sidebar-dept>B. P. Poddar Institute of Management &amp; Tech</div>
-      </div>
-
-      <div class="sidebar-avatar-circle" title="User Profile">
-        <img src="/img/user-avatar.png" alt="Profile" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';" />
-        <div class="sidebar-avatar-fallback" style="display:none;" data-sidebar-initial>S</div>
       </div>
 
       <hr class="sidebar-divider" />
@@ -689,11 +680,42 @@ function initSidebarController() {
     railToggle.addEventListener("click", () => {
       const nowCollapsed = document.body.classList.toggle("sidebar-collapsed");
       railToggle.innerHTML = nowCollapsed ? ICON_EXPAND : ICON_COLLAPSE;
-      try {
-        localStorage.setItem("sidebar_collapsed", nowCollapsed ? "true" : "false");
-      } catch (_) {}
+      window._userManuallyExpanded = !nowCollapsed;
     });
   }
+
+  // Auto-collapse rail when scrolling window; do NOT re-expand on scroll back (only re-appears when expand is clicked)
+  if (!window._sidebarScrollBound) {
+    window._sidebarScrollBound = true;
+    let scrollTicking = false;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (window.innerWidth <= 768) return; // Don't affect mobile drawer
+        if (!scrollTicking) {
+          window.requestAnimationFrame(() => {
+            const currentScroll = window.scrollY || document.documentElement.scrollTop;
+            const toggleBtn = document.querySelector(".sidebar-rail-toggle");
+
+            if (currentScroll > 40) {
+              if (!window._userManuallyExpanded && !document.body.classList.contains("sidebar-collapsed")) {
+                document.body.classList.add("sidebar-collapsed");
+                if (toggleBtn) toggleBtn.innerHTML = ICON_EXPAND;
+              }
+            }
+            // Will NOT re-expand when scrolling back up. It only re-appears when the user clicks expand.
+            scrollTicking = false;
+          });
+          scrollTicking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  // Remove any redundant sidebar footers from DOM
+  sidebar.querySelectorAll(".sidebar-footer").forEach((el) => el.remove());
 
   // 3. Process links in sidebar: wrap labels, add tooltips, upgrade icons to crisp SVGs
   sidebar.querySelectorAll("a:not(.sidebar-brand):not(.sidebar-main-btn)").forEach((link) => {
@@ -782,23 +804,11 @@ function initSidebarController() {
     }
   });
 
-  // 4. Mount Bottom Section ("Go to Main Page")
-  let bottomSection = sidebar.querySelector(".sidebar-bottom-section");
-  if (!bottomSection) {
-    bottomSection = document.createElement("div");
-    bottomSection.className = "sidebar-bottom-section";
-    bottomSection.innerHTML = `
-      <hr class="sidebar-divider" />
-      <a href="/" class="sidebar-main-btn" aria-label="Go to Main Page">
-        <span class="sidebar-globe-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-        </span>
-        <span class="sidebar-main-btn-label">Go to Main Page</span>
-        <span class="sidebar-tooltip">Go to Main Page</span>
-      </a>
-    `;
-    sidebar.appendChild(bottomSection);
-  }
+  // 4. Remove any bottom section / main page button if present
+  const existingBottom = sidebar.querySelector(".sidebar-bottom-section");
+  if (existingBottom) existingBottom.remove();
+  const existingMainBtn = sidebar.querySelector(".sidebar-main-btn");
+  if (existingMainBtn) existingMainBtn.remove();
 
   // 5. Mobile Hamburger Button in Topbar
   const topbarBrand = document.querySelector(".topbar .brand-group");
@@ -920,20 +930,83 @@ function setupSortableTables() {
   });
 }
 
+/* ─── Topbar Brand Navigation (Return to Dashboard / Refresh) ─────── */
+function initBrandHomeNavigation() {
+  document.querySelectorAll("[data-brand-home], .brand-link").forEach((el) => {
+    if (el.dataset.brandHomeBound) return;
+    el.dataset.brandHomeBound = "true";
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      let targetUrl = el.getAttribute("href");
+      if (!targetUrl || targetUrl === "#" || targetUrl === "/") {
+        try {
+          const cached = sessionStorage.getItem("cached_user");
+          if (cached) {
+            const u = JSON.parse(cached);
+            targetUrl =
+              u.role === "official"
+                ? getOfficerDashboardUrl(u)
+                : "/pages/applicant-dashboard.html";
+          }
+        } catch (_) {}
+      }
+      if (!targetUrl || targetUrl === "#" || targetUrl === "/") {
+        const path = window.location.pathname;
+        if (
+          path.includes("officer") ||
+          path.includes("verification") ||
+          path.includes("analytics") ||
+          path.includes("ai-admin")
+        ) {
+          targetUrl = "/pages/officer-workspace.html";
+        } else {
+          targetUrl = "/pages/applicant-dashboard.html";
+        }
+      }
+
+      const currentPath = window.location.pathname;
+      const targetPath = targetUrl.split("?")[0];
+      if (
+        currentPath === targetPath ||
+        (currentPath.endsWith(targetPath) && targetPath !== "/")
+      ) {
+        window.location.reload();
+      } else {
+        window.location.href = targetUrl;
+      }
+    });
+  });
+}
+
+/* ─── State Seal / Brand Emblem Initializer ──────────────────────── */
+function initMaharashtraEmblems() {
+  document.querySelectorAll(".brand-emblem, .cert-emblem, #deptEmblem").forEach((el) => {
+    if (!el.querySelector("img")) {
+      el.innerHTML = '<img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" class="brand-emblem-img" />';
+    }
+  });
+}
+
 if (typeof window !== "undefined") {
   window.notify = notify;
   window.confirmDialog = confirmDialog;
   window.setupSortableTables = setupSortableTables;
   window.initSidebarController = initSidebarController;
+  window.initBrandHomeNavigation = initBrandHomeNavigation;
+  window.initMaharashtraEmblems = initMaharashtraEmblems;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
+      initMaharashtraEmblems();
       initSidebarController();
       setupSortableTables();
+      initBrandHomeNavigation();
     });
   } else {
+    initMaharashtraEmblems();
     initSidebarController();
     setupSortableTables();
+    initBrandHomeNavigation();
   }
 }
 

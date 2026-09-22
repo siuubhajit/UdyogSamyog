@@ -176,7 +176,6 @@ function renderWorkflowCard(data) {
       </div>
     </div>
   `;
-  container.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 window.loadApplicantWorkflow = loadApplicantWorkflow;
