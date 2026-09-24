@@ -19,15 +19,24 @@ async function initOfficerWorkspace() {
   const deptParam = (params.get("dept") || "").toLowerCase();
   const userDept = (user.deptCode || "").toLowerCase();
 
-  if (deptParam && window.DEPARTMENT_CONFIG && window.DEPARTMENT_CONFIG[deptParam]) {
+  if (
+    deptParam &&
+    window.DEPARTMENT_CONFIG &&
+    window.DEPARTMENT_CONFIG[deptParam]
+  ) {
     currentDeptCode = deptParam;
-  } else if (userDept && window.DEPARTMENT_CONFIG && window.DEPARTMENT_CONFIG[userDept]) {
+  } else if (
+    userDept &&
+    window.DEPARTMENT_CONFIG &&
+    window.DEPARTMENT_CONFIG[userDept]
+  ) {
     currentDeptCode = userDept;
   } else {
     currentDeptCode = "midc";
   }
 
-  currentDeptConfig = window.DEPARTMENT_CONFIG[currentDeptCode] || window.DEPARTMENT_CONFIG.midc;
+  currentDeptConfig =
+    window.DEPARTMENT_CONFIG[currentDeptCode] || window.DEPARTMENT_CONFIG.midc;
 
   // Render department header context & accent stripe
   renderDepartmentHeader();
@@ -60,7 +69,8 @@ function renderDepartmentHeader() {
   if (titleEl) titleEl.textContent = cfg.title;
 
   const pretitleEl = document.getElementById("workspacePretitle");
-  if (pretitleEl) pretitleEl.textContent = `Government of Maharashtra · ${cfg.name}`;
+  if (pretitleEl)
+    pretitleEl.textContent = `Government of Maharashtra · ${cfg.name}`;
 
   const subtitleEl = document.getElementById("workspaceSubtitle");
   if (subtitleEl) {
@@ -70,7 +80,7 @@ function renderDepartmentHeader() {
   // Phase badge
   const phaseBadgeEl = document.getElementById("workspacePhaseBadge");
   if (phaseBadgeEl) {
-    phaseBadgeEl.className = `badge ${cfg.badgeClass || 'navy'}`;
+    phaseBadgeEl.className = `badge ${cfg.badgeClass || "navy"}`;
     phaseBadgeEl.textContent = cfg.phase;
   }
 
@@ -87,22 +97,28 @@ function renderFilterControls() {
   if (!container || !cfg || !cfg.filterOptions) return;
 
   container.innerHTML = `
-    <span style="font-size:0.75rem;font-weight:700;color:var(--color-text-secondary, #64748b);align-self:center;">
+    <span style="font-size:0.75rem;font-weight:700;color:var(--color-text-secondary, var(--ink-secondary));align-self:center;">
       ${cfg.filterTitle}:
     </span>
-    ${cfg.filterOptions.map((opt) => `
-      <button type="button" class="cluster-chip ${opt.id === activeFilter ? 'active' : ''}" data-filter="${opt.id}" onclick="filterWorkspace('${opt.id}')">
+    ${cfg.filterOptions
+      .map(
+        (opt) => `
+      <button type="button" class="cluster-chip ${opt.id === activeFilter ? "active" : ""}" data-filter="${opt.id}" onclick="filterWorkspace('${opt.id}')">
         ${opt.label}
       </button>
-    `).join("")}
+    `,
+      )
+      .join("")}
   `;
 }
 
 function filterWorkspace(filterId) {
   activeFilter = filterId;
-  document.querySelectorAll("#filterChipsContainer .cluster-chip").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.filter === filterId);
-  });
+  document
+    .querySelectorAll("#filterChipsContainer .cluster-chip")
+    .forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.filter === filterId);
+    });
   applyWorkspaceFilters();
 }
 
@@ -111,13 +127,25 @@ function mountDepartmentCalculator() {
   const drawerContainer = document.getElementById("calculatorDrawerContent");
   if (!drawerContainer || !cfg) return;
 
-  if (cfg.calculator === "effluent" && typeof window.renderMpcbCalculator === "function") {
+  if (
+    cfg.calculator === "effluent" &&
+    typeof window.renderMpcbCalculator === "function"
+  ) {
     window.renderMpcbCalculator(drawerContainer);
-  } else if (cfg.calculator === "fsi" && typeof window.renderMidcCalculator === "function") {
+  } else if (
+    cfg.calculator === "fsi" &&
+    typeof window.renderMidcCalculator === "function"
+  ) {
     window.renderMidcCalculator(drawerContainer);
-  } else if (cfg.calculator === "workers" && typeof window.renderDishCalculator === "function") {
+  } else if (
+    cfg.calculator === "workers" &&
+    typeof window.renderDishCalculator === "function"
+  ) {
     window.renderDishCalculator(drawerContainer);
-  } else if (cfg.calculator === "fireWater" && typeof window.renderFireCalculator === "function") {
+  } else if (
+    cfg.calculator === "fireWater" &&
+    typeof window.renderFireCalculator === "function"
+  ) {
     window.renderFireCalculator(drawerContainer);
   }
 }
@@ -129,7 +157,9 @@ function toggleCalculatorDrawer() {
   drawer.style.display = isHidden ? "block" : "none";
   const btn = document.getElementById("toggleCalculatorBtn");
   if (btn) {
-    btn.textContent = isHidden ? "✕ Hide Calculator Tool" : "📐 Open Calculation Tool";
+    btn.textContent = isHidden
+      ? "✕ Hide Calculator Tool"
+      : "📐 Open Calculation Tool";
   }
 }
 
@@ -164,8 +194,12 @@ function renderWorkspaceKPIs() {
     );
   });
 
-  const pending = relevant.filter((a) => getStageDecision(a, dept) !== "Approved").length;
-  const approved = relevant.filter((a) => getStageDecision(a, dept) === "Approved").length;
+  const pending = relevant.filter(
+    (a) => getStageDecision(a, dept) !== "Approved",
+  ).length;
+  const approved = relevant.filter(
+    (a) => getStageDecision(a, dept) === "Approved",
+  ).length;
 
   const elPending = document.getElementById("kpiPendingCount");
   if (elPending) elPending.textContent = pending;
@@ -182,11 +216,17 @@ function applyWorkspaceFilters() {
   const dept = cfg.deptCode;
   const isPhase1 = dept === "mpcb";
 
-  const search = (document.getElementById("workspaceSearchInput")?.value || "").toLowerCase().trim();
+  const search = (document.getElementById("workspaceSearchInput")?.value || "")
+    .toLowerCase()
+    .trim();
 
   let filtered = allWorkspaceApplications.filter((a) => {
     if (isPhase1) {
-      return a.current_stage === "mpcb" || !!getStageDecision(a, "mpcb") || a.status === "Approved";
+      return (
+        a.current_stage === "mpcb" ||
+        !!getStageDecision(a, "mpcb") ||
+        a.status === "Approved"
+      );
     }
     return (
       a.current_stage === "parallel_scrutiny" ||
@@ -201,18 +241,30 @@ function applyWorkspaceFilters() {
     if (cfg.filterType === "zone") {
       filtered = filtered.filter(
         (a) =>
-          (a.location || "").toLowerCase().includes(activeFilter.toLowerCase()) ||
-          (a.district || "").toLowerCase().includes(activeFilter.toLowerCase())
+          (a.location || "")
+            .toLowerCase()
+            .includes(activeFilter.toLowerCase()) ||
+          (a.district || "").toLowerCase().includes(activeFilter.toLowerCase()),
       );
     } else if (cfg.filterType === "category") {
-      filtered = filtered.filter((a) => (a.industry_category || "").toLowerCase() === activeFilter.toLowerCase());
+      filtered = filtered.filter(
+        (a) =>
+          (a.industry_category || "").toLowerCase() ===
+          activeFilter.toLowerCase(),
+      );
     } else if (cfg.filterType === "hazard") {
-      filtered = filtered.filter((a) => (a.hazard_classification || "").toLowerCase().includes(activeFilter.toLowerCase()));
+      filtered = filtered.filter((a) =>
+        (a.hazard_classification || "")
+          .toLowerCase()
+          .includes(activeFilter.toLowerCase()),
+      );
     } else if (cfg.filterType === "fire_risk") {
       filtered = filtered.filter((a) => {
         const hazard = (a.hazard_classification || "").toLowerCase();
-        if (activeFilter === "high") return hazard.includes("chemical") || hazard.includes("high");
-        if (activeFilter === "medium") return hazard.includes("mechanical") || hazard.includes("medium");
+        if (activeFilter === "high")
+          return hazard.includes("chemical") || hazard.includes("high");
+        if (activeFilter === "medium")
+          return hazard.includes("mechanical") || hazard.includes("medium");
         return !hazard.includes("chemical") && !hazard.includes("high");
       });
     }
@@ -225,7 +277,7 @@ function applyWorkspaceFilters() {
         (a.company_name || "").toLowerCase().includes(search) ||
         (a.application_no || "").toLowerCase().includes(search) ||
         (a.location || "").toLowerCase().includes(search) ||
-        (a.district || "").toLowerCase().includes(search)
+        (a.district || "").toLowerCase().includes(search),
     );
   }
 
@@ -234,7 +286,7 @@ function applyWorkspaceFilters() {
       applications: filtered,
       deptConfig: cfg,
       containerId: "applicationsTableBody",
-      mobileContainerId: "applicationsCardsBody"
+      mobileContainerId: "applicationsCardsBody",
     });
   }
 }
@@ -249,19 +301,21 @@ async function inspectWorkspaceDossier(id) {
     const modal = document.getElementById("dossierInspectModal");
     if (!modal) return;
 
-    document.getElementById("inspectModalTitle").textContent = `Dossier: ${data.application_no}`;
-    document.getElementById("inspectModalCompany").textContent = data.company_name;
+    document.getElementById("inspectModalTitle").textContent =
+      `Dossier: ${data.application_no}`;
+    document.getElementById("inspectModalCompany").textContent =
+      data.company_name;
 
     const metaBox = document.getElementById("inspectModalMeta");
     if (metaBox) {
       metaBox.innerHTML = `
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:10px;font-size:0.82rem;">
-          <div><span style="color:var(--color-text-secondary, #64748b);">District:</span> <b>${data.district || data.location}</b></div>
-          <div><span style="color:var(--color-text-secondary, #64748b);">Land Size:</span> <b>${data.land_size_sqm ? data.land_size_sqm.toLocaleString() + ' m²' : '—'}</b></div>
-          <div><span style="color:var(--color-text-secondary, #64748b);">Built-Up:</span> <b>${data.built_up_area_sqm ? data.built_up_area_sqm.toLocaleString() + ' m²' : '—'}</b></div>
-          <div><span style="color:var(--color-text-secondary, #64748b);">Water Demand:</span> <b>${data.water_requirement_kld ? data.water_requirement_kld + ' KLD' : '—'}</b></div>
-          <div><span style="color:var(--color-text-secondary, #64748b);">Power Demand:</span> <b>${data.electricity_load_kw ? data.electricity_load_kw + ' kW' : '—'}</b></div>
-          <div><span style="color:var(--color-text-secondary, #64748b);">Project Cost:</span> <b>₹${data.project_cost_cr || '0'} Cr</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">District:</span> <b>${data.district || data.location}</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">Land Size:</span> <b>${data.land_size_sqm ? data.land_size_sqm.toLocaleString() + " m²" : "—"}</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">Built-Up:</span> <b>${data.built_up_area_sqm ? data.built_up_area_sqm.toLocaleString() + " m²" : "—"}</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">Water Demand:</span> <b>${data.water_requirement_kld ? data.water_requirement_kld + " KLD" : "—"}</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">Power Demand:</span> <b>${data.electricity_load_kw ? data.electricity_load_kw + " kW" : "—"}</b></div>
+          <div><span style="color:var(--color-text-secondary, var(--ink-secondary));">Project Cost:</span> <b>₹${data.project_cost_cr || "0"} Cr</b></div>
         </div>
       `;
     }
@@ -271,19 +325,29 @@ async function inspectWorkspaceDossier(id) {
     if (docContainer) {
       const docs = data.documents || [];
       if (docs.length === 0) {
-        docContainer.innerHTML = '<div style="color:var(--color-text-secondary, #64748b);font-size:0.85rem;">No digital documents attached to this dossier.</div>';
+        docContainer.innerHTML =
+          '<div style="color:var(--color-text-secondary, var(--ink-secondary));font-size:0.85rem;">No digital documents attached to this dossier.</div>';
       } else {
-        docContainer.innerHTML = docs.map((d) => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--color-surface-page, #f8fafc);border:1px solid var(--color-border, #e2e8f0);border-radius:8px;margin-bottom:8px;">
+        docContainer.innerHTML = docs
+          .map(
+            (d) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--color-surface-page, var(--surface-card-alt));border:1px solid var(--color-border, var(--line));border-radius:8px;margin-bottom:8px;">
             <div>
-              <div style="font-weight:700;font-size:0.86rem;color:var(--color-text-primary, #0f172a);">${escapeHtml(d.original_name || d.name || d.file_name)}</div>
-              <div style="font-size:0.74rem;color:var(--color-text-secondary, #64748b);">${d.plan_type ? 'Type: ' + d.plan_type : 'Statutory Record'} · Uploaded: ${new Date(d.uploaded_at || Date.now()).toLocaleDateString("en-IN")}</div>
+              <div style="font-weight:700;font-size:0.86rem;color:var(--color-text-primary, var(--ink));">${escapeHtml(d.original_name || d.name || d.file_name)}</div>
+              <div style="font-size:0.74rem;color:var(--color-text-secondary, var(--ink-secondary));">${d.plan_type ? "Type: " + d.plan_type : "Statutory Record"} · Uploaded: ${new Date(d.uploaded_at || Date.now()).toLocaleDateString("en-IN")}</div>
             </div>
-            <a href="/api/documents/${d.id}/download" target="_blank" class="btn btn-sm btn-outline" style="font-size:0.75rem;">
-              View / Download
-            </a>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button type="button" onclick="if(window.openDocIntelReview){window.openDocIntelReview('${d.id}','${escapeHtml(d.original_name || d.name || d.file_name || "Document")}')}else{const s=document.createElement('script');s.src='/js/ai-doc-intel.js';s.onload=()=>window.openDocIntelReview('${d.id}','${escapeHtml(d.original_name || d.name || d.file_name || "Document")}');document.head.appendChild(s);}" class="btn btn-sm btn-outline" style="font-size:0.75rem;color:var(--brand-saffron, #b45309);border-color:var(--brand-saffron, #b45309);font-weight:700;">
+                🔍 AI OCR
+              </button>
+              <a href="/api/documents/${d.id}/download" target="_blank" class="btn btn-sm btn-outline" style="font-size:0.75rem;">
+                View / Download
+              </a>
+            </div>
           </div>
-        `).join("");
+        `,
+          )
+          .join("");
       }
     }
 
@@ -312,7 +376,7 @@ function triggerWorkspaceDecision(id) {
       department: currentDeptConfig.deptCode,
       applicationNo: app.application_no,
       companyName: app.company_name,
-      deptConfig: currentDeptConfig
+      deptConfig: currentDeptConfig,
     });
   }
 }
@@ -335,4 +399,3 @@ if (typeof window !== "undefined") {
   window.inspectWorkspaceDossier = inspectWorkspaceDossier;
   window.triggerWorkspaceDecision = triggerWorkspaceDecision;
 }
-

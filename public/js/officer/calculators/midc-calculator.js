@@ -39,17 +39,25 @@ function renderMidcCalculator(container) {
   `;
 
   function calculate() {
-    const plotArea = parseFloat(document.getElementById("calcPlotArea")?.value) || 2000;
-    const builtUp = parseFloat(document.getElementById("calcBuiltUp")?.value) || 1800;
+    const plotArea =
+      parseFloat(document.getElementById("calcPlotArea")?.value) || 2000;
+    const builtUp =
+      parseFloat(document.getElementById("calcBuiltUp")?.value) || 1800;
 
     const consumedFar = (builtUp / plotArea).toFixed(2);
     const maxFar = 1.0;
-    const coveragePercent = Math.min(100, ((builtUp / 2 / plotArea) * 100).toFixed(1));
+    const coveragePercent = Math.min(
+      100,
+      ((builtUp / 2 / plotArea) * 100).toFixed(1),
+    );
 
     const farEl = document.getElementById("calcConsumedFar");
     if (farEl) {
       farEl.textContent = `${consumedFar} / ${maxFar}`;
-      farEl.style.color = parseFloat(consumedFar) <= maxFar ? "var(--color-success, #059669)" : "var(--color-danger, #dc2626)";
+      farEl.style.color =
+        parseFloat(consumedFar) <= maxFar
+          ? "var(--color-success, var(--ok-ink))"
+          : "var(--color-danger, var(--err-ink))";
     }
 
     const covEl = document.getElementById("calcCoverage");
@@ -66,4 +74,3 @@ function renderMidcCalculator(container) {
 if (typeof window !== "undefined") {
   window.renderMidcCalculator = renderMidcCalculator;
 }
-

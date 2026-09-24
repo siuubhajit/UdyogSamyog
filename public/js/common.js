@@ -62,7 +62,7 @@ async function guard(role) {
     if (user.role === "official") {
       document
         .querySelectorAll(
-          "a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]"
+          "a[href='officer-dashboard.html'], a[href='/pages/officer-dashboard.html'], [data-nav-dashboard]",
         )
         .forEach((a) => a.setAttribute("href", dashUrl));
     }
@@ -76,11 +76,18 @@ async function guard(role) {
     // Populate user identity indicators
     document
       .querySelectorAll("[data-company]")
-      .forEach((x) => (x.textContent = user.companyName || user.department || user.email));
+      .forEach(
+        (x) =>
+          (x.textContent = user.companyName || user.department || user.email),
+      );
 
     document
       .querySelectorAll("[data-user-name]")
-      .forEach((x) => (x.textContent = user.contactPerson || user.companyName || user.email));
+      .forEach(
+        (x) =>
+          (x.textContent =
+            user.contactPerson || user.companyName || user.email),
+      );
 
     document.querySelectorAll("[data-user-dept]").forEach((x) => {
       x.textContent =
@@ -115,12 +122,15 @@ function updateSidebarUser(user) {
     } catch (_) {}
   }
 
-  const displayName = user?.contactPerson || user?.companyName || user?.name || "Portal User";
+  const displayName =
+    user?.contactPerson || user?.companyName || user?.name || "Portal User";
   const name = String(displayName).toUpperCase();
   const email = user?.email || "";
   const dept =
     user?.department ||
-    (user?.role === "official" ? "Govt of Maharashtra" : (user?.companyName || "Enterprise"));
+    (user?.role === "official"
+      ? "Govt of Maharashtra"
+      : user?.companyName || "Enterprise");
   const initial = displayName.charAt(0).toUpperCase() || "P";
 
   document.querySelectorAll("[data-sidebar-name]").forEach((el) => {
@@ -202,7 +212,8 @@ function toggleAllChecklist(prefix, total, btn) {
   const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
   const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
   checkboxes.forEach((cb) => (cb.checked = !allChecked));
-  if (targetBtn) targetBtn.textContent = !allChecked ? "Deselect All" : "Select All";
+  if (targetBtn)
+    targetBtn.textContent = !allChecked ? "Deselect All" : "Select All";
   updateChecklistCounter(prefix, total || checkboxes.length);
 }
 
@@ -236,9 +247,13 @@ function getTheme() {
 /** Set theme, persist to localStorage, and dispatch change event */
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
-  try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch (_) {}
   updateThemeToggleUI(theme);
-  document.dispatchEvent(new CustomEvent("udyog-theme-change", { detail: { theme } }));
+  document.dispatchEvent(
+    new CustomEvent("udyog-theme-change", { detail: { theme } }),
+  );
 }
 
 /** Toggle between light and dark */
@@ -250,12 +265,18 @@ function toggleTheme() {
 function updateThemeToggleUI(theme) {
   const isDark = (theme || getTheme()) === "dark";
   document.querySelectorAll(".theme-toggle-btn").forEach((btn) => {
-    const icon  = btn.querySelector(".toggle-icon");
+    const icon = btn.querySelector(".toggle-icon");
     const label = btn.querySelector(".toggle-label");
-    if (icon)  icon.textContent  = isDark ? "☀️" : "🌙";
+    if (icon) icon.textContent = isDark ? "☀️" : "🌙";
     if (label) label.textContent = isDark ? "Light Mode" : "Dark Mode";
-    btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
-    btn.setAttribute("title",      isDark ? "Switch to light mode" : "Switch to dark mode");
+    btn.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode",
+    );
+    btn.setAttribute(
+      "title",
+      isDark ? "Switch to light mode" : "Switch to dark mode",
+    );
   });
 }
 
@@ -271,11 +292,15 @@ function _createToggleBtn() {
 
 /** Mount theme toggle buttons into standard mount points */
 function mountThemeToggleButtons() {
-  const selectors = [".topbar-actions", ".hero-header", "[data-theme-toggle-mount]"];
+  const selectors = [
+    ".topbar-actions",
+    ".hero-header",
+    "[data-theme-toggle-mount]",
+  ];
   selectors.forEach((sel) => {
     document.querySelectorAll(sel).forEach((container) => {
       const signOutBtn = container.querySelector(
-        'button[onclick*="logout"], .btn-logout, a[href*="logout"], a[onclick*="logout"]'
+        'button[onclick*="logout"], .btn-logout, a[href*="logout"], a[onclick*="logout"]',
       );
       let btn = container.querySelector(".theme-toggle-btn");
       if (!btn) {
@@ -287,7 +312,11 @@ function mountThemeToggleButtons() {
         }
       } else {
         // If theme toggle button exists in container, ensure it is positioned before the sign out button
-        if (signOutBtn && signOutBtn.parentElement === container && btn.nextElementSibling !== signOutBtn) {
+        if (
+          signOutBtn &&
+          signOutBtn.parentElement === container &&
+          btn.nextElementSibling !== signOutBtn
+        ) {
           container.insertBefore(btn, signOutBtn);
         }
       }
@@ -298,19 +327,21 @@ function mountThemeToggleButtons() {
 
 /** React to OS-level prefers-color-scheme changes (only if user hasn't manually set a preference) */
 if (typeof window !== "undefined" && window.matchMedia) {
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-    try {
-      if (!localStorage.getItem(THEME_KEY)) {
-        setTheme(e.matches ? "dark" : "light");
-      }
-    } catch (_) {}
-  });
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      try {
+        if (!localStorage.getItem(THEME_KEY)) {
+          setTheme(e.matches ? "dark" : "light");
+        }
+      } catch (_) {}
+    });
 }
 
 /** Auto-initialise when DOM is ready */
 if (typeof window !== "undefined") {
-  window.getTheme  = getTheme;
-  window.setTheme  = setTheme;
+  window.getTheme = getTheme;
+  window.setTheme = setTheme;
   window.toggleTheme = toggleTheme;
 
   if (document.readyState === "loading") {
@@ -338,9 +369,13 @@ if (typeof window !== "undefined") {
       !!document.querySelector(".auth");
     if (isAuthPage) return; // Do not load AI modules on front / auth pages
 
-    const page = document.body ? (document.body.dataset.page || "") : "";
+    const page = document.body ? document.body.dataset.page || "" : "";
     const isAppPage = path.includes("application") || page === "application";
-    const isVerifPage = path.includes("verification") || page === "verification";
+    const isVerifPage =
+      path.includes("verification") ||
+      page === "verification" ||
+      path.includes("officer-workspace") ||
+      page === "officer-workspace";
     const isApplicantDash = path.includes("applicant-dashboard");
 
     // Global AI assistant chat
@@ -383,9 +418,12 @@ if (typeof window !== "undefined") {
       if (!modal.getAttribute("role")) modal.setAttribute("role", "dialog");
       modal.setAttribute("aria-modal", "true");
 
-      const heading = modal.querySelector(".modal-title, .dialog-title, h2, h3");
+      const heading = modal.querySelector(
+        ".modal-title, .dialog-title, h2, h3",
+      );
       if (heading && !modal.getAttribute("aria-labelledby")) {
-        if (!heading.id) heading.id = "modal-title-" + Math.random().toString(36).slice(2, 7);
+        if (!heading.id)
+          heading.id = "modal-title-" + Math.random().toString(36).slice(2, 7);
         modal.setAttribute("aria-labelledby", heading.id);
       }
 
@@ -393,9 +431,9 @@ if (typeof window !== "undefined") {
       this.syncLock();
 
       // Focus first interactive control or heading
-      const focusables = Array.from(modal.querySelectorAll(this.focusableSelectors)).filter(
-        (el) => el.offsetParent !== null
-      );
+      const focusables = Array.from(
+        modal.querySelectorAll(this.focusableSelectors),
+      ).filter((el) => el.offsetParent !== null);
       if (focusables.length > 0) {
         focusables[0].focus();
       } else if (heading) {
@@ -417,7 +455,9 @@ if (typeof window !== "undefined") {
       if (idx !== -1) {
         const entry = this.stack.splice(idx, 1)[0];
         if (entry.trigger && typeof entry.trigger.focus === "function") {
-          try { entry.trigger.focus(); } catch (_) {}
+          try {
+            entry.trigger.focus();
+          } catch (_) {}
         }
       }
       this.syncLock();
@@ -437,7 +477,7 @@ if (typeof window !== "undefined") {
       if (document.body) {
         document.body.classList.toggle("modal-open", shouldLock);
       }
-    }
+    },
   };
 
   // Global Keydown Handler: Escape to close, Tab to trap focus
@@ -453,9 +493,9 @@ if (typeof window !== "undefined") {
     }
 
     if (e.key === "Tab") {
-      const focusables = Array.from(modal.querySelectorAll(Modal.focusableSelectors)).filter(
-        (el) => el.offsetParent !== null && !el.disabled
-      );
+      const focusables = Array.from(
+        modal.querySelectorAll(Modal.focusableSelectors),
+      ).filter((el) => el.offsetParent !== null && !el.disabled);
       if (focusables.length === 0) return;
 
       const first = focusables[0];
@@ -493,11 +533,13 @@ if (typeof window !== "undefined") {
   window.closeTopModal = () => Modal.closeTop();
   window.closeModals = () => {
     while (Modal.stack.length > 0) Modal.closeTop();
-    document.querySelectorAll(".modal-overlay, .modal, .advisor-modal-overlay").forEach((m) => {
-      m.classList.remove("open");
-      m.style.display = "none";
-      m.setAttribute("aria-hidden", "true");
-    });
+    document
+      .querySelectorAll(".modal-overlay, .modal, .advisor-modal-overlay")
+      .forEach((m) => {
+        m.classList.remove("open");
+        m.style.display = "none";
+        m.setAttribute("aria-hidden", "true");
+      });
     if (document.body) document.body.classList.remove("modal-open");
   };
   window.syncBodyModalLock = () => Modal.syncLock();
@@ -606,8 +648,12 @@ function confirmDialog(options = {}) {
       resolve(result);
     }
 
-    overlay.querySelector(".btn-dialog-cancel").addEventListener("click", () => close(false));
-    overlay.querySelector(".btn-dialog-confirm").addEventListener("click", () => close(true));
+    overlay
+      .querySelector(".btn-dialog-cancel")
+      .addEventListener("click", () => close(false));
+    overlay
+      .querySelector(".btn-dialog-confirm")
+      .addEventListener("click", () => close(true));
 
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) close(false);
@@ -703,11 +749,15 @@ function initSidebarController() {
         if (window.innerWidth <= 768) return; // Don't affect mobile drawer
         if (!scrollTicking) {
           window.requestAnimationFrame(() => {
-            const currentScroll = window.scrollY || document.documentElement.scrollTop;
+            const currentScroll =
+              window.scrollY || document.documentElement.scrollTop;
             const toggleBtn = document.querySelector(".sidebar-rail-toggle");
 
             if (currentScroll > 40) {
-              if (!window._userManuallyExpanded && !document.body.classList.contains("sidebar-collapsed")) {
+              if (
+                !window._userManuallyExpanded &&
+                !document.body.classList.contains("sidebar-collapsed")
+              ) {
                 document.body.classList.add("sidebar-collapsed");
                 if (toggleBtn) toggleBtn.innerHTML = ICON_EXPAND;
               }
@@ -718,7 +768,7 @@ function initSidebarController() {
           scrollTicking = true;
         }
       },
-      { passive: true }
+      { passive: true },
     );
   }
 
@@ -726,91 +776,162 @@ function initSidebarController() {
   sidebar.querySelectorAll(".sidebar-footer").forEach((el) => el.remove());
 
   // 3. Process links in sidebar: wrap labels, add tooltips, upgrade icons to crisp SVGs
-  sidebar.querySelectorAll("a:not(.sidebar-brand):not(.sidebar-main-btn)").forEach((link) => {
-    let label = link.querySelector(".sidebar-label");
-    let tooltip = link.querySelector(".sidebar-tooltip");
+  sidebar
+    .querySelectorAll("a:not(.sidebar-brand):not(.sidebar-main-btn)")
+    .forEach((link) => {
+      let label = link.querySelector(".sidebar-label");
+      let tooltip = link.querySelector(".sidebar-tooltip");
 
-    if (!label) {
-      const childNodes = Array.from(link.childNodes);
-      const textNodes = childNodes.filter(
-        (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim().length > 0
-      );
-      let text = "";
-      if (textNodes.length > 0) {
-        text = textNodes.map((n) => n.textContent).join(" ").trim();
-        textNodes.forEach((n) => n.remove());
-      } else {
-        const nonIcons = childNodes.filter(
+      if (!label) {
+        const childNodes = Array.from(link.childNodes);
+        const textNodes = childNodes.filter(
           (n) =>
-            n.nodeType === Node.ELEMENT_NODE &&
-            !n.classList.contains("sidebar-icon") &&
-            !n.classList.contains("sidebar-badge") &&
-            !n.classList.contains("badge")
+            n.nodeType === Node.TEXT_NODE && n.textContent.trim().length > 0,
         );
-        if (nonIcons.length > 0) {
-          text = nonIcons.map((n) => n.textContent).join(" ").trim();
-          nonIcons.forEach((n) => n.remove());
-        }
-      }
-
-      if (text) {
-        label = document.createElement("span");
-        label.className = "sidebar-label";
-        label.textContent = text;
-        const badge = link.querySelector(".sidebar-badge, .badge");
-        if (badge && badge.parentElement === link) {
-          link.insertBefore(label, badge);
+        let text = "";
+        if (textNodes.length > 0) {
+          text = textNodes
+            .map((n) => n.textContent)
+            .join(" ")
+            .trim();
+          textNodes.forEach((n) => n.remove());
         } else {
-          link.appendChild(label);
+          const nonIcons = childNodes.filter(
+            (n) =>
+              n.nodeType === Node.ELEMENT_NODE &&
+              !n.classList.contains("sidebar-icon") &&
+              !n.classList.contains("sidebar-badge") &&
+              !n.classList.contains("badge"),
+          );
+          if (nonIcons.length > 0) {
+            text = nonIcons
+              .map((n) => n.textContent)
+              .join(" ")
+              .trim();
+            nonIcons.forEach((n) => n.remove());
+          }
+        }
+
+        if (text) {
+          label = document.createElement("span");
+          label.className = "sidebar-label";
+          label.textContent = text;
+          const badge = link.querySelector(".sidebar-badge, .badge");
+          if (badge && badge.parentElement === link) {
+            link.insertBefore(label, badge);
+          } else {
+            link.appendChild(label);
+          }
         }
       }
-    }
 
-    const linkText = (label ? label.textContent : link.textContent).trim();
+      const linkText = (label ? label.textContent : link.textContent).trim();
 
-    if (!tooltip && linkText) {
-      tooltip = document.createElement("span");
-      tooltip.className = "sidebar-tooltip";
-      tooltip.textContent = linkText;
-      link.appendChild(tooltip);
-    }
-
-    // Enhance icons with crisp SVGs matching the reference screenshots
-    const iconSpan = link.querySelector(".sidebar-icon");
-    if (iconSpan && !iconSpan.querySelector("svg")) {
-      const txtLower = linkText.toLowerCase();
-
-      if (txtLower.includes("dashboard") || txtLower.includes("overview")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`;
-      } else if (txtLower.includes("profile") || txtLower.includes("account") || txtLower.includes("user")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-      } else if (txtLower.includes("assessment") || txtLower.includes("test")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="9 15 11 17 15 13"></polyline></svg>`;
-      } else if (txtLower.includes("queue") || txtLower.includes("application") || txtLower.includes("permit")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`;
-      } else if (txtLower.includes("saved") || txtLower.includes("bookmark")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
-      } else if (txtLower.includes("private") || txtLower.includes("enterprise") || txtLower.includes("registry") || txtLower.includes("company")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>`;
-      } else if (txtLower.includes("government") || txtLower.includes("apex") || txtLower.includes("deemed") || txtLower.includes("sla")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V10"></path><path d="M19 21V10"></path><path d="M9 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7"></path><polygon points="12 2 2 7 22 7"></polygon></svg>`;
-      } else if (txtLower.includes("army") || txtLower.includes("security") || txtLower.includes("safety") || txtLower.includes("fire") || txtLower.includes("dish")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
-      } else if (txtLower.includes("nhai") || txtLower.includes("truck") || txtLower.includes("transport") || txtLower.includes("logistics")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
-      } else if (txtLower.includes("amrutam") || txtLower.includes("water") || txtLower.includes("mpcb") || txtLower.includes("pollution")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`;
-      } else if (txtLower.includes("scheme") || txtLower.includes("psi") || txtLower.includes("incentive") || txtLower.includes("fund") || txtLower.includes("calculator")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
-      } else if (txtLower.includes("scrutiny") || txtLower.includes("vault") || txtLower.includes("dossier") || txtLower.includes("verification") || txtLower.includes("search")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
-      } else if (txtLower.includes("analytics") || txtLower.includes("intelligence") || txtLower.includes("report") || txtLower.includes("metric")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`;
-      } else if (txtLower.includes("ai") || txtLower.includes("operations") || txtLower.includes("admin") || txtLower.includes("copilot")) {
-        iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
+      if (!tooltip && linkText) {
+        tooltip = document.createElement("span");
+        tooltip.className = "sidebar-tooltip";
+        tooltip.textContent = linkText;
+        link.appendChild(tooltip);
       }
-    }
-  });
+
+      // Enhance icons with crisp SVGs matching the reference screenshots
+      const iconSpan = link.querySelector(".sidebar-icon");
+      if (iconSpan && !iconSpan.querySelector("svg")) {
+        const txtLower = linkText.toLowerCase();
+
+        if (txtLower.includes("dashboard") || txtLower.includes("overview")) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`;
+        } else if (
+          txtLower.includes("profile") ||
+          txtLower.includes("account") ||
+          txtLower.includes("user")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+        } else if (
+          txtLower.includes("assessment") ||
+          txtLower.includes("test")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="9 15 11 17 15 13"></polyline></svg>`;
+        } else if (
+          txtLower.includes("queue") ||
+          txtLower.includes("application") ||
+          txtLower.includes("permit")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`;
+        } else if (
+          txtLower.includes("saved") ||
+          txtLower.includes("bookmark")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+        } else if (
+          txtLower.includes("private") ||
+          txtLower.includes("enterprise") ||
+          txtLower.includes("registry") ||
+          txtLower.includes("company")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>`;
+        } else if (
+          txtLower.includes("government") ||
+          txtLower.includes("apex") ||
+          txtLower.includes("deemed") ||
+          txtLower.includes("sla")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V10"></path><path d="M19 21V10"></path><path d="M9 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7"></path><polygon points="12 2 2 7 22 7"></polygon></svg>`;
+        } else if (
+          txtLower.includes("army") ||
+          txtLower.includes("security") ||
+          txtLower.includes("safety") ||
+          txtLower.includes("fire") ||
+          txtLower.includes("dish")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
+        } else if (
+          txtLower.includes("nhai") ||
+          txtLower.includes("truck") ||
+          txtLower.includes("transport") ||
+          txtLower.includes("logistics")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+        } else if (
+          txtLower.includes("amrutam") ||
+          txtLower.includes("water") ||
+          txtLower.includes("mpcb") ||
+          txtLower.includes("pollution")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`;
+        } else if (
+          txtLower.includes("scheme") ||
+          txtLower.includes("psi") ||
+          txtLower.includes("incentive") ||
+          txtLower.includes("fund") ||
+          txtLower.includes("calculator")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+        } else if (
+          txtLower.includes("scrutiny") ||
+          txtLower.includes("vault") ||
+          txtLower.includes("dossier") ||
+          txtLower.includes("verification") ||
+          txtLower.includes("search")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+        } else if (
+          txtLower.includes("analytics") ||
+          txtLower.includes("intelligence") ||
+          txtLower.includes("report") ||
+          txtLower.includes("metric")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`;
+        } else if (
+          txtLower.includes("ai") ||
+          txtLower.includes("operations") ||
+          txtLower.includes("admin") ||
+          txtLower.includes("copilot")
+        ) {
+          iconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
+        }
+      }
+    });
 
   // 4. Remove any bottom section / main page button if present
   const existingBottom = sidebar.querySelector(".sidebar-bottom-section");
@@ -838,7 +959,8 @@ function initSidebarController() {
     }
 
     function toggleMobileDrawer(open) {
-      const isOpen = open !== undefined ? open : !sidebar.classList.contains("drawer-open");
+      const isOpen =
+        open !== undefined ? open : !sidebar.classList.contains("drawer-open");
       if (isOpen) {
         sidebar.classList.add("drawer-open");
         backdrop.classList.add("active");
@@ -862,7 +984,10 @@ function initSidebarController() {
     });
 
     document.addEventListener("keydown", (e) => {
-      if ((e.key === "Escape" || e.key === "Esc") && sidebar.classList.contains("drawer-open")) {
+      if (
+        (e.key === "Escape" || e.key === "Esc") &&
+        sidebar.classList.contains("drawer-open")
+      ) {
         toggleMobileDrawer(false);
       }
     });
@@ -875,14 +1000,20 @@ function initSidebarController() {
    ═══════════════════════════════════════════════════════════════ */
 function setupSortableTables() {
   const tables = document.querySelectorAll(
-    "table[data-sortable], table.sortable, .table-container table:not([data-no-sort]), .table-wrap table:not([data-no-sort])"
+    "table[data-sortable], table.sortable, .table-container table:not([data-no-sort]), .table-wrap table:not([data-no-sort])",
   );
   tables.forEach((table) => {
     const ths = table.querySelectorAll("thead th");
     ths.forEach((th, colIdx) => {
       if (th.getAttribute("data-no-sort") !== null) return;
       const text = th.textContent.trim().toLowerCase();
-      if (text === "action" || text === "actions" || text === "view" || text === "") return;
+      if (
+        text === "action" ||
+        text === "actions" ||
+        text === "view" ||
+        text === ""
+      )
+        return;
       if (th.classList.contains("sortable-th")) return;
 
       th.classList.add("sortable-th");
@@ -896,7 +1027,8 @@ function setupSortableTables() {
 
       th.addEventListener("click", () => {
         const currentOrder = th.getAttribute("aria-sort");
-        const newOrder = currentOrder === "ascending" ? "descending" : "ascending";
+        const newOrder =
+          currentOrder === "ascending" ? "descending" : "ascending";
 
         ths.forEach((otherTh) => {
           otherTh.setAttribute("aria-sort", "none");
@@ -917,8 +1049,12 @@ function setupSortableTables() {
         if (dataRows.length <= 1) return;
 
         dataRows.sort((rowA, rowB) => {
-          const cellA = rowA.children[colIdx] ? rowA.children[colIdx].textContent.trim() : "";
-          const cellB = rowB.children[colIdx] ? rowB.children[colIdx].textContent.trim() : "";
+          const cellA = rowA.children[colIdx]
+            ? rowA.children[colIdx].textContent.trim()
+            : "";
+          const cellB = rowB.children[colIdx]
+            ? rowB.children[colIdx].textContent.trim()
+            : "";
 
           const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ""));
           const numB = parseFloat(cellB.replace(/[^0-9.-]/g, ""));
@@ -927,7 +1063,10 @@ function setupSortableTables() {
           if (!isNaN(numA) && !isNaN(numB) && cellA.match(/^[₹$€\d]/)) {
             cmp = numA - numB;
           } else {
-            cmp = cellA.localeCompare(cellB, undefined, { numeric: true, sensitivity: "base" });
+            cmp = cellA.localeCompare(cellB, undefined, {
+              numeric: true,
+              sensitivity: "base",
+            });
           }
           return newOrder === "ascending" ? cmp : -cmp;
         });
@@ -988,16 +1127,22 @@ function initBrandHomeNavigation() {
 
 /* ─── State Seal / Brand Emblem Initializer ──────────────────────── */
 function initMaharashtraEmblems() {
-  document.querySelectorAll(".brand-emblem, .cert-emblem, #deptEmblem").forEach((el) => {
-    if (!el.querySelector("img")) {
-      el.innerHTML = '<img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" class="brand-emblem-img" />';
-    }
-  });
+  document
+    .querySelectorAll(".brand-emblem, .cert-emblem, #deptEmblem")
+    .forEach((el) => {
+      if (!el.querySelector("img")) {
+        el.innerHTML =
+          '<img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" class="brand-emblem-img" />';
+      }
+    });
 }
 
 /* ─── AI Chat Assistant Initializer ───────────────────────────────── */
 function initAiChatAssistant() {
-  const path = (typeof window !== "undefined" && window.location.pathname) ? window.location.pathname.toLowerCase() : "";
+  const path =
+    typeof window !== "undefined" && window.location.pathname
+      ? window.location.pathname.toLowerCase()
+      : "";
   const isAuthPage =
     path === "/" ||
     path.endsWith("/login.html") ||
@@ -1074,5 +1219,3 @@ if (typeof window !== "undefined") {
     initAiChatAssistant();
   }
 }
-
-

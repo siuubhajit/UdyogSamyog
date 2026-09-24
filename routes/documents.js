@@ -31,13 +31,21 @@ router.post(
 
       const appId = toObjectId(req.params.id);
       if (!appId) {
-        if (req.file) { try { fs.unlinkSync(req.file.path); } catch (_) {} }
+        if (req.file) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (_) {}
+        }
         return res.status(404).json({ error: "Application not found" });
       }
 
       const a = await Application.findById(appId).lean();
       if (!a) {
-        if (req.file) { try { fs.unlinkSync(req.file.path); } catch (_) {} }
+        if (req.file) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (_) {}
+        }
         return res.status(404).json({ error: "Application not found" });
       }
 
@@ -45,23 +53,37 @@ router.post(
         req.session.user.role !== "official" &&
         a.user_id.toString() !== req.session.user.id
       ) {
-        if (req.file) { try { fs.unlinkSync(req.file.path); } catch (_) {} }
+        if (req.file) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (_) {}
+        }
         return res
           .status(403)
           .json({ error: "Not authorized to upload to this application." });
       }
 
       if (req.session.user.role === "applicant") {
-        const u = await User.findById(req.session.user.id, "is_banned ban_reason").lean();
+        const u = await User.findById(
+          req.session.user.id,
+          "is_banned ban_reason",
+        ).lean();
         if (u && u.is_banned) {
-          if (req.file) { try { fs.unlinkSync(req.file.path); } catch (_) {} }
+          if (req.file) {
+            try {
+              fs.unlinkSync(req.file.path);
+            } catch (_) {}
+          }
           return res.status(403).json({
             error: `Your enterprise account has been blacklisted: ${u.ban_reason || "Statutory non-compliance"}. Document uploads are prohibited.`,
           });
         }
       }
 
-      const planType = determinePlanType(req.body.documentType, req.body.planType);
+      const planType = determinePlanType(
+        req.body.documentType,
+        req.body.planType,
+      );
       const department = getDocumentDepartment({
         plan_type: planType,
         document_type: req.body.documentType,
@@ -203,7 +225,9 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
     }
 
     if (!fs.existsSync(resolvedPath)) {
-      return res.status(404).send("Physical file is missing from the server vault.");
+      return res
+        .status(404)
+        .send("Physical file is missing from the server vault.");
     }
 
     res.setHeader("X-Content-Type-Options", "nosniff");
@@ -272,6 +296,31 @@ router.get("/api/documents/:id", auth, async (req, res) => {
   }
 });
 
+// Document Optical Character Recognition & Extraction (OCR)
+router.post("/api/documents/:id/ocr", auth, async (req, res) => {
+  try {
+    const docId = toObjectId(req.params.id);
+    if (!docId)
+      return res.status(404).json({ error: "Document not found in vault." });
+
+    const d = await Document.findById(docId).lean();
+    if (!d)
+      return res.status(404).json({ error: "Document not found in vault." });
+
+    const aiClient = require("../utils/aiClient");
+    const result = await aiClient.processDocument(
+      d._id.toString(),
+      d.stored_name,
+      d.document_type || d.plan_type,
+      req.session.user,
+    );
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "OCR extraction failed: " + err.message });
+  }
+});
+
 // Officer Document Verification
 router.patch("/api/documents/:id/verify", auth, official, async (req, res) => {
   try {
@@ -282,8 +331,14 @@ router.patch("/api/documents/:id/verify", auth, official, async (req, res) => {
     const d = await Document.findById(docId).lean();
     if (!d) return res.status(404).json({ error: "Document not found" });
 
-    const appRow = await Application.findById(d.application_id, "status").lean();
-    if (appRow && (appRow.status === "Approved" || appRow.status === "Rejected")) {
+    const appRow = await Application.findById(
+      d.application_id,
+      "status",
+    ).lean();
+    if (
+      appRow &&
+      (appRow.status === "Approved" || appRow.status === "Rejected")
+    ) {
       return res.status(400).json({
         error: `Application is already ${appRow.status}. Document scrutiny is locked.`,
       });
@@ -335,4 +390,3 @@ router.patch("/api/documents/:id/verify", auth, official, async (req, res) => {
 });
 
 module.exports = router;
-

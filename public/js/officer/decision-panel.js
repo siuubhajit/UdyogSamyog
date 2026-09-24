@@ -13,7 +13,7 @@ function openDepartmentDecisionModal({
   department,
   applicationNo,
   companyName,
-  deptConfig
+  deptConfig,
 }) {
   activeDecisionAppId = applicationId;
   activeDecisionDept = department;
@@ -33,14 +33,20 @@ function openDepartmentDecisionModal({
     subEl.textContent = `${applicationNo} · ${companyName} (${deptConfig.phase})`;
   }
 
-  const checklistContainer = document.getElementById("decisionChecklistContainer");
+  const checklistContainer = document.getElementById(
+    "decisionChecklistContainer",
+  );
   if (checklistContainer) {
-    checklistContainer.innerHTML = (deptConfig.checklist || []).map((item, idx) => `
+    checklistContainer.innerHTML = (deptConfig.checklist || [])
+      .map(
+        (item, idx) => `
       <label class="checklist-item-row" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;user-select:none;">
-        <input type="checkbox" class="dept-decision-chk" id="deptChk_${idx}" style="width:17px;height:17px;margin-top:2px;accent-color:${deptConfig.accentColor || 'var(--navy)'};" />
-        <span style="font-size:0.85rem;line-height:1.4;color:var(--color-text-primary, #1e293b);">${escapeHtml(item)}</span>
+        <input type="checkbox" class="dept-decision-chk" id="deptChk_${idx}" style="width:17px;height:17px;margin-top:2px;accent-color:${deptConfig.accentColor || "var(--navy)"};" />
+        <span style="font-size:0.85rem;line-height:1.4;color:var(--color-text-primary, var(--ink));">${escapeHtml(item)}</span>
       </label>
-    `).join("");
+    `,
+      )
+      .join("");
   }
 
   const counterEl = document.getElementById("decisionChecklistCounter");
@@ -60,10 +66,14 @@ function openDepartmentDecisionModal({
     cb.addEventListener("change", () => {
       const checked = Array.from(chks).filter((c) => c.checked).length;
       if (counterEl) {
-        counterEl.textContent = checked === chks.length
-          ? `✅ All ${checked} statutory criteria verified (100%)`
-          : `${checked} of ${chks.length} verified`;
-        counterEl.style.color = checked === chks.length ? "var(--color-success, #059669)" : "var(--color-warning, #b45309)";
+        counterEl.textContent =
+          checked === chks.length
+            ? `✅ All ${checked} statutory criteria verified (100%)`
+            : `${checked} of ${chks.length} verified`;
+        counterEl.style.color =
+          checked === chks.length
+            ? "var(--color-success, var(--ok-ink))"
+            : "var(--color-warning, var(--warn-ink))";
       }
     });
   });
@@ -82,10 +92,14 @@ function toggleAllDecisionChecklist() {
   const counterEl = document.getElementById("decisionChecklistCounter");
   if (counterEl) {
     const checked = !allChecked ? chks.length : 0;
-    counterEl.textContent = checked === chks.length
-      ? `✅ All ${checked} statutory criteria verified (100%)`
-      : `${checked} of ${chks.length} verified`;
-    counterEl.style.color = checked === chks.length ? "var(--color-success, #059669)" : "var(--color-warning, #b45309)";
+    counterEl.textContent =
+      checked === chks.length
+        ? `✅ All ${checked} statutory criteria verified (100%)`
+        : `${checked} of ${chks.length} verified`;
+    counterEl.style.color =
+      checked === chks.length
+        ? "var(--color-success, var(--ok-ink))"
+        : "var(--color-warning, var(--warn-ink))";
   }
   const btn = document.getElementById("decisionToggleAllBtn");
   if (btn) btn.textContent = !allChecked ? "Deselect All" : "Select All";
@@ -98,13 +112,14 @@ async function submitDepartmentDecision({
   remarks,
   checklistSelector = ".dept-decision-chk",
   defaultApprovalRemark = "Statutory departmental clearance granted.",
-  onSuccess
+  onSuccess,
 }) {
   if (!applicationId) return;
 
-  const rawRemarks = remarks !== undefined
-    ? remarks
-    : (document.getElementById("decisionRemarksInput")?.value || "").trim();
+  const rawRemarks =
+    remarks !== undefined
+      ? remarks
+      : (document.getElementById("decisionRemarksInput")?.value || "").trim();
 
   // Verification checklist check on approval
   if (decision === "Approved") {
@@ -112,7 +127,10 @@ async function submitDepartmentDecision({
     const incomplete = items.some((item) => !item.checked);
     if (items.length > 0 && incomplete) {
       if (typeof notify === "function") {
-        notify(`Statutory Requirement: Please verify and check all ${items.length} checklist items before issuing clearance.`, "warning");
+        notify(
+          `Statutory Requirement: Please verify and check all ${items.length} checklist items before issuing clearance.`,
+          "warning",
+        );
       } else {
         alert("Please complete all checklist items before approval.");
       }
@@ -123,7 +141,10 @@ async function submitDepartmentDecision({
   // Remarks validation for Query and Reject
   if (decision === "Query" && !rawRemarks) {
     if (typeof notify === "function") {
-      notify("Please provide the specific clarification query or missing document requirements for the applicant.", "warning");
+      notify(
+        "Please provide the specific clarification query or missing document requirements for the applicant.",
+        "warning",
+      );
     } else {
       alert("Please provide the query remarks.");
     }
@@ -132,7 +153,10 @@ async function submitDepartmentDecision({
 
   if (decision === "Rejected" && !rawRemarks) {
     if (typeof notify === "function") {
-      notify("Please provide statutory grounds and reference acts for clearance refusal.", "warning");
+      notify(
+        "Please provide statutory grounds and reference acts for clearance refusal.",
+        "warning",
+      );
     } else {
       alert("Please provide statutory grounds for rejection.");
     }
@@ -145,12 +169,15 @@ async function submitDepartmentDecision({
       body: JSON.stringify({
         decision,
         targetDept: department,
-        remarks: rawRemarks || defaultApprovalRemark
-      })
+        remarks: rawRemarks || defaultApprovalRemark,
+      }),
     });
 
     if (typeof notify === "function") {
-      notify(res.message || `Decision '${decision}' recorded successfully.`, "success");
+      notify(
+        res.message || `Decision '${decision}' recorded successfully.`,
+        "success",
+      );
     }
 
     if (window.Modal) {
@@ -179,4 +206,3 @@ if (typeof window !== "undefined") {
   window.toggleAllDecisionChecklist = toggleAllDecisionChecklist;
   window.submitDepartmentDecision = submitDepartmentDecision;
 }
-

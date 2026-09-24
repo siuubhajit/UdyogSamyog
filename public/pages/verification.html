@@ -11,8 +11,16 @@
       /* Zero-FOUC: apply theme before first paint */
       (function () {
         var t = null;
-        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
-        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        try {
+          t = localStorage.getItem("udyog_theme");
+        } catch (_) {}
+        if (!t) {
+          t =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        }
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
@@ -23,16 +31,38 @@
       <!-- Topbar Header -->
       <header class="topbar">
         <div class="brand-group">
-          <a href="#" class="brand-link" data-brand-home title="Return to Dashboard / Refresh">
-            <div class="brand-emblem"><img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" class="brand-emblem-img" /></div>
-            <div class="brand-title">महाराष्ट्र शासन | GOVT. OF MAHARASHTRA</div>
+          <a
+            href="#"
+            class="brand-link"
+            data-brand-home
+            title="Return to Dashboard / Refresh"
+          >
+            <div class="brand-emblem">
+              <img
+                src="/img/seal-of-maharashtra.svg"
+                alt="Seal of Maharashtra"
+                class="brand-emblem-img"
+              />
+            </div>
+            <div class="brand-title">
+              महाराष्ट्र शासन | GOVT. OF MAHARASHTRA
+            </div>
           </a>
         </div>
         <div class="topbar-actions">
           <a class="btn outline sm" href="officer-dashboard.html"
             >← Back to Application Queue</a
           >
-          <button type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark / light mode" onclick="toggleTheme()"><span class="toggle-icon">🌙</span><span class="toggle-label">Dark Mode</span></button>
+          <button
+            type="button"
+            class="theme-toggle-btn"
+            aria-label="Toggle theme"
+            title="Toggle dark / light mode"
+            onclick="toggleTheme()"
+          >
+            <span class="toggle-icon">🌙</span
+            ><span class="toggle-label">Dark Mode</span>
+          </button>
           <button class="btn outline sm" onclick="logout()">Sign Out</button>
         </div>
       </header>
@@ -105,7 +135,14 @@
                 </p>
               </div>
 
-              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <div
+                style="
+                  display: flex;
+                  gap: 10px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
                 <select
                   id="quickAppSelect"
                   onchange="switchApplication(this.value)"
@@ -127,7 +164,9 @@
             <div class="industry-info-strip">
               <div class="industry-info-item">
                 <span class="industry-info-label">👤 Authorized Signatory</span>
-                <span class="industry-info-value" id="headerContactPerson">---</span>
+                <span class="industry-info-value" id="headerContactPerson"
+                  >---</span
+                >
               </div>
               <div class="industry-info-item">
                 <span class="industry-info-label">✉️ Official Email</span>
@@ -142,16 +181,29 @@
                 <span class="industry-info-value" id="headerLocation">---</span>
               </div>
               <div class="industry-info-item">
-                <span class="industry-info-label">📅 Application Filing Date</span>
-                <span class="industry-info-value" id="headerFilingDate">---</span>
+                <span class="industry-info-label"
+                  >📅 Application Filing Date</span
+                >
+                <span class="industry-info-value" id="headerFilingDate"
+                  >---</span
+                >
               </div>
               <div class="industry-info-item">
                 <span class="industry-info-label">⏱️ Statutory SLA Status</span>
-                <span class="industry-info-value" id="headerSlaStatus" style="color:var(--navy); font-weight:800;">Evaluating...</span>
+                <span
+                  class="industry-info-value"
+                  id="headerSlaStatus"
+                  style="color: var(--navy); font-weight: 800"
+                  >Evaluating...</span
+                >
               </div>
               <div class="industry-info-item">
-                <span class="industry-info-label">⏱️ Statutory Clearance Phase</span>
-                <span class="industry-info-value" id="headerCurrentStage">---</span>
+                <span class="industry-info-label"
+                  >⏱️ Statutory Clearance Phase</span
+                >
+                <span class="industry-info-value" id="headerCurrentStage"
+                  >---</span
+                >
               </div>
             </div>
 
@@ -265,28 +317,88 @@
             <!-- LEFT COLUMN: Statutory Folder Directory, Document Explorer & PDF Inspector -->
             <div class="dossier-pane-left" id="dossierPaneLeft">
               <!-- Departmental Vault Scrutiny Badge & Jurisdiction Banner -->
-              <div id="vaultScopeBanner" style="background: var(--surface-card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <span id="vaultScopeIcon" style="font-size: 1.6rem;">🏛️</span>
+              <div
+                id="vaultScopeBanner"
+                style="
+                  background: var(--surface-card);
+                  border: 1px solid var(--line);
+                  border-radius: 8px;
+                  padding: 14px 18px;
+                  margin-bottom: 16px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  gap: 12px;
+                  flex-wrap: wrap;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <span id="vaultScopeIcon" style="font-size: 1.6rem">🏛️</span>
                   <div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                      <span style="font-weight: 800; font-size: 1.05rem; color: var(--navy);" id="vaultScopeTitle">Apex Multi-Department Scrutiny Vault</span>
-                      <span id="vaultScopeBadge" class="badge blue">Apex Authority · All Statutory Vaults</span>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        flex-wrap: wrap;
+                      "
+                    >
+                      <span
+                        style="
+                          font-weight: 800;
+                          font-size: 1.05rem;
+                          color: var(--navy);
+                        "
+                        id="vaultScopeTitle"
+                        >Apex Multi-Department Scrutiny Vault</span
+                      >
+                      <span id="vaultScopeBadge" class="badge blue"
+                        >Apex Authority · All Statutory Vaults</span
+                      >
                     </div>
-                    <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 3px;" id="vaultScopeSubtitle">
-                      Consolidated statutory oversight across Pollution Control Board, Industrial Development Corporation, Industrial Safety & Health, and Fire Services.
+                    <div
+                      style="
+                        font-size: 0.78rem;
+                        color: var(--ink-light);
+                        margin-top: 3px;
+                      "
+                      id="vaultScopeSubtitle"
+                    >
+                      Consolidated statutory oversight across Pollution Control
+                      Board, Industrial Development Corporation, Industrial
+                      Safety & Health, and Fire Services.
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- 1. STATUTORY FOLDERS NAVIGATION DIRECTORY -->
-              <div style="margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <div style="font-weight: 700; font-size: 0.88rem; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+              <div style="margin-bottom: 8px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <div
+                    style="
+                      font-weight: 700;
+                      font-size: 0.88rem;
+                      color: var(--navy);
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                  >
                     <span>📁</span> <span>Statutory Document Folders</span>
                   </div>
-                  <span id="vaultFolderSectionSubtitle" style="font-size: 0.75rem; color: var(--ink-light);">Click any folder to inspect blueprints</span>
+                  <span
+                    id="vaultFolderSectionSubtitle"
+                    style="font-size: 0.75rem; color: var(--ink-light)"
+                    >Click any folder to inspect blueprints</span
+                  >
                 </div>
                 <div class="vault-folder-nav" id="vaultFolderNav">
                   <!-- Generated dynamically via renderVaultFolders() -->
@@ -297,13 +409,35 @@
               <div class="vault-folder-explorer" id="vaultFolderExplorer">
                 <div class="vault-folder-header">
                   <div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span id="activeFolderIcon" style="font-size: 1.3rem;">📂</span>
-                      <h3 style="margin: 0; font-size: 0.98rem; color: var(--navy);" id="activeFolderTitle">All Technical Blueprints & Dossiers</h3>
-                      <span id="activeFolderCountBadge" class="badge blue">0 Documents</span>
+                    <div style="display: flex; align-items: center; gap: 8px">
+                      <span id="activeFolderIcon" style="font-size: 1.3rem"
+                        >📂</span
+                      >
+                      <h3
+                        style="
+                          margin: 0;
+                          font-size: 0.98rem;
+                          color: var(--navy);
+                        "
+                        id="activeFolderTitle"
+                      >
+                        All Technical Blueprints & Dossiers
+                      </h3>
+                      <span id="activeFolderCountBadge" class="badge blue"
+                        >0 Documents</span
+                      >
                     </div>
-                    <div style="font-size: 0.76rem; color: var(--ink-light); margin-top: 3px;" id="activeFolderDesc">
-                      Unified statutory repository containing all architectural blueprints, environmental engineering plans, and enterprise proofs.
+                    <div
+                      style="
+                        font-size: 0.76rem;
+                        color: var(--ink-light);
+                        margin-top: 3px;
+                      "
+                      id="activeFolderDesc"
+                    >
+                      Unified statutory repository containing all architectural
+                      blueprints, environmental engineering plans, and
+                      enterprise proofs.
                     </div>
                   </div>
                 </div>
@@ -317,35 +451,137 @@
                 <div class="doc-viewer-header">
                   <div class="doc-viewer-title">
                     <span id="activeDocIcon">📄</span>
-                    <span id="activeDocTitle">Select a submitted document to inspect</span>
+                    <span id="activeDocTitle"
+                      >Select a submitted document to inspect</span
+                    >
                   </div>
                   <div class="doc-viewer-actions">
-                    <span id="activeDocBadge" class="badge gray">Pending Scrutiny</span>
-                    
+                    <span id="activeDocBadge" class="badge gray"
+                      >Pending Scrutiny</span
+                    >
+
                     <!-- Zoom & Transform Controls -->
-                    <div class="doc-toolbar-group" role="group" aria-label="Zoom controls">
-                      <button type="button" class="doc-toolbar-btn" onclick="zoomDoc(-0.15)" title="Zoom Out (-)" aria-label="Zoom Out">−</button>
-                      <span class="doc-zoom-label" id="docZoomVal" title="Current Zoom">100%</span>
-                      <button type="button" class="doc-toolbar-btn" onclick="zoomDoc(0.15)" title="Zoom In (+)" aria-label="Zoom In">+</button>
-                      <button type="button" class="doc-toolbar-btn" onclick="resetDocZoom()" title="Reset Zoom (1:1)">1:1</button>
+                    <div
+                      class="doc-toolbar-group"
+                      role="group"
+                      aria-label="Zoom controls"
+                    >
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        onclick="zoomDoc(-0.15)"
+                        title="Zoom Out (-)"
+                        aria-label="Zoom Out"
+                      >
+                        −
+                      </button>
+                      <span
+                        class="doc-zoom-label"
+                        id="docZoomVal"
+                        title="Current Zoom"
+                        >100%</span
+                      >
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        onclick="zoomDoc(0.15)"
+                        title="Zoom In (+)"
+                        aria-label="Zoom In"
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        onclick="resetDocZoom()"
+                        title="Reset Zoom (1:1)"
+                      >
+                        1:1
+                      </button>
                     </div>
 
                     <!-- Rotate Control -->
-                    <div class="doc-toolbar-group" role="group" aria-label="Rotation control">
-                      <button type="button" class="doc-toolbar-btn" onclick="rotateDoc(90)" title="Rotate 90° clockwise (R)">⟳ 90°</button>
+                    <div
+                      class="doc-toolbar-group"
+                      role="group"
+                      aria-label="Rotation control"
+                    >
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        onclick="rotateDoc(90)"
+                        title="Rotate 90° clockwise (R)"
+                      >
+                        ⟳ 90°
+                      </button>
                     </div>
 
                     <!-- Workspace Display Controls -->
-                    <div class="doc-toolbar-group" role="group" aria-label="Viewer layout controls">
-                      <button type="button" class="doc-toolbar-btn" id="btnFocusMode" onclick="toggleFocusMode()" title="Toggle Focus Mode (F)">⛶ Focus</button>
-                      <button type="button" class="doc-toolbar-btn" id="btnFullscreen" onclick="toggleDocFullscreen()" title="Toggle Fullscreen">🗖</button>
+                    <div
+                      class="doc-toolbar-group"
+                      role="group"
+                      aria-label="Viewer layout controls"
+                    >
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        id="btnFocusMode"
+                        onclick="toggleFocusMode()"
+                        title="Toggle Focus Mode (F)"
+                      >
+                        ⛶ Focus
+                      </button>
+                      <button
+                        type="button"
+                        class="doc-toolbar-btn"
+                        id="btnFullscreen"
+                        onclick="toggleDocFullscreen()"
+                        title="Toggle Fullscreen"
+                      >
+                        🗖
+                      </button>
                     </div>
 
-                    <button type="button" class="btn outline sm" style="color: #ffffff; border-color: #475569;" onclick="reloadDocPreview()" title="Reload PDF Canvas">🔄 Reload</button>
+                    <button
+                      type="button"
+                      class="btn sm"
+                      id="btnTriggerDocOcr"
+                      style="
+                        background: linear-gradient(
+                          135deg,
+                          #0284c7 0%,
+                          #0369a1 100%
+                        );
+                        color: #ffffff;
+                        border: 1px solid #38bdf8;
+                        font-weight: 700;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);
+                      "
+                      onclick="triggerDocOcr()"
+                      title="Scan document using Optical Character Recognition (OCR)"
+                    >
+                      🔍 Run AI OCR
+                    </button>
+                    <button
+                      type="button"
+                      class="btn outline sm"
+                      style="color: #ffffff; border-color: #475569"
+                      onclick="reloadDocPreview()"
+                      title="Reload PDF Canvas"
+                    >
+                      🔄 Reload
+                    </button>
                     <a
                       id="btnDocExternal"
                       class="btn outline sm"
-                      style="color: #ffffff; border-color: #475569; font-weight: 600;"
+                      style="
+                        color: #ffffff;
+                        border-color: #475569;
+                        font-weight: 600;
+                      "
                       href="#"
                       target="_blank"
                       title="Open Full Screen in New Tab"
@@ -354,7 +590,7 @@
                     <a
                       id="btnDocDownload"
                       class="btn outline sm"
-                      style="color: #ffffff; border-color: #475569;"
+                      style="color: #ffffff; border-color: #475569"
                       href="#"
                       download
                       title="Download Attachment File"
@@ -364,38 +600,75 @@
                 </div>
 
                 <!-- Document Frame Previewer -->
-                <div class="doc-frame-wrapper" id="docFrameWrapper">
+                <div
+                  class="doc-frame-wrapper"
+                  id="docFrameWrapper"
+                  style="color-scheme: light !important"
+                >
                   <iframe
                     id="docFrame"
                     class="doc-frame"
                     src="about:blank"
                     title="Statutory Blueprint Viewer"
+                    style="
+                      color-scheme: light !important;
+                      background-color: #ffffff !important;
+                    "
                   ></iframe>
                   <div
                     id="docEmptyNotice"
                     class="doc-empty-state"
                     style="display: none"
                   >
-                    <div style="font-size: 2.2rem; margin-bottom: 8px;">📁</div>
-                    <h3 style="margin-bottom: 6px;">No Documents in Active Vault Scope</h3>
-                    <p style="color: #94a3b8; font-size: 0.82rem;">
-                      Please select a document from the folder list above to inspect.
+                    <div style="font-size: 2.2rem; margin-bottom: 8px">📁</div>
+                    <h3 style="margin-bottom: 6px">
+                      No Documents in Active Vault Scope
+                    </h3>
+                    <p style="color: #94a3b8; font-size: 0.82rem">
+                      Please select a document from the folder list above to
+                      inspect.
                     </p>
                   </div>
                 </div>
 
                 <!-- Document Helper & Fallback Bar -->
                 <div id="docViewerHelper" class="vault-helper-bar">
-                  <span id="docViewerHelperText">ℹ️ High-Resolution Statutory Blueprint Engine Active</span>
-                  <a id="docViewerHelperLink" href="#" target="_blank" style="color: #93c5fd; font-weight: 600; text-decoration: underline;">Open in Dedicated Tab ↗</a>
+                  <span id="docViewerHelperText"
+                    >ℹ️ High-Resolution Statutory Blueprint Engine Active</span
+                  >
+                  <a
+                    id="docViewerHelperLink"
+                    href="#"
+                    target="_blank"
+                    style="
+                      color: #93c5fd;
+                      font-weight: 600;
+                      text-decoration: underline;
+                    "
+                    >Open in Dedicated Tab ↗</a
+                  >
                 </div>
               </div>
 
               <!-- 4. DOCUMENT SCRUTINY DECISION CONSOLE -->
               <div class="panel" style="margin-top: 18px" id="docScrutinyBox">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <h3 style="margin: 0; font-size: 1rem; color: var(--navy);" id="docScrutinyHeading">Document Scrutiny Decision</h3>
-                  <span class="badge blue" id="scrutinyActiveDocName">No Document Selected</span>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 6px;
+                  "
+                >
+                  <h3
+                    style="margin: 0; font-size: 1rem; color: var(--navy)"
+                    id="docScrutinyHeading"
+                  >
+                    Document Scrutiny Decision
+                  </h3>
+                  <span class="badge blue" id="scrutinyActiveDocName"
+                    >No Document Selected</span
+                  >
                 </div>
                 <p
                   style="
@@ -404,18 +677,33 @@
                     margin-bottom: 12px;
                   "
                 >
-                  Verify that the active document complies with Maharashtra statutory standards, setback clearances, and engineering specifications.
+                  Verify that the active document complies with Maharashtra
+                  statutory standards, setback clearances, and engineering
+                  specifications.
                 </p>
-                <label style="font-weight: 600; font-size: 0.82rem; color: var(--navy); display: block;"
+                <label
+                  style="
+                    font-weight: 600;
+                    font-size: 0.82rem;
+                    color: var(--navy);
+                    display: block;
+                  "
                   >Officer Scrutiny Remark
                   <input
                     type="text"
                     id="docScrutinyRemark"
                     placeholder="e.g. Setbacks and road access verified per Industrial Development Corporation norms"
-                    style="margin-top: 4px;"
+                    style="margin-top: 4px"
                   />
                 </label>
-                <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                <div
+                  style="
+                    display: flex;
+                    gap: 10px;
+                    margin-top: 12px;
+                    flex-wrap: wrap;
+                  "
+                >
                   <button
                     class="btn emerald"
                     onclick="verifyActiveDocument('Verified')"
@@ -434,25 +722,98 @@
             </div>
 
             <!-- Draggable Splitter Handle -->
-            <div class="dossier-splitter" id="dossierSplitter" title="Drag horizontally to resize document canvas"></div>
+            <div
+              class="dossier-splitter"
+              id="dossierSplitter"
+              title="Drag horizontally to resize document canvas"
+            ></div>
 
             <!-- RIGHT COLUMN: Tabbed Scrutiny Actions -->
             <div class="dossier-pane-right" id="dossierPaneRight">
               <!-- Scrutiny Tabs Navigation -->
-              <div class="scrutiny-tabs-nav" role="tablist" aria-label="Scrutiny Panes" style="display:flex; gap:6px; border-bottom:2px solid var(--line); margin-bottom:14px; padding-bottom:6px; overflow-x:auto;">
-                <button type="button" class="btn sm scrutiny-tab-btn active" id="tabBtnChecklist" onclick="switchScrutinyTab('checklist')" role="tab" aria-selected="true" aria-controls="tabPaneChecklist" style="font-weight:700;">
+              <div
+                class="scrutiny-tabs-nav"
+                role="tablist"
+                aria-label="Scrutiny Panes"
+                style="
+                  display: flex;
+                  gap: 6px;
+                  border-bottom: 2px solid var(--line);
+                  margin-bottom: 14px;
+                  padding-bottom: 6px;
+                  overflow-x: auto;
+                "
+              >
+                <button
+                  type="button"
+                  class="btn sm scrutiny-tab-btn active"
+                  id="tabBtnChecklist"
+                  onclick="switchScrutinyTab('checklist')"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="tabPaneChecklist"
+                  style="font-weight: 700"
+                >
                   📋 Checklist
                 </button>
-                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnQueries" onclick="switchScrutinyTab('queries')" role="tab" aria-selected="false" aria-controls="tabPaneQueries" style="font-weight:700;">
-                  ✉️ Queries <span class="badge gray sm" id="tabBadgeQueries" style="margin-left:4px; font-size:0.7rem;">0</span>
+                <button
+                  type="button"
+                  class="btn sm outline scrutiny-tab-btn"
+                  id="tabBtnQueries"
+                  onclick="switchScrutinyTab('queries')"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tabPaneQueries"
+                  style="font-weight: 700"
+                >
+                  ✉️ Queries
+                  <span
+                    class="badge gray sm"
+                    id="tabBadgeQueries"
+                    style="margin-left: 4px; font-size: 0.7rem"
+                    >0</span
+                  >
                 </button>
-                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnNotes" onclick="switchScrutinyTab('notes')" role="tab" aria-selected="false" aria-controls="tabPaneNotes" style="font-weight:700;">
-                  🔒 Notes <span class="badge blue sm" id="tabBadgeNotes" style="margin-left:4px; font-size:0.7rem;">0</span>
+                <button
+                  type="button"
+                  class="btn sm outline scrutiny-tab-btn"
+                  id="tabBtnNotes"
+                  onclick="switchScrutinyTab('notes')"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tabPaneNotes"
+                  style="font-weight: 700"
+                >
+                  🔒 Notes
+                  <span
+                    class="badge blue sm"
+                    id="tabBadgeNotes"
+                    style="margin-left: 4px; font-size: 0.7rem"
+                    >0</span
+                  >
                 </button>
-                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnInspection" onclick="switchScrutinyTab('inspection')" role="tab" aria-selected="false" aria-controls="tabPaneInspection" style="font-weight:700;">
+                <button
+                  type="button"
+                  class="btn sm outline scrutiny-tab-btn"
+                  id="tabBtnInspection"
+                  onclick="switchScrutinyTab('inspection')"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tabPaneInspection"
+                  style="font-weight: 700"
+                >
                   📅 Inspection
                 </button>
-                <button type="button" class="btn sm outline scrutiny-tab-btn" id="tabBtnDecision" onclick="switchScrutinyTab('decision')" role="tab" aria-selected="false" aria-controls="tabPaneDecision" style="font-weight:700;">
+                <button
+                  type="button"
+                  class="btn sm outline scrutiny-tab-btn"
+                  id="tabBtnDecision"
+                  onclick="switchScrutinyTab('decision')"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tabPaneDecision"
+                  style="font-weight: 700"
+                >
                   ⚖️ Decision
                 </button>
               </div>
@@ -513,7 +874,7 @@
                 </div>
 
                 <!-- 1. Parallel Departmental Approvals Checklist -->
-                <div class="scrutiny-card" style="margin-top: 14px;">
+                <div class="scrutiny-card" style="margin-top: 14px">
                   <h3>
                     <span>Parallel Departmental Clearances</span>
                     <span class="badge gray" id="clearancesCount"
@@ -527,11 +888,26 @@
               </div>
 
               <!-- TAB 2: QUERIES & CLARIFICATIONS -->
-              <div id="tabPaneQueries" class="scrutiny-tab-pane" style="display: none;">
+              <div
+                id="tabPaneQueries"
+                class="scrutiny-tab-pane"
+                style="display: none"
+              >
                 <div class="scrutiny-card">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h3 style="margin: 0;">Clarification Queries &amp; Grievances</h3>
-                    <span id="queryCountBadge" class="badge gray">0 Queries</span>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <h3 style="margin: 0">
+                      Clarification Queries &amp; Grievances
+                    </h3>
+                    <span id="queryCountBadge" class="badge gray"
+                      >0 Queries</span
+                    >
                   </div>
                   <p
                     style="
@@ -576,18 +952,90 @@
                     </label>
 
                     <!-- Visual Blueprint Annotation Tool -->
-                    <div style="background:var(--surface-subtle); border:1px dashed var(--line); border-radius:6px; padding:8px 12px; margin:8px 0;">
-                      <div style="font-size:0.75rem; font-weight:700; color:var(--ink); margin-bottom:4px; display:flex; justify-content:space-between;">
-                        <span>📍 Visual Blueprint Annotation Callout (Optional)</span>
-                        <label style="font-weight:normal; font-size:0.72rem; cursor:pointer;">
-                          <input type="checkbox" id="chkEnableAnnotation" onchange="toggleAnnotationInputs(this.checked)"> Attach Box Callout
+                    <div
+                      style="
+                        background: var(--surface-subtle);
+                        border: 1px dashed var(--line);
+                        border-radius: 6px;
+                        padding: 8px 12px;
+                        margin: 8px 0;
+                      "
+                    >
+                      <div
+                        style="
+                          font-size: 0.75rem;
+                          font-weight: 700;
+                          color: var(--ink);
+                          margin-bottom: 4px;
+                          display: flex;
+                          justify-content: space-between;
+                        "
+                      >
+                        <span
+                          >📍 Visual Blueprint Annotation Callout
+                          (Optional)</span
+                        >
+                        <label
+                          style="
+                            font-weight: normal;
+                            font-size: 0.72rem;
+                            cursor: pointer;
+                          "
+                        >
+                          <input
+                            type="checkbox"
+                            id="chkEnableAnnotation"
+                            onchange="toggleAnnotationInputs(this.checked)"
+                          />
+                          Attach Box Callout
                         </label>
                       </div>
-                      <div id="annotationInputs" style="display:none; grid-template-columns: repeat(4, 1fr); gap:6px; font-size:0.75rem;">
-                        <div><span style="color:var(--ink-muted);">Page</span><input type="number" id="annPage" value="1" min="1" style="padding:2px 4px; width:100%;"></div>
-                        <div><span style="color:var(--ink-muted);">X (px)</span><input type="number" id="annX" value="120" style="padding:2px 4px; width:100%;"></div>
-                        <div><span style="color:var(--ink-muted);">Y (px)</span><input type="number" id="annY" value="280" style="padding:2px 4px; width:100%;"></div>
-                        <div><span style="color:var(--ink-muted);">Width</span><input type="number" id="annW" value="180" style="padding:2px 4px; width:100%;"></div>
+                      <div
+                        id="annotationInputs"
+                        style="
+                          display: none;
+                          grid-template-columns: repeat(4, 1fr);
+                          gap: 6px;
+                          font-size: 0.75rem;
+                        "
+                      >
+                        <div>
+                          <span style="color: var(--ink-muted)">Page</span
+                          ><input
+                            type="number"
+                            id="annPage"
+                            value="1"
+                            min="1"
+                            style="padding: 2px 4px; width: 100%"
+                          />
+                        </div>
+                        <div>
+                          <span style="color: var(--ink-muted)">X (px)</span
+                          ><input
+                            type="number"
+                            id="annX"
+                            value="120"
+                            style="padding: 2px 4px; width: 100%"
+                          />
+                        </div>
+                        <div>
+                          <span style="color: var(--ink-muted)">Y (px)</span
+                          ><input
+                            type="number"
+                            id="annY"
+                            value="280"
+                            style="padding: 2px 4px; width: 100%"
+                          />
+                        </div>
+                        <div>
+                          <span style="color: var(--ink-muted)">Width</span
+                          ><input
+                            type="number"
+                            id="annW"
+                            value="180"
+                            style="padding: 2px 4px; width: 100%"
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -600,34 +1048,122 @@
               </div>
 
               <!-- TAB 3: INTER-AGENCY NOTES -->
-              <div id="tabPaneNotes" class="scrutiny-tab-pane" style="display: none;">
-                <div class="scrutiny-card" id="internalNotesCard" style="border:1.5px solid #0284c7; background:var(--surface-card);">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <h3 style="margin:0; font-size:1rem; color:var(--ink); display:flex; align-items:center; gap:6px;">
-                      <span>🔒</span> <span>Inter-Agency Joint Scrutiny Notes</span>
+              <div
+                id="tabPaneNotes"
+                class="scrutiny-tab-pane"
+                style="display: none"
+              >
+                <div
+                  class="scrutiny-card"
+                  id="internalNotesCard"
+                  style="
+                    border: 1.5px solid #0284c7;
+                    background: var(--surface-card);
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <h3
+                      style="
+                        margin: 0;
+                        font-size: 1rem;
+                        color: var(--ink);
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                      "
+                    >
+                      <span>🔒</span>
+                      <span>Inter-Agency Joint Scrutiny Notes</span>
                     </h3>
-                    <span class="badge blue" style="font-size:0.7rem;">Confidential · Officer Only</span>
+                    <span class="badge blue" style="font-size: 0.7rem"
+                      >Confidential · Officer Only</span
+                    >
                   </div>
-                  <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:10px;">
-                    Internal technical collaboration between MIDC, MPCB, DISH, and Fire Directorate during Phase 2. Hidden from applicant.
+                  <p
+                    style="
+                      font-size: 0.8rem;
+                      color: var(--ink-light);
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Internal technical collaboration between MIDC, MPCB, DISH,
+                    and Fire Directorate during Phase 2. Hidden from applicant.
                   </p>
 
-                  <div id="internalNotesThread" style="max-height:220px; overflow-y:auto; background:var(--surface-subtle); border:1px solid var(--line); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.82rem;">
-                    <div style="color:var(--ink-muted); text-align:center; padding:12px;">Loading internal agency notes...</div>
+                  <div
+                    id="internalNotesThread"
+                    style="
+                      max-height: 220px;
+                      overflow-y: auto;
+                      background: var(--surface-subtle);
+                      border: 1px solid var(--line);
+                      border-radius: 6px;
+                      padding: 8px 12px;
+                      margin-bottom: 10px;
+                      font-size: 0.82rem;
+                    "
+                  >
+                    <div
+                      style="
+                        color: var(--ink-muted);
+                        text-align: center;
+                        padding: 12px;
+                      "
+                    >
+                      Loading internal agency notes...
+                    </div>
                   </div>
 
-                  <div style="display:flex; gap:6px;">
-                    <input type="text" id="internalNoteInput" placeholder="Post internal observation to other scrutiny officers..." style="font-size:0.82rem; padding:6px 10px; flex:1; border:1px solid var(--line); border-radius:4px;">
-                    <button type="button" class="btn sm" style="background:#0284c7; color:#fff; font-size:0.8rem; padding:6px 12px; border-radius:4px; font-weight:700; cursor:pointer;" onclick="postInternalNote()">
+                  <div style="display: flex; gap: 6px">
+                    <input
+                      type="text"
+                      id="internalNoteInput"
+                      placeholder="Post internal observation to other scrutiny officers..."
+                      style="
+                        font-size: 0.82rem;
+                        padding: 6px 10px;
+                        flex: 1;
+                        border: 1px solid var(--line);
+                        border-radius: 4px;
+                      "
+                    />
+                    <button
+                      type="button"
+                      class="btn sm"
+                      style="
+                        background: #0284c7;
+                        color: #fff;
+                        font-size: 0.8rem;
+                        padding: 6px 12px;
+                        border-radius: 4px;
+                        font-weight: 700;
+                        cursor: pointer;
+                      "
+                      onclick="postInternalNote()"
+                    >
                       Post Note
                     </button>
                   </div>
-                  <div id="internalNoteMsg" style="font-size:0.75rem; margin-top:4px;"></div>
+                  <div
+                    id="internalNoteMsg"
+                    style="font-size: 0.75rem; margin-top: 4px"
+                  ></div>
                 </div>
               </div>
 
               <!-- TAB 4: INSPECTION SCHEDULER -->
-              <div id="tabPaneInspection" class="scrutiny-tab-pane" style="display: none;">
+              <div
+                id="tabPaneInspection"
+                class="scrutiny-tab-pane"
+                style="display: none"
+              >
                 <div class="scrutiny-card">
                   <h3>
                     <span>Joint Multi-Departmental Inspection</span>
@@ -639,8 +1175,9 @@
                       margin-bottom: 10px;
                     "
                   >
-                    Coordinate simultaneous inspection with Pollution Control Board, Directorate of Industrial Safety &amp; Health, and Fire
-                    Services to avoid repetitive site visits.
+                    Coordinate simultaneous inspection with Pollution Control
+                    Board, Directorate of Industrial Safety &amp; Health, and
+                    Fire Services to avoid repetitive site visits.
                   </p>
 
                   <div id="inspectionsList" style="margin-bottom: 12px">
@@ -654,22 +1191,23 @@
                         <option
                           value="Combined Joint Committee (Pollution Control + Industrial Safety + Fire)"
                         >
-                          Joint Committee (Pollution Control + Industrial Safety + Fire)
+                          Joint Committee (Pollution Control + Industrial Safety
+                          + Fire)
                         </option>
                         <option
                           value="Directorate of Industrial Safety & Health"
                         >
                           Directorate of Industrial Safety &amp; Health
                         </option>
-                        <option
-                          value="Maharashtra Pollution Control Board"
-                        >
+                        <option value="Maharashtra Pollution Control Board">
                           Maharashtra Pollution Control Board
                         </option>
                         <option value="Maharashtra Fire Services">
                           Maharashtra Fire Services
                         </option>
-                        <option value="Industrial Development Corporation Engineering Wing">
+                        <option
+                          value="Industrial Development Corporation Engineering Wing"
+                        >
                           Industrial Development Corporation Engineering Wing
                         </option>
                       </select>
@@ -709,7 +1247,11 @@
               </div>
 
               <!-- TAB 5: FINAL DECISION -->
-              <div id="tabPaneDecision" class="scrutiny-tab-pane" style="display: none;">
+              <div
+                id="tabPaneDecision"
+                class="scrutiny-tab-pane"
+                style="display: none"
+              >
                 <div
                   class="panel"
                   style="
@@ -765,7 +1307,13 @@
       let activeFolderKey = "all";
 
       function switchScrutinyTab(tabName) {
-        const tabs = ["checklist", "queries", "notes", "inspection", "decision"];
+        const tabs = [
+          "checklist",
+          "queries",
+          "notes",
+          "inspection",
+          "decision",
+        ];
         tabs.forEach((t) => {
           const capitalized = t.charAt(0).toUpperCase() + t.slice(1);
           const pane = document.getElementById(`tabPane${capitalized}`);
@@ -794,7 +1342,7 @@
           icon: "📂",
           badgeClass: "badge blue",
           title: "Master Enterprise Dossier & Technical Blueprints Repository",
-          desc: "Unified statutory repository containing all architectural blueprints, environmental engineering plans, occupational safety schemes, and enterprise proofs deposited by the applicant."
+          desc: "Unified statutory repository containing all architectural blueprints, environmental engineering plans, occupational safety schemes, and enterprise proofs deposited by the applicant.",
         },
         {
           key: "general",
@@ -803,7 +1351,7 @@
           icon: "📁",
           badgeClass: "badge gray",
           title: "General Statutory Supporting Documents Vault",
-          desc: "Constitutional and title records including Land Allotment Deed, Detailed Project Feasibility Report (DPR), Incorporation Certificate, and Utility Sanction Letters. Required prior to final single-window clearance."
+          desc: "Constitutional and title records including Land Allotment Deed, Detailed Project Feasibility Report (DPR), Incorporation Certificate, and Utility Sanction Letters. Required prior to final single-window clearance.",
         },
         {
           key: "mpcb",
@@ -812,7 +1360,7 @@
           icon: "🌿",
           badgeClass: "badge green",
           title: "Maharashtra Pollution Control Board Environmental Vault",
-          desc: "Statutory Environmental Management Plans, Effluent Treatment schemes, stack emission control diagrams, and Water Balance schematics under Water & Air Pollution Control Acts."
+          desc: "Statutory Environmental Management Plans, Effluent Treatment schemes, stack emission control diagrams, and Water Balance schematics under Water & Air Pollution Control Acts.",
         },
         {
           key: "midc",
@@ -820,8 +1368,9 @@
           shortName: "Industrial Development Corporation",
           icon: "🏗️",
           badgeClass: "badge blue",
-          title: "Maharashtra Industrial Development Corporation Civil & Planning Vault",
-          desc: "Civil site boundary surveys, master architectural layout drawings, Floor Space Index computations, and regional infrastructure connection layouts."
+          title:
+            "Maharashtra Industrial Development Corporation Civil & Planning Vault",
+          desc: "Civil site boundary surveys, master architectural layout drawings, Floor Space Index computations, and regional infrastructure connection layouts.",
         },
         {
           key: "dish",
@@ -829,8 +1378,9 @@
           shortName: "Industrial Safety & Health",
           icon: "⚙️",
           badgeClass: "badge saffron",
-          title: "Directorate of Industrial Safety & Health Factory Safety Vault",
-          desc: "Factory floor safety drawings, hazardous chemical containment zones, machinery guarding mechanisms, and occupational health protection blueprints under The Factories Act."
+          title:
+            "Directorate of Industrial Safety & Health Factory Safety Vault",
+          desc: "Factory floor safety drawings, hazardous chemical containment zones, machinery guarding mechanisms, and occupational health protection blueprints under The Factories Act.",
         },
         {
           key: "fire",
@@ -839,17 +1389,47 @@
           icon: "🚒",
           badgeClass: "badge red",
           title: "Directorate of Maharashtra Fire Services Vault",
-          desc: "Fire hydrant ring network plans, static fire water tank specifications, riser schematics, and emergency evacuation egress layouts under Maharashtra Fire Prevention & Life Safety Act."
-        }
+          desc: "Fire hydrant ring network plans, static fire water tank specifications, riser schematics, and emergency evacuation egress layouts under Maharashtra Fire Prevention & Life Safety Act.",
+        },
       ];
 
       const DEPT_BADGES = {
-        general: { name: "General Statutory Supporting Documents", icon: "📁", color: "#475569", bg: "#f1f5f9" },
-        mpcb: { name: "Maharashtra Pollution Control Board", icon: "🌿", color: "#166534", bg: "#dcfce7" },
-        midc: { name: "Maharashtra Industrial Development Corporation", icon: "🏗️", color: "#1e40af", bg: "#dbeafe" },
-        dish: { name: "Directorate of Industrial Safety & Health", icon: "⚙️", color: "#9a3412", bg: "#ffedd5" },
-        fire: { name: "Directorate of Maharashtra Fire Services", icon: "🚒", color: "#991b1b", bg: "#fee2e2" },
-        other: { name: "General Statutory Supporting Documents", icon: "📁", color: "#475569", bg: "#f1f5f9" }
+        general: {
+          name: "General Statutory Supporting Documents",
+          icon: "📁",
+          color: "#475569",
+          bg: "#f1f5f9",
+        },
+        mpcb: {
+          name: "Maharashtra Pollution Control Board",
+          icon: "🌿",
+          color: "#166534",
+          bg: "#dcfce7",
+        },
+        midc: {
+          name: "Maharashtra Industrial Development Corporation",
+          icon: "🏗️",
+          color: "#1e40af",
+          bg: "#dbeafe",
+        },
+        dish: {
+          name: "Directorate of Industrial Safety & Health",
+          icon: "⚙️",
+          color: "#9a3412",
+          bg: "#ffedd5",
+        },
+        fire: {
+          name: "Directorate of Maharashtra Fire Services",
+          icon: "🚒",
+          color: "#991b1b",
+          bg: "#fee2e2",
+        },
+        other: {
+          name: "General Statutory Supporting Documents",
+          icon: "📁",
+          color: "#475569",
+          bg: "#f1f5f9",
+        },
       };
 
       function updateVaultScopeBanner() {
@@ -857,22 +1437,34 @@
         const badge = document.getElementById("vaultScopeBadge");
         const subtitle = document.getElementById("vaultScopeSubtitle");
         const icon = document.getElementById("vaultScopeIcon");
-        const folderSubtitle = document.getElementById("vaultFolderSectionSubtitle");
+        const folderSubtitle = document.getElementById(
+          "vaultFolderSectionSubtitle",
+        );
 
         if (!currentUser) return;
 
         const queueLink = document.getElementById("sidebarQueueLink");
         if (queueLink) {
-          queueLink.href = typeof getOfficerDashboardUrl === "function" ? getOfficerDashboardUrl(currentUser) : "officer-dashboard.html";
+          queueLink.href =
+            typeof getOfficerDashboardUrl === "function"
+              ? getOfficerDashboardUrl(currentUser)
+              : "officer-dashboard.html";
         }
 
-        if (currentUser.isApex || currentUser.deptCode === "msins" || currentUser.role === "super_admin") {
+        if (
+          currentUser.isApex ||
+          currentUser.deptCode === "msins" ||
+          currentUser.role === "super_admin"
+        ) {
           icon.textContent = "🏛️";
           title.textContent = "Apex Multi-Department Scrutiny Vault";
           badge.textContent = "Apex Authority · All Statutory Vaults";
           badge.className = "badge blue";
-          subtitle.textContent = "Consolidated statutory oversight across Maharashtra Pollution Control Board, Maharashtra Industrial Development Corporation, Directorate of Industrial Safety & Health, and Directorate of Maharashtra Fire Services.";
-          if (folderSubtitle) folderSubtitle.textContent = "Consolidated access across all departmental statutory folders";
+          subtitle.textContent =
+            "Consolidated statutory oversight across Maharashtra Pollution Control Board, Maharashtra Industrial Development Corporation, Directorate of Industrial Safety & Health, and Directorate of Maharashtra Fire Services.";
+          if (folderSubtitle)
+            folderSubtitle.textContent =
+              "Consolidated access across all departmental statutory folders";
           activeFolderKey = "all";
         } else {
           const dept = currentUser.deptCode || "midc";
@@ -881,36 +1473,47 @@
               icon: "🌿",
               title: "Pollution Control Board Environmental Vault",
               badge: "Environmental Vault · Statutory Scrutiny",
-              subtitle: "Restricted strictly to Environmental Management Plans, Effluent Treatment schemes, and Air Emission designs under Maharashtra Pollution Control Board jurisdiction.",
-              folderSubtitle: "Restricted strictly to Maharashtra Pollution Control Board statutory blueprint folder",
+              subtitle:
+                "Restricted strictly to Environmental Management Plans, Effluent Treatment schemes, and Air Emission designs under Maharashtra Pollution Control Board jurisdiction.",
+              folderSubtitle:
+                "Restricted strictly to Maharashtra Pollution Control Board statutory blueprint folder",
             },
             midc: {
               icon: "🏗️",
               title: "Industrial Development Corporation Civil Vault",
               badge: "Civil & Infrastructure Vault",
-              subtitle: "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under Maharashtra Industrial Development Corporation jurisdiction.",
-              folderSubtitle: "Restricted strictly to Maharashtra Industrial Development Corporation statutory blueprint folder",
+              subtitle:
+                "Restricted strictly to Site Master Layouts, Building Plans, and Civil Infrastructure Drawings under Maharashtra Industrial Development Corporation jurisdiction.",
+              folderSubtitle:
+                "Restricted strictly to Maharashtra Industrial Development Corporation statutory blueprint folder",
             },
             dish: {
               icon: "⚙️",
-              title: "Directorate of Industrial Safety & Health Factory Safety Vault",
+              title:
+                "Directorate of Industrial Safety & Health Factory Safety Vault",
               badge: "Industrial Safety & Health Vault",
-              subtitle: "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under Directorate of Industrial Safety & Health jurisdiction.",
-              folderSubtitle: "Restricted strictly to Directorate of Industrial Safety & Health statutory blueprint folder",
+              subtitle:
+                "Restricted strictly to Factory Blueprints, Machinery Guarding & Occupational Safety Plans under Directorate of Industrial Safety & Health jurisdiction.",
+              folderSubtitle:
+                "Restricted strictly to Directorate of Industrial Safety & Health statutory blueprint folder",
             },
             fire: {
               icon: "🚒",
               title: "Directorate of Maharashtra Fire Services Vault",
               badge: "Fire Services Vault · Life Safety Clearance",
-              subtitle: "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Directorate of Maharashtra Fire Services jurisdiction.",
-              folderSubtitle: "Restricted strictly to Directorate of Maharashtra Fire Services statutory blueprint folder",
+              subtitle:
+                "Restricted strictly to Fire Hydrant Networks & Emergency Evacuation Layouts under Directorate of Maharashtra Fire Services jurisdiction.",
+              folderSubtitle:
+                "Restricted strictly to Directorate of Maharashtra Fire Services statutory blueprint folder",
             },
           }[dept] || {
             icon: "🔒",
             title: "Department Scrutiny Vault",
             badge: "Department Vault",
-            subtitle: "Restricted strictly to documents under your departmental jurisdiction.",
-            folderSubtitle: "Restricted strictly to your department's statutory blueprint folder",
+            subtitle:
+              "Restricted strictly to documents under your departmental jurisdiction.",
+            folderSubtitle:
+              "Restricted strictly to your department's statutory blueprint folder",
           };
 
           icon.textContent = info.icon;
@@ -924,7 +1527,12 @@
       }
 
       function getAvailableFolders() {
-        if (!currentUser || currentUser.isApex || currentUser.deptCode === "msins" || currentUser.role === "super_admin") {
+        if (
+          !currentUser ||
+          currentUser.isApex ||
+          currentUser.deptCode === "msins" ||
+          currentUser.role === "super_admin"
+        ) {
           return STATUTORY_FOLDERS;
         }
         const dept = currentUser.deptCode || "midc";
@@ -993,7 +1601,8 @@
         if (dept === "dish") return "dish";
         if (dept === "fire") return "fire";
 
-        const text = `${d.document_type || ""} ${d.original_name || ""}`.toLowerCase();
+        const text =
+          `${d.document_type || ""} ${d.original_name || ""}`.toLowerCase();
         if (
           text.includes("environment") ||
           text.includes("effluent") ||
@@ -1045,29 +1654,34 @@
           activeFolderKey = availableFolders[0].key;
         }
 
-        container.innerHTML = availableFolders.map((f) => {
-          let folderDocs = docs;
-          if (f.key !== "all") {
-            folderDocs = docs.filter((d) => getDocDepartment(d) === f.key);
-          }
-          const count = folderDocs.length;
-          const verifiedCount = folderDocs.filter((d) => d.verification_status === "Verified").length;
-          const deficientCount = folderDocs.filter((d) => d.verification_status === "Deficient").length;
+        container.innerHTML = availableFolders
+          .map((f) => {
+            let folderDocs = docs;
+            if (f.key !== "all") {
+              folderDocs = docs.filter((d) => getDocDepartment(d) === f.key);
+            }
+            const count = folderDocs.length;
+            const verifiedCount = folderDocs.filter(
+              (d) => d.verification_status === "Verified",
+            ).length;
+            const deficientCount = folderDocs.filter(
+              (d) => d.verification_status === "Deficient",
+            ).length;
 
-          let statusPill = "";
-          if (count === 0) {
-            statusPill = `<span class="badge gray" style="font-size: 0.65rem; padding: 2px 6px;">Empty</span>`;
-          } else if (deficientCount > 0) {
-            statusPill = `<span class="badge red" style="font-size: 0.65rem; padding: 2px 6px;">⚠️ ${deficientCount} Deficient</span>`;
-          } else if (verifiedCount === count) {
-            statusPill = `<span class="badge green" style="font-size: 0.65rem; padding: 2px 6px;">✓ All Verified</span>`;
-          } else {
-            statusPill = `<span class="badge orange" style="font-size: 0.65rem; padding: 2px 6px;">⏳ ${count - verifiedCount} Pending</span>`;
-          }
+            let statusPill = "";
+            if (count === 0) {
+              statusPill = `<span class="badge gray" style="font-size: 0.65rem; padding: 2px 6px;">Empty</span>`;
+            } else if (deficientCount > 0) {
+              statusPill = `<span class="badge red" style="font-size: 0.65rem; padding: 2px 6px;">⚠️ ${deficientCount} Deficient</span>`;
+            } else if (verifiedCount === count) {
+              statusPill = `<span class="badge green" style="font-size: 0.65rem; padding: 2px 6px;">✓ All Verified</span>`;
+            } else {
+              statusPill = `<span class="badge orange" style="font-size: 0.65rem; padding: 2px 6px;">⏳ ${count - verifiedCount} Pending</span>`;
+            }
 
-          const isActive = activeFolderKey === f.key;
+            const isActive = activeFolderKey === f.key;
 
-          return `
+            return `
             <div class="vault-folder-card ${isActive ? "active" : ""}" onclick="openVaultFolder('${f.key}')">
               <div class="vault-folder-top">
                 <span class="vault-folder-icon">${f.icon}</span>
@@ -1080,20 +1694,26 @@
               </div>
             </div>
           `;
-        }).join("");
+          })
+          .join("");
       }
 
       function openVaultFolder(key) {
         const availableFolders = getAvailableFolders();
         const validFolder = availableFolders.find((f) => f.key === key);
-        activeFolderKey = validFolder ? validFolder.key : availableFolders[0].key;
+        activeFolderKey = validFolder
+          ? validFolder.key
+          : availableFolders[0].key;
 
         renderVaultFolders();
         renderFolderExplorer();
 
         // If current active document is not in this folder, pick the first document in this folder
-        const docs = currentDossier ? (currentDossier.documents || []) : [];
-        const folderDocs = activeFolderKey === "all" ? docs : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
+        const docs = currentDossier ? currentDossier.documents || [] : [];
+        const folderDocs =
+          activeFolderKey === "all"
+            ? docs
+            : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
 
         if (folderDocs.length > 0) {
           const isDocInFolder = folderDocs.some((d) => d.id === activeDocId);
@@ -1107,14 +1727,20 @@
 
       function renderFolderExplorer() {
         const availableFolders = getAvailableFolders();
-        const folder = availableFolders.find((f) => f.key === activeFolderKey) || availableFolders[0];
-        const docs = currentDossier ? (currentDossier.documents || []) : [];
-        const folderDocs = activeFolderKey === "all" ? docs : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
+        const folder =
+          availableFolders.find((f) => f.key === activeFolderKey) ||
+          availableFolders[0];
+        const docs = currentDossier ? currentDossier.documents || [] : [];
+        const folderDocs =
+          activeFolderKey === "all"
+            ? docs
+            : docs.filter((d) => getDocDepartment(d) === activeFolderKey);
 
         document.getElementById("activeFolderIcon").textContent = folder.icon;
         document.getElementById("activeFolderTitle").textContent = folder.name;
         document.getElementById("activeFolderDesc").textContent = folder.desc;
-        document.getElementById("activeFolderCountBadge").textContent = `${folderDocs.length} ${folderDocs.length === 1 ? "Document" : "Documents"}`;
+        document.getElementById("activeFolderCountBadge").textContent =
+          `${folderDocs.length} ${folderDocs.length === 1 ? "Document" : "Documents"}`;
 
         const list = document.getElementById("vaultFileList");
         if (folderDocs.length === 0) {
@@ -1130,19 +1756,20 @@
           return;
         }
 
-        list.innerHTML = folderDocs.map((doc) => {
-          const dept = getDocDepartment(doc);
-          const badge = DEPT_BADGES[dept] || DEPT_BADGES.general;
-          const isVerified = doc.verification_status === "Verified";
-          const isDeficient = doc.verification_status === "Deficient";
-          const statusBadge = isVerified
-            ? `<span class="badge green">✓ Verified</span>`
-            : isDeficient
-              ? `<span class="badge red">⚠️ Deficient</span>`
-              : `<span class="badge orange">⏳ Pending Scrutiny</span>`;
-          const isSelected = doc.id === activeDocId;
+        list.innerHTML = folderDocs
+          .map((doc) => {
+            const dept = getDocDepartment(doc);
+            const badge = DEPT_BADGES[dept] || DEPT_BADGES.general;
+            const isVerified = doc.verification_status === "Verified";
+            const isDeficient = doc.verification_status === "Deficient";
+            const statusBadge = isVerified
+              ? `<span class="badge green">✓ Verified</span>`
+              : isDeficient
+                ? `<span class="badge red">⚠️ Deficient</span>`
+                : `<span class="badge orange">⏳ Pending Scrutiny</span>`;
+            const isSelected = doc.id === activeDocId;
 
-          return `
+            return `
             <div class="vault-file-card ${isSelected ? "active" : ""}" id="fileCard_${doc.id}">
               <div class="vault-file-info" onclick="selectDocument('${doc.id}')" style="cursor: pointer;">
                 <div class="vault-file-title">
@@ -1167,8 +1794,8 @@
                 }
               </div>
               <div class="vault-file-actions">
-                <button class="btn sm outline" style="border-color:var(--navy);color:var(--navy);font-weight:700;" onclick="if(window.openDocIntelReview) window.openDocIntelReview('${doc.id}', '${escapeHtml(doc.name)}')">
-                  🤖 AI Extraction
+                <button class="btn sm outline" style="border-color:var(--navy);color:var(--navy);font-weight:700;" onclick="triggerDocOcrSpecific('${doc.id}', '${escapeHtml(doc.original_name || doc.name || doc.file_name || "Document")}')">
+                  🔍 AI OCR Extract
                 </button>
                 <button class="btn sm ${isSelected ? "navy" : "outline"}" onclick="selectDocument('${doc.id}')">
                   👁️ Inspect in Viewer
@@ -1182,17 +1809,23 @@
               </div>
             </div>
           `;
-        }).join("");
+          })
+          .join("");
       }
 
       function selectDocument(docId) {
         activeDocId = docId;
-        const docs = currentDossier ? (currentDossier.documents || []) : [];
+        const docs = currentDossier ? currentDossier.documents || [] : [];
         const doc = docs.find((d) => d.id === docId);
         if (!doc) return;
 
         // If non-Apex officer, ensure doc belongs to their department
-        if (currentUser && !currentUser.isApex && currentUser.deptCode && currentUser.deptCode !== "msins") {
+        if (
+          currentUser &&
+          !currentUser.isApex &&
+          currentUser.deptCode &&
+          currentUser.deptCode !== "msins"
+        ) {
           const docDept = getDocDepartment(doc);
           if (docDept !== currentUser.deptCode) {
             showEmptyDocumentViewer();
@@ -1201,7 +1834,9 @@
         }
 
         // Update active file card highlighting
-        document.querySelectorAll(".vault-file-card").forEach((c) => c.classList.remove("active"));
+        document
+          .querySelectorAll(".vault-file-card")
+          .forEach((c) => c.classList.remove("active"));
         const activeCard = document.getElementById(`fileCard_${docId}`);
         if (activeCard) activeCard.classList.add("active");
 
@@ -1224,8 +1859,10 @@
         statusBadge.className = `badge ${isVerified ? "green" : isDeficient ? "red" : "orange"}`;
 
         // Action links
-        document.getElementById("btnDocExternal").href = `/api/documents/${doc.id}/view`;
-        document.getElementById("btnDocDownload").href = `/api/documents/${doc.id}`;
+        document.getElementById("btnDocExternal").href =
+          `/api/documents/${doc.id}/view`;
+        document.getElementById("btnDocDownload").href =
+          `/api/documents/${doc.id}`;
 
         // Canvas iframe
         const frame = document.getElementById("docFrame");
@@ -1239,11 +1876,14 @@
         document.getElementById("docViewerHelperText").innerHTML = `
           <span>Viewing: <b>${escapeHtml(doc.original_name)}</b> · Technical Blueprint Canvas Active</span>
         `;
-        document.getElementById("docViewerHelperLink").href = `/api/documents/${doc.id}/view`;
+        document.getElementById("docViewerHelperLink").href =
+          `/api/documents/${doc.id}/view`;
 
         // Scrutiny decision box
-        document.getElementById("scrutinyActiveDocName").textContent = doc.original_name;
-        document.getElementById("docScrutinyRemark").value = doc.officer_remarks || "";
+        document.getElementById("scrutinyActiveDocName").textContent =
+          doc.original_name;
+        document.getElementById("docScrutinyRemark").value =
+          doc.officer_remarks || "";
       }
 
       function showEmptyDocumentViewer() {
@@ -1253,14 +1893,17 @@
         frame.style.display = "none";
         frame.src = "about:blank";
         emptyNotice.style.display = "block";
-        document.getElementById("activeDocTitle").textContent = "No document selected";
+        document.getElementById("activeDocTitle").textContent =
+          "No document selected";
         document.getElementById("activeDocBadge").textContent = "No Document";
         document.getElementById("activeDocBadge").className = "badge gray";
         document.getElementById("btnDocExternal").href = "#";
         document.getElementById("btnDocDownload").href = "#";
-        document.getElementById("docViewerHelperText").textContent = "No active document in viewer canvas";
+        document.getElementById("docViewerHelperText").textContent =
+          "No active document in viewer canvas";
         document.getElementById("docViewerHelperLink").href = "#";
-        document.getElementById("scrutinyActiveDocName").textContent = "No Document Selected";
+        document.getElementById("scrutinyActiveDocName").textContent =
+          "No Document Selected";
         document.getElementById("docScrutinyRemark").value = "";
         resetDocZoom();
       }
@@ -1278,7 +1921,10 @@
       }
 
       function zoomDoc(delta) {
-        docZoomLevel = Math.max(0.4, Math.min(3.0, parseFloat((docZoomLevel + delta).toFixed(2))));
+        docZoomLevel = Math.max(
+          0.4,
+          Math.min(3.0, parseFloat((docZoomLevel + delta).toFixed(2))),
+        );
         applyDocTransform();
       }
 
@@ -1321,6 +1967,41 @@
         resetDocZoom();
       }
 
+      function triggerDocOcr() {
+        if (!activeDocId) {
+          if (typeof notify === "function")
+            notify(
+              "Please select a document from the folder vault to run OCR.",
+              "warning",
+            );
+          else
+            alert("Please select a document from the folder vault to run OCR.");
+          return;
+        }
+        const docs = currentDossier ? currentDossier.documents || [] : [];
+        const doc = docs.find((d) => d.id === activeDocId);
+        const name = doc
+          ? doc.original_name || doc.name || doc.file_name || "Document"
+          : "Selected Document";
+        triggerDocOcrSpecific(activeDocId, name);
+      }
+
+      function triggerDocOcrSpecific(docId, docName) {
+        if (!docId) return;
+        if (typeof window.openDocIntelReview === "function") {
+          window.openDocIntelReview(docId, docName);
+        } else {
+          const s = document.createElement("script");
+          s.src = "/js/ai-doc-intel.js";
+          s.onload = () => {
+            if (typeof window.openDocIntelReview === "function") {
+              window.openDocIntelReview(docId, docName);
+            }
+          };
+          document.head.appendChild(s);
+        }
+      }
+
       /* ─── Draggable Splitter Implementation ─── */
       function initDossierSplitter() {
         const splitter = document.getElementById("dossierSplitter");
@@ -1356,7 +2037,11 @@
 
       // Keyboard shortcuts (+, -, r, f, Escape)
       document.addEventListener("keydown", (e) => {
-        if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+        if (
+          e.target &&
+          (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+        )
+          return;
         if (e.key === "+" || e.key === "=") {
           zoomDoc(0.15);
         } else if (e.key === "-" || e.key === "_") {
@@ -1380,48 +2065,71 @@
 
           // Render Officer AI Copilot Brief
           if (window.renderOfficerCopilotBrief) {
-            window.renderOfficerCopilotBrief(d.id || id, document.getElementById("aiOfficerCopilotContainer"));
+            window.renderOfficerCopilotBrief(
+              d.id || id,
+              document.getElementById("aiOfficerCopilotContainer"),
+            );
           }
 
           // Header Info
           document.getElementById("headerAppNo").textContent = d.application_no;
-          document.getElementById("headerCompanyName").textContent = d.company_name;
-          document.getElementById("headerRegNo").textContent = d.registration_no || "GSTIN-PENDING";
-          document.getElementById("headerSector").textContent = d.industry_category || "General Manufacturing";
-          document.getElementById("headerDistrict").textContent = `${d.district || "Pune"} (${d.location || ""})`;
+          document.getElementById("headerCompanyName").textContent =
+            d.company_name;
+          document.getElementById("headerRegNo").textContent =
+            d.registration_no || "GSTIN-PENDING";
+          document.getElementById("headerSector").textContent =
+            d.industry_category || "General Manufacturing";
+          document.getElementById("headerDistrict").textContent =
+            `${d.district || "Pune"} (${d.location || ""})`;
 
           // Applying Enterprise Profile & Authorized Signatory Strip
           if (document.getElementById("headerContactPerson")) {
-            document.getElementById("headerContactPerson").textContent = d.contact_person || "Authorized Signatory";
+            document.getElementById("headerContactPerson").textContent =
+              d.contact_person || "Authorized Signatory";
           }
           if (document.getElementById("headerEmail")) {
-            document.getElementById("headerEmail").textContent = d.applicant_email || d.email || "---";
+            document.getElementById("headerEmail").textContent =
+              d.applicant_email || d.email || "---";
           }
           if (document.getElementById("headerPhone")) {
-            document.getElementById("headerPhone").textContent = d.applicant_phone || d.phone || "---";
+            document.getElementById("headerPhone").textContent =
+              d.applicant_phone || d.phone || "---";
           }
           if (document.getElementById("headerLocation")) {
-            document.getElementById("headerLocation").textContent = `${d.location || "Industrial Zone"}, ${d.district || "Maharashtra"}`;
+            document.getElementById("headerLocation").textContent =
+              `${d.location || "Industrial Zone"}, ${d.district || "Maharashtra"}`;
           }
           if (document.getElementById("headerFilingDate")) {
-            document.getElementById("headerFilingDate").textContent = d.created_at
-              ? new Date(d.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
-              : "Recorded";
+            document.getElementById("headerFilingDate").textContent =
+              d.created_at
+                ? new Date(d.created_at).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "Recorded";
           }
           if (document.getElementById("headerCurrentStage")) {
             const stageNameMap = {
               mpcb: "Phase 1: Maharashtra Pollution Control Board Review",
               parallel: "Phase 2: Simultaneous Departmental Scrutiny",
-              msins: "Phase 3: Consolidated Apex Approval (Maharashtra State Innovation Society)",
+              msins:
+                "Phase 3: Consolidated Apex Approval (Maharashtra State Innovation Society)",
               approved: "Single-Window Statutory Clearance Issued",
-              rejected: "Application Rejected"
+              rejected: "Application Rejected",
             };
-            document.getElementById("headerCurrentStage").textContent = stageNameMap[d.current_stage] || d.current_stage || "Statutory Scrutiny";
+            document.getElementById("headerCurrentStage").textContent =
+              stageNameMap[d.current_stage] ||
+              d.current_stage ||
+              "Statutory Scrutiny";
           }
 
           // SLA Status calculation
           const createdDate = new Date(d.created_at || Date.now());
-          const daysElapsed = Math.max(1, Math.floor((Date.now() - createdDate) / (1000 * 60 * 60 * 24)));
+          const daysElapsed = Math.max(
+            1,
+            Math.floor((Date.now() - createdDate) / (1000 * 60 * 60 * 24)),
+          );
           const slaStatusEl = document.getElementById("headerSlaStatus");
           if (slaStatusEl) {
             if (daysElapsed > 45) {
@@ -1466,13 +2174,26 @@
           riskBadge.className = `risk-tag ${d.risk_tier === "Red" ? "risk-red" : d.risk_tier === "Orange" ? "risk-orange" : "risk-green"}`;
 
           // Industrial Metrics
-          document.getElementById("paramCost").textContent = d.project_cost ? `₹${d.project_cost} Cr` : "---";
-          document.getElementById("paramEmp").textContent = d.employment_potential ? `${d.employment_potential} Persons` : "---";
-          document.getElementById("paramLand").textContent = `${d.land_size} Acres`;
-          document.getElementById("paramWater").textContent = `${d.water_use} KL/day`;
-          document.getElementById("paramPower").textContent = `${d.electricity} kVA`;
-          document.getElementById("paramHazard").textContent = d.hazardLevel || (d.hazardous ? "Chemical Hazard (High Risk)" : "Non-Hazardous / Low Risk");
-          document.getElementById("paramMsme").textContent = d.msme_category || "Small";
+          document.getElementById("paramCost").textContent = d.project_cost
+            ? `₹${d.project_cost} Cr`
+            : "---";
+          document.getElementById("paramEmp").textContent =
+            d.employment_potential
+              ? `${d.employment_potential} Persons`
+              : "---";
+          document.getElementById("paramLand").textContent =
+            `${d.land_size} Acres`;
+          document.getElementById("paramWater").textContent =
+            `${d.water_use} KL/day`;
+          document.getElementById("paramPower").textContent =
+            `${d.electricity} kVA`;
+          document.getElementById("paramHazard").textContent =
+            d.hazardLevel ||
+            (d.hazardous
+              ? "Chemical Hazard (High Risk)"
+              : "Non-Hazardous / Low Risk");
+          document.getElementById("paramMsme").textContent =
+            d.msme_category || "Small";
 
           // Statutory Folders & Explorer
           renderVaultFolders();
@@ -1484,9 +2205,10 @@
           }
 
           const docs = d.documents || [];
-          const currentFolderDocs = activeFolderKey === "all"
-            ? docs
-            : docs.filter((doc) => getDocDepartment(doc) === activeFolderKey);
+          const currentFolderDocs =
+            activeFolderKey === "all"
+              ? docs
+              : docs.filter((doc) => getDocDepartment(doc) === activeFolderKey);
 
           if (autoSelect && currentFolderDocs.length > 0) {
             const hasDoc = currentFolderDocs.some((x) => x.id === activeDocId);
@@ -1580,11 +2302,26 @@
 
         thread.innerHTML = queries
           .map((q) => {
-            const safeDept = typeof escapeHtml === "function" ? escapeHtml(q.officer_dept || "Department Officer") : (q.officer_dept || "Department Officer");
-            const safeOfficer = typeof escapeHtml === "function" ? escapeHtml(q.officer_name || "Scrutiny Officer") : (q.officer_name || "Scrutiny Officer");
-            const safeMsg = typeof escapeHtml === "function" ? escapeHtml(q.message) : q.message;
-            const safeReply = typeof escapeHtml === "function" ? escapeHtml(q.applicant_reply || "") : (q.applicant_reply || "");
-            const safeFile = typeof escapeHtml === "function" ? escapeHtml(q.reply_file_name || "") : (q.reply_file_name || "");
+            const safeDept =
+              typeof escapeHtml === "function"
+                ? escapeHtml(q.officer_dept || "Department Officer")
+                : q.officer_dept || "Department Officer";
+            const safeOfficer =
+              typeof escapeHtml === "function"
+                ? escapeHtml(q.officer_name || "Scrutiny Officer")
+                : q.officer_name || "Scrutiny Officer";
+            const safeMsg =
+              typeof escapeHtml === "function"
+                ? escapeHtml(q.message)
+                : q.message;
+            const safeReply =
+              typeof escapeHtml === "function"
+                ? escapeHtml(q.applicant_reply || "")
+                : q.applicant_reply || "";
+            const safeFile =
+              typeof escapeHtml === "function"
+                ? escapeHtml(q.reply_file_name || "")
+                : q.reply_file_name || "";
             return `
           <div class="query-bubble officer">
             <div class="query-author">
@@ -1670,7 +2407,9 @@
         const thread = document.getElementById("internalNotesThread");
         if (!thread || !currentAppId) return;
         try {
-          const res = await api(`/api/applications/${currentAppId}/internal-notes`);
+          const res = await api(
+            `/api/applications/${currentAppId}/internal-notes`,
+          );
           const notes = res.internal_notes || [];
           const tabBadge = document.getElementById("tabBadgeNotes");
           if (tabBadge) tabBadge.textContent = notes.length;
@@ -1678,15 +2417,19 @@
             thread.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:12px;">No internal agency notes yet. Post observations to collaborate across departments.</div>`;
             return;
           }
-          thread.innerHTML = res.internal_notes.map(n => `
+          thread.innerHTML = res.internal_notes
+            .map(
+              (n) => `
             <div style="background:var(--surface-card); border:1px solid var(--line); border-radius:4px; padding:6px 8px; margin-bottom:6px;">
               <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--ink-muted); margin-bottom:2px;">
-                <span><strong>${typeof escapeHtml === 'function' ? escapeHtml(n.author_name) : n.author_name}</strong> (${(n.department || 'Officer').toUpperCase()})</span>
-                <span>${new Date(n.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                <span><strong>${typeof escapeHtml === "function" ? escapeHtml(n.author_name) : n.author_name}</strong> (${(n.department || "Officer").toUpperCase()})</span>
+                <span>${new Date(n.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
-              <div style="color:var(--ink);">${typeof escapeHtml === 'function' ? escapeHtml(n.note) : n.note}</div>
+              <div style="color:var(--ink);">${typeof escapeHtml === "function" ? escapeHtml(n.note) : n.note}</div>
             </div>
-          `).join("");
+          `,
+            )
+            .join("");
         } catch (err) {
           thread.innerHTML = `<div style="color:#ef4444; text-align:center; padding:8px;">Could not load internal notes.</div>`;
         }
@@ -1699,13 +2442,15 @@
         try {
           await api(`/api/applications/${currentAppId}/internal-notes`, {
             method: "POST",
-            body: JSON.stringify({ note: input.value.trim() })
+            body: JSON.stringify({ note: input.value.trim() }),
           });
           input.value = "";
           if (msgEl) {
             msgEl.textContent = "Note posted to internal thread.";
             msgEl.style.color = "#059669";
-            setTimeout(() => { msgEl.textContent = ""; }, 2500);
+            setTimeout(() => {
+              msgEl.textContent = "";
+            }, 2500);
           }
           loadInternalNotes();
         } catch (err) {
@@ -1725,9 +2470,18 @@
 
         list.innerHTML = inspections
           .map((i) => {
-            const safeDept = typeof escapeHtml === "function" ? escapeHtml(i.department) : i.department;
-            const safeName = typeof escapeHtml === "function" ? escapeHtml(i.inspector_name) : i.inspector_name;
-            const safeNotes = typeof escapeHtml === "function" ? escapeHtml(i.notes || "") : (i.notes || "");
+            const safeDept =
+              typeof escapeHtml === "function"
+                ? escapeHtml(i.department)
+                : i.department;
+            const safeName =
+              typeof escapeHtml === "function"
+                ? escapeHtml(i.inspector_name)
+                : i.inspector_name;
+            const safeNotes =
+              typeof escapeHtml === "function"
+                ? escapeHtml(i.notes || "")
+                : i.notes || "";
             return `
           <div style="background: var(--surface-subtle); border-left: 3px solid var(--navy); border: 1px solid var(--line); border-left-width: 3px; padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.84rem; color: var(--navy);">
@@ -1781,7 +2535,8 @@
           icon: "🏗️",
           badge: "Maharashtra Industrial Development Corporation",
           desc: "Evaluate site master plan, building setbacks, Floor Space Index compliance, and road/drainage infrastructure per regional planning norms.",
-          subtext: "Civil Engineering Wing · Industrial Development Corporation",
+          subtext:
+            "Civil Engineering Wing · Industrial Development Corporation",
         },
         mpcb: {
           title: "Pollution Control Board · Environmental Scrutiny",
@@ -1795,14 +2550,16 @@
           icon: "🚒",
           badge: "Directorate of Maharashtra Fire Services",
           desc: "Evaluate hydrant loops, static water reservoir demands, sprinkler systems, and life safety evacuation egress per Maharashtra Fire Prevention Act.",
-          subtext: "Directorate of Maharashtra Fire Services (Govt. of Maharashtra)",
+          subtext:
+            "Directorate of Maharashtra Fire Services (Govt. of Maharashtra)",
         },
         dish: {
           title: "Industrial Safety & Health · Factory Safety Scrutiny",
           icon: "⚙️",
           badge: "Directorate of Industrial Safety & Health",
           desc: "Evaluate factory layout blueprint, machinery hazard zones, worker welfare facilities, and chemical safety safeguards under The Factories Act.",
-          subtext: "Directorate of Industrial Safety & Health (Labour Dept, Govt. of Maharashtra)",
+          subtext:
+            "Directorate of Industrial Safety & Health (Labour Dept, Govt. of Maharashtra)",
         },
       };
 

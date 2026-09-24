@@ -3,21 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Consolidated Industrial Clearance Certificate · Government of Maharashtra</title>
+    <title>
+      Consolidated Industrial Clearance Certificate · Government of Maharashtra
+    </title>
     <link rel="stylesheet" href="/css/style.css" />
     <script>
       /* Zero-FOUC: apply theme before first paint */
       (function () {
         var t = null;
-        try { t = localStorage.getItem("udyog_theme"); } catch (_) {}
-        if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+        try {
+          t = localStorage.getItem("udyog_theme");
+        } catch (_) {}
+        if (!t) {
+          t =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        }
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
     <style>
       body {
         background: var(--surface-base, #f1f5f9);
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
         color: var(--ink, #0f172a);
         margin: 0;
         padding: 24px 16px;
@@ -36,14 +50,15 @@
       .certificate-page {
         max-width: 860px;
         margin: 0 auto;
-        background: var(--surface-card, #ffffff);
-        color: var(--ink, #0f172a);
+        background: #ffffff !important;
+        color: #0f172a !important;
         padding: 44px 50px;
         border: 4px double #b45309;
         border-radius: 4px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         position: relative;
         box-sizing: border-box;
+        color-scheme: light !important;
       }
 
       /* Watermark */
@@ -133,13 +148,14 @@
       }
 
       .cert-enterprise-box {
-        background: var(--surface-subtle, #f8fafc);
-        border: 1px solid var(--line, #e2e8f0);
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 6px;
         padding: 16px 20px;
         margin-bottom: 20px;
         position: relative;
         z-index: 1;
+        color: #0f172a !important;
       }
 
       .cert-grid {
@@ -151,7 +167,7 @@
 
       .cert-grid-item b {
         display: block;
-        color: var(--ink-muted, #64748b);
+        color: #64748b !important;
         font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -159,7 +175,7 @@
       }
 
       .cert-grid-item span {
-        color: var(--ink, #0f172a);
+        color: #0f172a !important;
         font-weight: 700;
         font-size: 0.92rem;
       }
@@ -174,8 +190,8 @@
       }
 
       .clearance-table th {
-        background: #1e3a8a;
-        color: #ffffff;
+        background: #1e3a8a !important;
+        color: #ffffff !important;
         font-weight: 700;
         text-align: left;
         padding: 8px 12px;
@@ -186,13 +202,14 @@
 
       .clearance-table td {
         padding: 8px 12px;
-        border-bottom: 1px solid var(--line, #e2e8f0);
+        border-bottom: 1px solid #e2e8f0 !important;
         vertical-align: middle;
-        color: var(--ink, #0f172a);
+        color: #0f172a !important;
+        background: #ffffff !important;
       }
 
-      .clearance-table tr:nth-child(even) {
-        background: var(--surface-subtle, #f8fafc);
+      .clearance-table tr:nth-child(even) td {
+        background: #f8fafc !important;
       }
 
       .status-pill {
@@ -203,19 +220,20 @@
         font-weight: 700;
       }
       .status-approved {
-        background: #dcfce7;
-        color: #166534;
+        background: #dcfce7 !important;
+        color: #166534 !important;
       }
 
       .cert-footer {
         margin-top: 32px;
         padding-top: 20px;
-        border-top: 1.5px dashed var(--line, #cbd5e1);
+        border-top: 1.5px dashed #cbd5e1 !important;
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
         position: relative;
         z-index: 1;
+        color: #0f172a !important;
       }
 
       .cert-seal-box {
@@ -242,7 +260,7 @@
       }
 
       .cert-sign-img {
-        font-family: 'Brush Script MT', cursive, sans-serif;
+        font-family: "Brush Script MT", cursive, sans-serif;
         font-size: 1.5rem;
         color: #1e3a8a;
         margin-bottom: 2px;
@@ -250,13 +268,13 @@
 
       .cert-hash-box {
         margin-top: 20px;
-        background: var(--surface-subtle, #f1f5f9);
-        border: 1px solid var(--line, #e2e8f0);
+        background: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
         padding: 8px 14px;
         border-radius: 4px;
         font-size: 0.7rem;
         font-family: monospace;
-        color: var(--ink-secondary, #475569);
+        color: #475569 !important;
         word-break: break-all;
         position: relative;
         z-index: 1;
@@ -268,7 +286,8 @@
           margin: 6mm 8mm;
         }
 
-        html, body {
+        html,
+        body {
           background: #ffffff !important;
           color: #0f172a !important;
           margin: 0 !important;
@@ -421,7 +440,7 @@
 
         .status-pill {
           padding: 1px 5px !important;
-          font-size: 0.60rem !important;
+          font-size: 0.6rem !important;
         }
 
         .cert-terms {
@@ -454,7 +473,7 @@
         }
 
         .golden-seal + div > div:nth-child(2) {
-          font-size: 0.60rem !important;
+          font-size: 0.6rem !important;
         }
 
         .golden-seal + div > div:nth-child(3) {
@@ -478,7 +497,7 @@
         .dsc-badge {
           padding: 3px 6px !important;
           max-width: 170px !important;
-          font-size: 0.60rem !important;
+          font-size: 0.6rem !important;
         }
 
         .dsc-badge > div:nth-child(1) {
@@ -499,11 +518,11 @@
         }
 
         .cert-sign-box > div:nth-child(2) {
-          font-size: 0.70rem !important;
+          font-size: 0.7rem !important;
         }
 
         .cert-sign-box > div:nth-child(3) {
-          font-size: 0.60rem !important;
+          font-size: 0.6rem !important;
         }
 
         .cert-hash-box {
@@ -537,10 +556,18 @@
   <body>
     <div class="no-print-bar">
       <div>
-        <a href="javascript:history.back()" class="btn outline sm">&larr; Back</a>
-        <a id="homeLink" href="/pages/applicant-dashboard.html" class="btn outline sm" style="margin-left: 6px;">Portal Home</a>
+        <a href="javascript:history.back()" class="btn outline sm"
+          >&larr; Back</a
+        >
+        <a
+          id="homeLink"
+          href="/pages/applicant-dashboard.html"
+          class="btn outline sm"
+          style="margin-left: 6px"
+          >Portal Home</a
+        >
       </div>
-      <div style="display: flex; gap: 8px;">
+      <div style="display: flex; gap: 8px">
         <button class="btn outline sm" onclick="openVcModal()">
           📜 W3C Verifiable Credential
         </button>
@@ -552,26 +579,53 @@
 
     <div class="certificate-page" id="certPage">
       <div class="cert-header">
-        <div class="cert-emblem"><img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" /></div>
-        <h2 class="govt-title">Government of Maharashtra</h2>
-        <p class="govt-slogan">"प्रतिपच्चंद्रलेखेव वर्धिष्णुर्विश्ववंदिता शाहसूनोः शिवस्यैषा मुद्रा भद्राय राजते"</p>
-        <div class="govt-dept">
-          Directorate of Industries &amp; Maharashtra State Innovation Society<br />
-          Single Window Industrial Clearances System &middot; <i>Udyog Samyog</i>
+        <div class="cert-emblem">
+          <img src="/img/seal-of-maharashtra.svg" alt="Seal of Maharashtra" />
         </div>
-        <div class="cert-main-title">Consolidated Industrial Clearance Certificate</div>
-        <div class="cert-sub-title">Sanction &amp; Statutory Deemed Clearances Order</div>
+        <h2 class="govt-title">Government of Maharashtra</h2>
+        <p class="govt-slogan">
+          "प्रतिपच्चंद्रलेखेव वर्धिष्णुर्विश्ववंदिता शाहसूनोः शिवस्यैषा मुद्रा
+          भद्राय राजते"
+        </p>
+        <div class="govt-dept">
+          Directorate of Industries &amp; Maharashtra State Innovation
+          Society<br />
+          Single Window Industrial Clearances System &middot;
+          <i>Udyog Samyog</i>
+        </div>
+        <div class="cert-main-title">
+          Consolidated Industrial Clearance Certificate
+        </div>
+        <div class="cert-sub-title">
+          Sanction &amp; Statutory Deemed Clearances Order
+        </div>
       </div>
 
       <div class="cert-meta-strip">
-        <div>Certificate No: <b id="certNo" style="color:#b45309;">Loading...</b></div>
+        <div>
+          Certificate No: <b id="certNo" style="color: #b45309">Loading...</b>
+        </div>
         <div>Issue Date: <b id="certIssueDate">---</b></div>
-        <div>Application Ref: <b id="certAppNo" style="color:#1e3a8a;">---</b></div>
-        <div>Validity: <b id="certValidity" style="color:#166534;">Permanent / 5 Years</b></div>
+        <div>
+          Application Ref: <b id="certAppNo" style="color: #1e3a8a">---</b>
+        </div>
+        <div>
+          Validity:
+          <b id="certValidity" style="color: #166534">Permanent / 5 Years</b>
+        </div>
       </div>
 
       <div class="cert-enterprise-box">
-        <div style="font-weight:700; color:#1e3a8a; font-size:0.9rem; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
+        <div
+          style="
+            font-weight: 700;
+            color: #1e3a8a;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+          "
+        >
           Enterprise &amp; Manufacturing Unit Particulars
         </div>
         <div class="cert-grid">
@@ -602,10 +656,21 @@
         </div>
       </div>
 
-      <div class="cert-section-title" style="font-weight:700; color:#0f172a; font-size:0.86rem; margin-bottom:6px;">
+      <div
+        class="cert-section-title"
+        style="
+          font-weight: 700;
+          color: #0f172a;
+          font-size: 0.86rem;
+          margin-bottom: 6px;
+        "
+      >
         Parallel Inter-Departmental Statutory Clearances Sanctioned:
       </div>
-      <div class="table-container" style="border:none;background:transparent;margin:10px 0;">
+      <div
+        class="table-container"
+        style="border: none; background: transparent; margin: 10px 0"
+      >
         <table class="clearance-table">
           <thead>
             <tr>
@@ -620,70 +685,181 @@
               <td><b>Maharashtra Pollution Control Board</b></td>
               <td>Consent to Establish &amp; Effluent Discharge Clearance</td>
               <td>Water (Prevention) Act 1974 &amp; Air Act 1981</td>
-              <td><span class="status-pill status-approved">&#10003; Granted</span></td>
+              <td>
+                <span class="status-pill status-approved"
+                  >&#10003; Granted</span
+                >
+              </td>
             </tr>
             <tr>
               <td><b>Maharashtra Industrial Development Corporation</b></td>
-              <td>Civil Infrastructure, Building Layout &amp; Land Use Approval</td>
-              <td>Maharashtra Regional and Town Planning Act 1966 &amp; Industrial Development Corporation Planning Regulations</td>
-              <td><span class="status-pill status-approved">&#10003; Sanctioned</span></td>
+              <td>
+                Civil Infrastructure, Building Layout &amp; Land Use Approval
+              </td>
+              <td>
+                Maharashtra Regional and Town Planning Act 1966 &amp; Industrial
+                Development Corporation Planning Regulations
+              </td>
+              <td>
+                <span class="status-pill status-approved"
+                  >&#10003; Sanctioned</span
+                >
+              </td>
             </tr>
             <tr>
               <td><b>Directorate of Industrial Safety &amp; Health</b></td>
-              <td>Factory Safety Blueprint &amp; Hazard Containment Endorsement</td>
+              <td>
+                Factory Safety Blueprint &amp; Hazard Containment Endorsement
+              </td>
               <td>Factories Act 1948 (Sections 6, 7 &amp; 41)</td>
-              <td><span class="status-pill status-approved">&#10003; Endorsed</span></td>
+              <td>
+                <span class="status-pill status-approved"
+                  >&#10003; Endorsed</span
+                >
+              </td>
             </tr>
             <tr>
               <td><b>Directorate of Maharashtra Fire Services</b></td>
-              <td>Provisional Fire Safety &amp; Life Safety Clearance Certificate</td>
+              <td>
+                Provisional Fire Safety &amp; Life Safety Clearance Certificate
+              </td>
               <td>Maharashtra Fire Prevention &amp; Life Safety Act 2006</td>
-              <td><span class="status-pill status-approved">&#10003; Cleared</span></td>
+              <td>
+                <span class="status-pill status-approved"
+                  >&#10003; Cleared</span
+                >
+              </td>
             </tr>
             <tr>
-              <td><b>Maharashtra State Innovation Society (Apex Authority)</b></td>
+              <td>
+                <b>Maharashtra State Innovation Society (Apex Authority)</b>
+              </td>
               <td>Consolidated Single Window Sanction &amp; License Grant</td>
               <td>Maharashtra Ease of Doing Business Act &amp; Guarantee</td>
-              <td><span class="status-pill status-approved">&#10003; Approved</span></td>
+              <td>
+                <span class="status-pill status-approved"
+                  >&#10003; Approved</span
+                >
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="cert-terms" style="font-size:0.75rem; color:#475569; line-height:1.5; margin-top:12px;">
-        <b>Statutory Terms &amp; Declarations:</b> This digital certificate serves as official statutory clearance granted under the Maharashtra Ease of Doing Business Act and Service Level Guarantee framework. Any deviations in factory layout, hazardous chemical handling, or effluent discharges without prior departmental endorsements will invite statutory revocation.
+      <div
+        class="cert-terms"
+        style="
+          font-size: 0.75rem;
+          color: #475569;
+          line-height: 1.5;
+          margin-top: 12px;
+        "
+      >
+        <b>Statutory Terms &amp; Declarations:</b> This digital certificate
+        serves as official statutory clearance granted under the Maharashtra
+        Ease of Doing Business Act and Service Level Guarantee framework. Any
+        deviations in factory layout, hazardous chemical handling, or effluent
+        discharges without prior departmental endorsements will invite statutory
+        revocation.
       </div>
 
       <div class="cert-footer">
         <div class="cert-seal-box">
           <div class="golden-seal">&#128081;</div>
           <div>
-            <div style="font-size:0.78rem; font-weight:800; color:#b45309; text-transform:uppercase;">
+            <div
+              style="
+                font-size: 0.78rem;
+                font-weight: 800;
+                color: #b45309;
+                text-transform: uppercase;
+              "
+            >
               Official State Golden Seal
             </div>
-            <div style="font-size:0.7rem; color:#64748b;">
+            <div style="font-size: 0.7rem; color: #64748b">
               Digitally Authenticated Single Window Repository
             </div>
-            <div style="font-size:0.68rem; color:#166534; font-weight:700; margin-top:2px;">
+            <div
+              style="
+                font-size: 0.68rem;
+                color: #166534;
+                font-weight: 700;
+                margin-top: 2px;
+              "
+            >
               &#10003; SHA-256 Validated &middot; Tamper-Proof
             </div>
           </div>
         </div>
 
         <!-- Class 3 DSC Token & W3C Verifiable Credential QR -->
-        <div class="cert-qr-dsc-box" style="display:flex; align-items:center; gap:12px;">
-          <div id="vcQrContainer" style="text-align:center;">
-            <img id="certQrImg" alt="W3C VC QR" style="width:68px; height:68px; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; display:block;" src="" />
-            <div style="font-size:0.6rem; color:#64748b; margin-top:2px; font-weight:700;">W3C VC QR</div>
+        <div
+          class="cert-qr-dsc-box"
+          style="display: flex; align-items: center; gap: 12px"
+        >
+          <div id="vcQrContainer" style="text-align: center">
+            <img
+              id="certQrImg"
+              alt="W3C VC QR"
+              style="
+                width: 68px;
+                height: 68px;
+                border: 1px solid #cbd5e1;
+                border-radius: 4px;
+                padding: 2px;
+                background: #fff;
+                display: block;
+              "
+              src=""
+            />
+            <div
+              style="
+                font-size: 0.6rem;
+                color: #64748b;
+                margin-top: 2px;
+                font-weight: 700;
+              "
+            >
+              W3C VC QR
+            </div>
           </div>
-          <div class="dsc-badge" style="border:1.5px solid #059669; background:#ecfdf5; border-radius:6px; padding:6px 10px; font-size:0.72rem; color:#065f46; max-width:200px;">
-            <div style="font-weight:800; display:flex; align-items:center; gap:4px; color:#047857; font-size:0.75rem;">
+          <div
+            class="dsc-badge"
+            style="
+              border: 1.5px solid #059669;
+              background: #ecfdf5;
+              border-radius: 6px;
+              padding: 6px 10px;
+              font-size: 0.72rem;
+              color: #065f46;
+              max-width: 200px;
+            "
+          >
+            <div
+              style="
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                color: #047857;
+                font-size: 0.75rem;
+              "
+            >
               <span>🔏</span> Class 3 DSC e-Signed
             </div>
-            <div style="font-size:0.65rem; color:#047857; margin-top:2px;">
+            <div style="font-size: 0.65rem; color: #047857; margin-top: 2px">
               Govt. CCA India &middot; RFC 3161 TSA
             </div>
-            <div style="font-size:0.62rem; font-family:monospace; color:#065f46; margin-top:2px; word-break:break-all;">
+            <div
+              style="
+                font-size: 0.62rem;
+                font-family: monospace;
+                color: #065f46;
+                margin-top: 2px;
+                word-break: break-all;
+              "
+            >
               Cert: CCA/IN/MH-DI-9021
             </div>
           </div>
@@ -691,10 +867,10 @@
 
         <div class="cert-sign-box">
           <div class="cert-sign-img">Dr. S. K. Mahajan, IAS</div>
-          <div style="font-size:0.82rem; font-weight:800; color:#1e3a8a;">
+          <div style="font-size: 0.82rem; font-weight: 800; color: #1e3a8a">
             Development Commissioner (Industries)
           </div>
-          <div style="font-size:0.72rem; color:#475569;">
+          <div style="font-size: 0.72rem; color: #475569">
             Government of Maharashtra &amp; Apex Approver Authority
           </div>
         </div>
@@ -702,39 +878,114 @@
 
       <!-- CRYPTOGRAPHIC INTEGRITY AUDIT TRAIL FOOTER -->
       <div class="cert-hash-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:8px;">
-          <span style="font-weight:700; color:var(--navy); font-size:0.75rem;">Cryptographic Audit Trail &middot; SHA-256 Digital Fingerprint</span>
-          <span style="font-size:0.68rem; color:#15803d; font-weight:700;">&#10003; Validated Against State Government Root Ledger</span>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+          "
+        >
+          <span style="font-weight: 700; color: #0b2545; font-size: 0.75rem"
+            >Cryptographic Audit Trail &middot; SHA-256 Digital
+            Fingerprint</span
+          >
+          <span style="font-size: 0.68rem; color: #15803d; font-weight: 700"
+            >&#10003; Validated Against State Government Root Ledger</span
+          >
         </div>
-        <div>
-          SHA-256 Digest: <span class="cert-hash-val" id="certHashVal">Computing SHA-256 digital fingerprint...</span>
-          <span id="certHash" style="display:none;"></span>
+        <div style="color: #334155">
+          SHA-256 Digest:
+          <span class="cert-hash-val" id="certHashVal"
+            >Computing SHA-256 digital fingerprint...</span
+          >
+          <span id="certHash" style="display: none"></span>
         </div>
-        <div style="margin-top:4px; color:var(--ink-muted); font-size:0.68rem;">
-          W3C Verifiable Credential ID: <span id="certVcId" style="font-family:monospace;">urn:uuid:...</span> &middot;
-          Issued: <span id="certIssuedTimestamp">---</span>
+        <div style="margin-top: 4px; color: #64748b; font-size: 0.68rem">
+          W3C Verifiable Credential ID:
+          <span id="certVcId" style="font-family: monospace; color: #0b2545"
+            >urn:uuid:...</span
+          >
+          &middot; Issued: <span id="certIssuedTimestamp">---</span>
         </div>
       </div>
     </div>
 
     <!-- W3C VERIFIABLE CREDENTIAL MODAL -->
-    <div id="vcModal" class="modal modal-overlay" style="display:none;">
+    <div id="vcModal" class="modal modal-overlay" style="display: none">
       <div class="modal-card lg">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
-          <h3 style="margin:0; color:var(--navy); font-size:1.15rem; display:flex; align-items:center; gap:8px;">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 10px;
+          "
+        >
+          <h3
+            style="
+              margin: 0;
+              color: var(--navy);
+              font-size: 1.15rem;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
             <span>📜</span> W3C Verifiable Credential &middot; Data Model 2.0
           </h3>
-          <button class="btn outline sm" onclick="closeVcModal()">✕ Close</button>
+          <button class="btn outline sm" onclick="closeVcModal()">
+            ✕ Close
+          </button>
         </div>
-        <p style="font-size:0.82rem; color:var(--ink-light); margin-bottom:12px;">
-          Standardized cryptographically verifiable credential conforming to W3C VC specification. Recognized by international trade bodies, financial institutions, and the National Single Window Portal.
+        <p
+          style="
+            font-size: 0.82rem;
+            color: var(--ink-light);
+            margin-bottom: 12px;
+          "
+        >
+          Standardized cryptographically verifiable credential conforming to W3C
+          VC specification. Recognized by international trade bodies, financial
+          institutions, and the National Single Window Portal.
         </p>
-        <div style="position:relative;">
-          <pre id="vcJsonContent" style="background:#0f172a; color:#38bdf8; font-family:Consolas, monospace; font-size:0.75rem; padding:14px; border-radius:6px; overflow-x:auto; max-height:360px; line-height:1.4;"></pre>
-          <button class="btn saffron sm" style="position:absolute; top:8px; right:8px; font-size:0.72rem; padding:3px 8px;" onclick="copyVcJson()">📋 Copy JSON</button>
+        <div style="position: relative">
+          <pre
+            id="vcJsonContent"
+            style="
+              background: #0f172a;
+              color: #38bdf8;
+              font-family: Consolas, monospace;
+              font-size: 0.75rem;
+              padding: 14px;
+              border-radius: 6px;
+              overflow-x: auto;
+              max-height: 360px;
+              line-height: 1.4;
+            "
+          ></pre>
+          <button
+            class="btn saffron sm"
+            style="
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              font-size: 0.72rem;
+              padding: 3px 8px;
+            "
+            onclick="copyVcJson()"
+          >
+            📋 Copy JSON
+          </button>
         </div>
-        <div style="margin-top:14px; display:flex; justify-content:flex-end;">
-          <button class="btn outline sm" onclick="closeVcModal()">Dismiss</button>
+        <div style="margin-top: 14px; display: flex; justify-content: flex-end">
+          <button class="btn outline sm" onclick="closeVcModal()">
+            Dismiss
+          </button>
         </div>
       </div>
     </div>
@@ -750,7 +1001,10 @@
           if (user && user.role === "official") {
             const homeLink = document.getElementById("homeLink");
             if (homeLink) {
-              homeLink.href = typeof getOfficerDashboardUrl === "function" ? getOfficerDashboardUrl(user) : "/pages/officer-dashboard.html";
+              homeLink.href =
+                typeof getOfficerDashboardUrl === "function"
+                  ? getOfficerDashboardUrl(user)
+                  : "/pages/officer-dashboard.html";
               homeLink.textContent = "Officer Dashboard";
             }
           }
@@ -775,19 +1029,38 @@
 
         try {
           const cert = await api(`/api/applications/${appId}/certificate`);
-          
-          document.getElementById("certNo").textContent = cert.certificateNo || "MH-EODB-" + appId;
-          const issueDateObj = cert.issuedDate ? new Date(cert.issuedDate) : (cert.issuedAt ? new Date(cert.issuedAt) : new Date());
-          document.getElementById("certIssueDate").textContent = issueDateObj.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-          document.getElementById("certAppNo").textContent = cert.applicationNo || "APP-" + appId;
-          document.getElementById("certValidity").textContent = `Valid through ${cert.validUntil || "5 Years"}`;
 
-          document.getElementById("certCompany").textContent = cert.companyName || "---";
-          document.getElementById("certReg").textContent = cert.registrationNo || "GSTIN-REGISTERED";
-          document.getElementById("certSector").textContent = cert.industryCategory || "Manufacturing";
-          document.getElementById("certRisk").textContent = `${cert.riskTier || "Green"} Risk Category`;
-          document.getElementById("certLocation").textContent = cert.location || "Maharashtra Industrial Zone";
-          const vHash = cert.verificationHash || "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069";
+          document.getElementById("certNo").textContent =
+            cert.certificateNo || "MH-EODB-" + appId;
+          const issueDateObj = cert.issuedDate
+            ? new Date(cert.issuedDate)
+            : cert.issuedAt
+              ? new Date(cert.issuedAt)
+              : new Date();
+          document.getElementById("certIssueDate").textContent =
+            issueDateObj.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            });
+          document.getElementById("certAppNo").textContent =
+            cert.applicationNo || "APP-" + appId;
+          document.getElementById("certValidity").textContent =
+            `Valid through ${cert.validUntil || "5 Years"}`;
+
+          document.getElementById("certCompany").textContent =
+            cert.companyName || "---";
+          document.getElementById("certReg").textContent =
+            cert.registrationNo || "GSTIN-REGISTERED";
+          document.getElementById("certSector").textContent =
+            cert.industryCategory || "Manufacturing";
+          document.getElementById("certRisk").textContent =
+            `${cert.riskTier || "Green"} Risk Category`;
+          document.getElementById("certLocation").textContent =
+            cert.location || "Maharashtra Industrial Zone";
+          const vHash =
+            cert.verificationHash ||
+            "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069";
           document.getElementById("certHash").textContent = `SHA256:${vHash}`;
 
           // Populate QR Code
@@ -802,46 +1075,79 @@
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
               "https://schema.org",
-              "https://gov.in/eodb/credentials/v1"
+              "https://gov.in/eodb/credentials/v1",
             ],
-            "id": `urn:uuid:mh-eodb-${cert.certificateNo || appId}`,
-            "type": ["VerifiableCredential", "StateIndustrialClearanceCredential"],
-            "issuer": {
-              "id": "did:gov:in:maharashtra:industries:single-window",
-              "name": "Government of Maharashtra - Directorate of Industries & MSINS",
-              "jurisdiction": "Maharashtra, India"
+            id: `urn:uuid:mh-eodb-${cert.certificateNo || appId}`,
+            type: [
+              "VerifiableCredential",
+              "StateIndustrialClearanceCredential",
+            ],
+            issuer: {
+              id: "did:gov:in:maharashtra:industries:single-window",
+              name: "Government of Maharashtra - Directorate of Industries & MSINS",
+              jurisdiction: "Maharashtra, India",
             },
-            "issuanceDate": issueDateObj.toISOString(),
-            "expirationDate": new Date(issueDateObj.getTime() + 5 * 365 * 24 * 3600 * 1000).toISOString(),
-            "credentialSubject": {
-              "id": `did:in:gstin:${cert.registrationNo || "UNREGISTERED"}`,
-              "enterpriseName": cert.companyName || "Industrial Unit",
-              "applicationReference": cert.applicationNo || `APP-${appId}`,
-              "certificateNumber": cert.certificateNo || `MH-EODB-${appId}`,
-              "classification": cert.industryCategory || "Manufacturing",
-              "riskCategory": cert.riskTier || "Green",
-              "location": cert.location || "Maharashtra",
-              "statutoryClearances": [
-                { "agency": "MPCB", "clearance": "Consent to Establish", "act": "Water Act 1974 & Air Act 1981", "status": "Granted" },
-                { "agency": "MIDC", "clearance": "Civil Infrastructure & Building Layout", "act": "MRTP Act 1966", "status": "Sanctioned" },
-                { "agency": "DISH", "clearance": "Factory Safety Blueprint Endorsement", "act": "Factories Act 1948", "status": "Endorsed" },
-                { "agency": "Fire Services", "clearance": "Provisional Fire & Life Safety NOC", "act": "Fire Safety Act 2006", "status": "Cleared" },
-                { "agency": "MSINS (Apex)", "clearance": "Consolidated Final Single Window Sanction", "act": "Right to Services Act 2015", "status": "Approved" }
-              ]
+            issuanceDate: issueDateObj.toISOString(),
+            expirationDate: new Date(
+              issueDateObj.getTime() + 5 * 365 * 24 * 3600 * 1000,
+            ).toISOString(),
+            credentialSubject: {
+              id: `did:in:gstin:${cert.registrationNo || "UNREGISTERED"}`,
+              enterpriseName: cert.companyName || "Industrial Unit",
+              applicationReference: cert.applicationNo || `APP-${appId}`,
+              certificateNumber: cert.certificateNo || `MH-EODB-${appId}`,
+              classification: cert.industryCategory || "Manufacturing",
+              riskCategory: cert.riskTier || "Green",
+              location: cert.location || "Maharashtra",
+              statutoryClearances: [
+                {
+                  agency: "MPCB",
+                  clearance: "Consent to Establish",
+                  act: "Water Act 1974 & Air Act 1981",
+                  status: "Granted",
+                },
+                {
+                  agency: "MIDC",
+                  clearance: "Civil Infrastructure & Building Layout",
+                  act: "MRTP Act 1966",
+                  status: "Sanctioned",
+                },
+                {
+                  agency: "DISH",
+                  clearance: "Factory Safety Blueprint Endorsement",
+                  act: "Factories Act 1948",
+                  status: "Endorsed",
+                },
+                {
+                  agency: "Fire Services",
+                  clearance: "Provisional Fire & Life Safety NOC",
+                  act: "Fire Safety Act 2006",
+                  status: "Cleared",
+                },
+                {
+                  agency: "MSINS (Apex)",
+                  clearance: "Consolidated Final Single Window Sanction",
+                  act: "Right to Services Act 2015",
+                  status: "Approved",
+                },
+              ],
             },
-            "evidence": [{
-              "id": `urn:uuid:verification-hash-${vHash.substring(0, 16)}`,
-              "type": ["CryptographicIntegritySeal"],
-              "verifier": "AI State Integrity & Inspection Engine",
-              "documentSha256": vHash.replace(/^SHA256:/i, "")
-            }],
-            "proof": {
-              "type": "Ed25519Signature2020",
-              "created": issueDateObj.toISOString(),
-              "verificationMethod": "did:gov:in:maharashtra:industries:single-window#key-1",
-              "proofPurpose": "assertionMethod",
-              "jws": `eyJhbGciOiJFZERTQSI...${vHash.substring(0, 32)}`
-            }
+            evidence: [
+              {
+                id: `urn:uuid:verification-hash-${vHash.substring(0, 16)}`,
+                type: ["CryptographicIntegritySeal"],
+                verifier: "AI State Integrity & Inspection Engine",
+                documentSha256: vHash.replace(/^SHA256:/i, ""),
+              },
+            ],
+            proof: {
+              type: "Ed25519Signature2020",
+              created: issueDateObj.toISOString(),
+              verificationMethod:
+                "did:gov:in:maharashtra:industries:single-window#key-1",
+              proofPurpose: "assertionMethod",
+              jws: `eyJhbGciOiJFZERTQSI...${vHash.substring(0, 32)}`,
+            },
           };
 
           const pre = document.getElementById("vcJsonContent");
@@ -852,13 +1158,17 @@
             const vResp = await fetch("/api/ai/integrity/verify-certificate", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ application_no: cert.applicationNo || "APP-" + appId, certificate_hash: vHash.replace(/^SHA256:/i, "") }),
+              body: JSON.stringify({
+                application_no: cert.applicationNo || "APP-" + appId,
+                certificate_hash: vHash.replace(/^SHA256:/i, ""),
+              }),
             });
             const vData = await vResp.json();
             if (vData.valid) {
               const badge = document.createElement("div");
               badge.className = "cert-ai-badge";
-              badge.style.cssText = "font-size:0.78rem; color:#15803d; font-weight:700; margin-top:6px;";
+              badge.style.cssText =
+                "font-size:0.78rem; color:#15803d; font-weight:700; margin-top:6px;";
               badge.innerHTML = `🛡️ Cryptographically Verified by AI State Authority (${vData.issuer})`;
               document.getElementById("certHash").parentNode.appendChild(badge);
             }
@@ -899,9 +1209,14 @@
       }
       function copyVcJson() {
         if (!currentVcPayload) return;
-        navigator.clipboard.writeText(JSON.stringify(currentVcPayload, null, 2)).then(() => {
-          notify("✓ W3C Verifiable Credential JSON copied to clipboard!", "success");
-        });
+        navigator.clipboard
+          .writeText(JSON.stringify(currentVcPayload, null, 2))
+          .then(() => {
+            notify(
+              "✓ W3C Verifiable Credential JSON copied to clipboard!",
+              "success",
+            );
+          });
       }
 
       loadCertificate();

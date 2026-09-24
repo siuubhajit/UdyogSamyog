@@ -43,9 +43,12 @@ function renderDishCalculator(container) {
   `;
 
   function calculate() {
-    const area = parseFloat(document.getElementById("calcHallArea")?.value) || 800;
-    const height = parseFloat(document.getElementById("calcCeilingHeight")?.value) || 4.5;
-    const workers = parseInt(document.getElementById("calcShiftWorkers")?.value, 10) || 40;
+    const area =
+      parseFloat(document.getElementById("calcHallArea")?.value) || 800;
+    const height =
+      parseFloat(document.getElementById("calcCeilingHeight")?.value) || 4.5;
+    const workers =
+      parseInt(document.getElementById("calcShiftWorkers")?.value, 10) || 40;
 
     const effHeight = Math.min(4.2, height);
     const totalVolume = area * effHeight;
@@ -57,7 +60,9 @@ function renderDishCalculator(container) {
     const volEl = document.getElementById("calcVolumePerWorker");
     if (volEl) {
       volEl.textContent = `${volumePerWorker} m³ / worker (Min: 14.2 m³)`;
-      volEl.style.color = isCompliant ? "var(--color-success, #059669)" : "var(--color-danger, #dc2626)";
+      volEl.style.color = isCompliant
+        ? "var(--color-success, var(--ok-ink))"
+        : "var(--color-danger, var(--err-ink))";
     }
 
     const maxWEl = document.getElementById("calcMaxWorkers");
@@ -67,12 +72,15 @@ function renderDishCalculator(container) {
   }
 
   document.getElementById("calcHallArea")?.addEventListener("input", calculate);
-  document.getElementById("calcCeilingHeight")?.addEventListener("input", calculate);
-  document.getElementById("calcShiftWorkers")?.addEventListener("input", calculate);
+  document
+    .getElementById("calcCeilingHeight")
+    ?.addEventListener("input", calculate);
+  document
+    .getElementById("calcShiftWorkers")
+    ?.addEventListener("input", calculate);
   calculate();
 }
 
 if (typeof window !== "undefined") {
   window.renderDishCalculator = renderDishCalculator;
 }
-
