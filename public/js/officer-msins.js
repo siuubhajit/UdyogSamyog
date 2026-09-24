@@ -79,25 +79,22 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
       : document.getElementById("companySearchInput")?.value || ""
   ).trim();
 
-  // If no search query was entered, display the clean search guide prompt (never auto-populate unapplied/random industries)
+  // If no search query was entered, keep the space blank
   if (!term) {
-    container.innerHTML = `
-      <div style="text-align:center; padding: 28px 16px; color: var(--ink-light); background:var(--surface-card-alt); border-radius:8px; border:1px dashed var(--line-strong);">
-        <div style="font-size:1.6rem; margin-bottom:6px;">🔎</div>
-        <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:4px;">Search Enterprise Clearances &amp; Licenses</div>
-        <div style="font-size:0.82rem; color:var(--ink-muted); max-width:460px; margin:0 auto;">
-          Enter an enterprise name (e.g. Sahyadri), GSTIN, or Application ID above to inspect live multi-departmental clearance milestones, statutory remarks, and license status.
-        </div>
-      </div>`;
+    container.innerHTML = "";
+    container.style.display = "none";
     return;
   }
+  container.style.display = "block";
 
   const termLower = term.toLowerCase();
 
   const matchRegNo = (reg, query) => {
     if (!reg) return false;
     const r = reg.toLowerCase();
-    return query.length >= 5 ? r.includes(query) : r.startsWith(query) || r === query;
+    return query.length >= 5
+      ? r.includes(query)
+      : r.startsWith(query) || r === query;
   };
 
   // 1. Find matching applications from industries that HAVE APPLIED
@@ -111,12 +108,15 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
 
   // 2. Find registered enterprises matching the search that have NOT applied yet
   const unappliedMatches = (allEnterprises || []).filter((ent) => {
-    const nameMatch = (ent.company_name || "").toLowerCase().includes(termLower);
+    const nameMatch = (ent.company_name || "")
+      .toLowerCase()
+      .includes(termLower);
     const regMatch = matchRegNo(ent.registration_no, termLower);
     const hasAppInApps = allApplications.some(
       (a) =>
         a.user_id === ent.id ||
-        (a.company_name || "").trim().toLowerCase() === (ent.company_name || "").trim().toLowerCase(),
+        (a.company_name || "").trim().toLowerCase() ===
+          (ent.company_name || "").trim().toLowerCase(),
     );
     const hasAppCount = ent.applications_count && ent.applications_count > 0;
     return (nameMatch || regMatch) && !hasAppInApps && !hasAppCount;
@@ -248,15 +248,22 @@ function renderCompanySearchResults(apps, explicitTerm = null) {
 }
 
 function renderApplicationsTable() {
-  const tbody = document.getElementById("applicationsTableBody") || document.getElementById("rows");
+  const tbody =
+    document.getElementById("applicationsTableBody") ||
+    document.getElementById("rows");
   if (!tbody) return;
 
   const search = (
-    document.getElementById("filterSearch")?.value || ""
-  ).toLowerCase().trim();
+    document.getElementById("companySearchInput")?.value ||
+    document.getElementById("filterSearch")?.value ||
+    ""
+  )
+    .toLowerCase()
+    .trim();
   const statusFilter = document.getElementById("filterStatus")?.value || "all";
   const riskFilter = document.getElementById("filterRisk")?.value || "all";
-  const districtFilter = document.getElementById("filterDistrict")?.value || "all";
+  const districtFilter =
+    document.getElementById("filterDistrict")?.value || "all";
 
   let filtered = allApplications;
 
@@ -275,11 +282,15 @@ function renderApplicationsTable() {
   }
 
   if (riskFilter !== "all") {
-    filtered = filtered.filter((a) => (a.risk_tier || a.risk_category || "Orange") === riskFilter);
+    filtered = filtered.filter(
+      (a) => (a.risk_tier || a.risk_category || "Orange") === riskFilter,
+    );
   }
 
   if (districtFilter !== "all") {
-    filtered = filtered.filter((a) => (a.district || "").toLowerCase() === districtFilter.toLowerCase());
+    filtered = filtered.filter(
+      (a) => (a.district || "").toLowerCase() === districtFilter.toLowerCase(),
+    );
   }
 
   if (filtered.length === 0) {
@@ -307,7 +318,8 @@ function renderApplicationsTable() {
         (mpcbOk && midcOk && dishOk && fireOk) || a.current_stage === "msins";
       const isApproved = a.status === "Approved";
       const risk = a.risk_tier || a.risk_category || "Orange";
-      const riskBadgeClass = risk === "Green" ? "green" : risk === "Red" ? "red" : "yellow";
+      const riskBadgeClass =
+        risk === "Green" ? "green" : risk === "Red" ? "red" : "yellow";
 
       return `
       <tr>
@@ -384,15 +396,19 @@ async function inspectApexDossier(id) {
       `${data.district} · ${data.location}`;
     if (document.getElementById("modalInspectHazard")) {
       document.getElementById("modalInspectHazard").textContent =
-        data.hazardLevel || (data.hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
+        data.hazardLevel ||
+        (data.hazardous ? "Chemical Hazard (High Risk)" : "Low Risk / General");
     }
     document.getElementById("modalInspectStage").textContent =
       data.current_stage || "mpcb";
 
     const vaultBtn = document.getElementById("modalInspectVaultBtn");
     if (vaultBtn) vaultBtn.href = `/pages/verification.html?id=${id}`;
-    const vaultBtnFooter = document.getElementById("modalInspectVaultBtnFooter");
-    if (vaultBtnFooter) vaultBtnFooter.href = `/pages/verification.html?id=${id}`;
+    const vaultBtnFooter = document.getElementById(
+      "modalInspectVaultBtnFooter",
+    );
+    if (vaultBtnFooter)
+      vaultBtnFooter.href = `/pages/verification.html?id=${id}`;
 
     const allDocs = data.documents || [];
     const stages = data.stageStatuses || {};
@@ -541,7 +557,9 @@ async function inspectApexDossier(id) {
     ];
 
     const uploadedPlansCount = planItems.filter((p) => !!p.doc).length;
-    const deptSummaryBadge = document.getElementById("modalDepartmentalSummaryBadge");
+    const deptSummaryBadge = document.getElementById(
+      "modalDepartmentalSummaryBadge",
+    );
     if (deptSummaryBadge) {
       deptSummaryBadge.innerHTML = `
         <span class="badge ${uploadedPlansCount === 4 ? "green" : "yellow"}" style="font-size:0.75rem; font-weight:700;">
@@ -645,7 +663,9 @@ async function inspectApexDossier(id) {
     if (!certBanner) {
       certBanner = document.createElement("div");
       certBanner.id = "modalApexCertBanner";
-      const parent = document.getElementById("apexInspectModal").querySelector(".modal-card");
+      const parent = document
+        .getElementById("apexInspectModal")
+        .querySelector(".modal-card");
       parent.insertBefore(certBanner, parent.children[1]);
     }
     if (isApproved) {
@@ -671,13 +691,20 @@ async function inspectApexDossier(id) {
   }
 }
 
-function openFinalApprovalModal(id, appNo, companyName, district = "Maharashtra") {
+function openFinalApprovalModal(
+  id,
+  appNo,
+  companyName,
+  district = "Maharashtra",
+) {
   activeAppId = id;
   // Pre-load dossier if not already loaded to check supporting docs
   if (!activeAppDossier || activeAppDossier.id !== id) {
-    api(`/api/applications/${id}`).then((d) => {
-      activeAppDossier = d;
-    }).catch(() => {});
+    api(`/api/applications/${id}`)
+      .then((d) => {
+        activeAppDossier = d;
+      })
+      .catch(() => {});
   }
 
   const decModal = document.getElementById("decisionModal");
@@ -721,11 +748,20 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
     }
 
     const suppDocs = (activeAppDossier?.documents || []).filter(
-      (d) => !["environmental_plan", "civil_plan", "factory_safety_plan", "fire_safety_plan"].includes(d.plan_type)
+      (d) =>
+        ![
+          "environmental_plan",
+          "civil_plan",
+          "factory_safety_plan",
+          "fire_safety_plan",
+        ].includes(d.plan_type),
     );
 
     if (suppDocs.length === 0) {
-      notify("Statutory Requirement: General statutory supporting documents must be submitted by the enterprise before Apex approval can be granted.", "warning");
+      notify(
+        "Statutory Requirement: General statutory supporting documents must be submitted by the enterprise before Apex approval can be granted.",
+        "warning",
+      );
       return;
     }
 
@@ -733,7 +769,10 @@ async function submitFinalApexDecision(decision, explicitRemarks = null) {
     const checkboxes = document.querySelectorAll(".msins-chk");
     const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
     if (checkboxes.length > 0 && checked < checkboxes.length) {
-      notify(`Statutory Requirement: Please verify and tick all ${checkboxes.length} Apex statutory review checklist items before granting final clearance.`, "warning");
+      notify(
+        `Statutory Requirement: Please verify and tick all ${checkboxes.length} Apex statutory review checklist items before granting final clearance.`,
+        "warning",
+      );
       return;
     }
   }
@@ -851,7 +890,9 @@ async function unbanEnterprise(id) {
   if (!ok) return;
 
   try {
-    const res = await api(`/api/admin/enterprises/${id}/unban`, { method: "POST" });
+    const res = await api(`/api/admin/enterprises/${id}/unban`, {
+      method: "POST",
+    });
     notify(res.message || "Enterprise ban lifted.", "success");
     await loadEnterprises();
   } catch (err) {
@@ -901,10 +942,13 @@ async function submitBanEnterprise() {
   }
 
   try {
-    const res = await api(`/api/admin/enterprises/${activeBanEnterpriseId}/ban`, {
-      method: "POST",
-      body: JSON.stringify({ reason }),
-    });
+    const res = await api(
+      `/api/admin/enterprises/${activeBanEnterpriseId}/ban`,
+      {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      },
+    );
     notify(res.message || "Enterprise statutorily blacklisted.", "success");
     closeBanModal();
     await loadEnterprises();
@@ -941,7 +985,10 @@ function runPsiCalc() {
 
   const eligibleSubsidy = (capital * subsidyRate).toFixed(2);
   const sgstPeriod =
-    zone === "D_plus" || zone === "D_PLUS" || zone === "Aspirational" || zone === "VIDARBHA"
+    zone === "D_plus" ||
+    zone === "D_PLUS" ||
+    zone === "Aspirational" ||
+    zone === "VIDARBHA"
       ? "10 Years"
       : "7 Years";
 
@@ -976,15 +1023,17 @@ function closeModals() {
 }
 
 function resetFilters() {
+  const cSearch = document.getElementById("companySearchInput");
   const fSearch = document.getElementById("filterSearch");
   const fStatus = document.getElementById("filterStatus");
   const fRisk = document.getElementById("filterRisk");
   const fDistrict = document.getElementById("filterDistrict");
+  if (cSearch) cSearch.value = "";
   if (fSearch) fSearch.value = "";
   if (fStatus) fStatus.value = "all";
   if (fRisk) fRisk.value = "all";
   if (fDistrict) fDistrict.value = "all";
-  renderApplicationsTable();
+  loadApplications();
 }
 
 function escapeHtml(str) {
@@ -1003,6 +1052,7 @@ function setupEventListeners() {
     const onSearch = () => {
       const val = companySearch.value.trim();
       renderCompanySearchResults(allApplications, val);
+      renderApplicationsTable();
     };
     companySearch.addEventListener("input", onSearch);
     companySearch.addEventListener("keyup", (e) => {
@@ -1018,13 +1068,16 @@ function setupEventListeners() {
   }
 
   const filterStatus = document.getElementById("filterStatus");
-  if (filterStatus) filterStatus.addEventListener("change", renderApplicationsTable);
+  if (filterStatus)
+    filterStatus.addEventListener("change", renderApplicationsTable);
 
   const filterRisk = document.getElementById("filterRisk");
-  if (filterRisk) filterRisk.addEventListener("change", renderApplicationsTable);
+  if (filterRisk)
+    filterRisk.addEventListener("change", renderApplicationsTable);
 
   const filterDistrict = document.getElementById("filterDistrict");
-  if (filterDistrict) filterDistrict.addEventListener("change", renderApplicationsTable);
+  if (filterDistrict)
+    filterDistrict.addEventListener("change", renderApplicationsTable);
 
   const calcZone = document.getElementById("calcPsiZone");
   const calcCap = document.getElementById("calcPsiCapital");
@@ -1037,41 +1090,56 @@ function setupEventListeners() {
 async function loadDeemedApplications() {
   const tbody = document.getElementById("deemedTableBody");
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">Fetching statutory SLA status across departments...</td></tr>';
+  tbody.innerHTML =
+    '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">Fetching statutory SLA status across departments...</td></tr>';
 
   try {
-    const apps = allApplications.length > 0 ? allApplications : await api("/api/applications");
+    const apps =
+      allApplications.length > 0
+        ? allApplications
+        : await api("/api/applications");
     let breachedCount = 0;
     let eligibleCount = 0;
 
-    const activeApps = apps.filter(a => a.status !== "Rejected");
+    const activeApps = apps.filter((a) => a.status !== "Rejected");
 
     if (!activeApps || activeApps.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">No applications found in the statutory queue.</td></tr>';
+      tbody.innerHTML =
+        '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-muted);">No applications found in the statutory queue.</td></tr>';
       return;
     }
 
-    const rowsHtml = activeApps.map((app) => {
-      const created = new Date(app.created_at || Date.now());
-      const now = new Date();
-      const diffDays = Math.max(0, Math.floor((now - created) / (1000 * 60 * 60 * 24)));
-      const slaLimit = 30; // RTSA statutory 30-day single window mandate
-      const daysRemaining = Math.max(0, slaLimit - diffDays);
-      const isBreached = diffDays >= slaLimit;
-      const isNearBreach = diffDays >= 20 && !isBreached;
+    const rowsHtml = activeApps
+      .map((app) => {
+        const created = new Date(app.created_at || Date.now());
+        const now = new Date();
+        const diffDays = Math.max(
+          0,
+          Math.floor((now - created) / (1000 * 60 * 60 * 24)),
+        );
+        const slaLimit = 30; // RTSA statutory 30-day single window mandate
+        const daysRemaining = Math.max(0, slaLimit - diffDays);
+        const isBreached = diffDays >= slaLimit;
+        const isNearBreach = diffDays >= 20 && !isBreached;
 
-      if (isBreached || isNearBreach) breachedCount++;
+        if (isBreached || isNearBreach) breachedCount++;
 
-      const isEligible = (isBreached || app.sla_escalation?.is_breached) && app.status !== "Approved";
-      if (isEligible) eligibleCount++;
+        const isEligible =
+          (isBreached || app.sla_escalation?.is_breached) &&
+          app.status !== "Approved";
+        if (isEligible) eligibleCount++;
 
-      const pct = Math.min(100, Math.round((diffDays / slaLimit) * 100));
-      const barColor = isBreached ? "#ef4444" : isNearBreach ? "#f59e0b" : "#10b981";
+        const pct = Math.min(100, Math.round((diffDays / slaLimit) * 100));
+        const barColor = isBreached
+          ? "#ef4444"
+          : isNearBreach
+            ? "#f59e0b"
+            : "#10b981";
 
-      const appId = app.id || app._id;
-      const appNo = escapeHtml(app.app_no || "APP");
+        const appId = app.id || app._id;
+        const appNo = escapeHtml(app.app_no || "APP");
 
-      return `
+        return `
         <tr>
           <td>
             <b style="color:var(--navy);">${appNo}</b><br/>
@@ -1082,8 +1150,8 @@ async function loadDeemedApplications() {
           <td>
             <div style="font-size:0.82rem; margin-bottom:4px; display:flex; justify-content:space-between;">
               <span><b>${diffDays}</b> days elapsed</span>
-              <span style="color:${isBreached ? '#ef4444' : isNearBreach ? '#d97706' : '#059669'}; font-weight:700;">
-                ${isBreached ? '⚠️ SLA BREACHED' : `${daysRemaining} days left`}
+              <span style="color:${isBreached ? "#ef4444" : isNearBreach ? "#d97706" : "#059669"}; font-weight:700;">
+                ${isBreached ? "⚠️ SLA BREACHED" : `${daysRemaining} days left`}
               </span>
             </div>
             <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
@@ -1108,7 +1176,8 @@ async function loadDeemedApplications() {
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
 
     tbody.innerHTML = rowsHtml;
     const kpiBreached = document.getElementById("kpiSlaBreached");
@@ -1124,7 +1193,7 @@ async function loadDeemedApplications() {
 async function invokeDeemedApproval(appId, appNo) {
   const reason = prompt(
     `Invoke Statutory Deemed Approval under Section 4 of Maharashtra Right to Public Services Act for Application ${appNo}?\n\nEnter statutory justification:`,
-    "Statutory SLA exceeded 30 days without departmental objection. Fast-track deemed clearance invoked by Apex Approving Authority."
+    "Statutory SLA exceeded 30 days without departmental objection. Fast-track deemed clearance invoked by Apex Approving Authority.",
   );
   if (!reason) return;
 
@@ -1137,10 +1206,16 @@ async function invokeDeemedApproval(appId, appNo) {
     });
     const data = await res.json();
     if (!res.ok) {
-      notify("Failed to invoke deemed approval: " + (data.error || "Unknown error"), "error");
+      notify(
+        "Failed to invoke deemed approval: " + (data.error || "Unknown error"),
+        "error",
+      );
       return;
     }
-    notify(`✓ Deemed approval successfully invoked for ${appNo}! Application moved to: ${data.application?.current_stage || 'next stage'}`, "success");
+    notify(
+      `✓ Deemed approval successfully invoked for ${appNo}! Application moved to: ${data.application?.current_stage || "next stage"}`,
+      "success",
+    );
     await loadApplications();
     loadDeemedApplications();
   } catch (err) {
@@ -1171,6 +1246,3 @@ window.runPsiCalc = runPsiCalc;
 window.loadDeemedApplications = loadDeemedApplications;
 window.invokeDeemedApproval = invokeDeemedApproval;
 window.calculatePsi = calculatePsi;
-
-
-
