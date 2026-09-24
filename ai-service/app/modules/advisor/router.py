@@ -41,7 +41,7 @@ def _build_advisor_response(profile_data: dict, is_fallback_forced: bool = False
                 SourceCitation(
                     doc=src.get("doc", "Statutory Rulebook"),
                     section=src.get("section", "General Clause"),
-                    url=src.get("url", "https://industries.maharashtra.gov.in"),
+                    url=src.get("url", "https://industry.maharashtra.gov.in/"),
                     last_verified=src.get("last_verified", "2026-09"),
                 )
             )
@@ -69,7 +69,7 @@ def _build_advisor_response(profile_data: dict, is_fallback_forced: bool = False
                 SourceCitation(
                     doc=src.get("doc", "Incentive Policy"),
                     section=src.get("section", "Schedule A"),
-                    url=src.get("url", "https://industries.maharashtra.gov.in"),
+                    url=src.get("url", "https://industry.maharashtra.gov.in/"),
                     last_verified=src.get("last_verified", "2026-09"),
                 )
             )

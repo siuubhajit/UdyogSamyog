@@ -330,6 +330,14 @@ if (typeof window !== "undefined") {
 
   function initConditionalAILoader() {
     const path = (window.location.pathname || "").toLowerCase();
+    const isAuthPage =
+      path === "/" ||
+      path.endsWith("/login.html") ||
+      path.endsWith("/login") ||
+      path.endsWith("/reset-password.html") ||
+      !!document.querySelector(".auth");
+    if (isAuthPage) return; // Do not load AI modules on front / auth pages
+
     const page = document.body ? (document.body.dataset.page || "") : "";
     const isAppPage = path.includes("application") || page === "application";
     const isVerifPage = path.includes("verification") || page === "verification";
@@ -987,6 +995,60 @@ function initMaharashtraEmblems() {
   });
 }
 
+/* ─── AI Chat Assistant Initializer ───────────────────────────────── */
+function initAiChatAssistant() {
+  const path = (typeof window !== "undefined" && window.location.pathname) ? window.location.pathname.toLowerCase() : "";
+  const isAuthPage =
+    path === "/" ||
+    path.endsWith("/login.html") ||
+    path.endsWith("/login") ||
+    path.endsWith("/reset-password.html") ||
+    !!document.querySelector(".auth");
+  if (isAuthPage) return;
+
+  if (typeof window !== "undefined") {
+    if (!window.openAiChat) {
+      window.openAiChat = function (q) {
+        initAiChatAssistant();
+        const check = setInterval(() => {
+          const b = document.getElementById("aiChatBox");
+          if (b) {
+            clearInterval(check);
+            b.classList.add("open");
+            const inp = document.getElementById("aiChatInput");
+            if (inp) {
+              if (q) {
+                inp.value = q;
+                document.getElementById("aiChatSend")?.click();
+              } else {
+                inp.focus();
+              }
+            }
+          }
+        }, 50);
+        setTimeout(() => clearInterval(check), 3000);
+      };
+    }
+    if (!window.toggleAiChat) {
+      window.toggleAiChat = function () {
+        const b = document.getElementById("aiChatBox");
+        if (b) {
+          b.classList.toggle("open");
+        } else if (window.openAiChat) {
+          window.openAiChat();
+        }
+      };
+    }
+  }
+
+  if (document.getElementById("udyog-ai-chat-root")) return;
+  if (!document.querySelector('script[src*="ai-chat.js"]')) {
+    const s = document.createElement("script");
+    s.src = "/js/ai-chat.js";
+    (document.body || document.head || document.documentElement).appendChild(s);
+  }
+}
+
 if (typeof window !== "undefined") {
   window.notify = notify;
   window.confirmDialog = confirmDialog;
@@ -994,6 +1056,7 @@ if (typeof window !== "undefined") {
   window.initSidebarController = initSidebarController;
   window.initBrandHomeNavigation = initBrandHomeNavigation;
   window.initMaharashtraEmblems = initMaharashtraEmblems;
+  window.initAiChatAssistant = initAiChatAssistant;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
@@ -1001,12 +1064,14 @@ if (typeof window !== "undefined") {
       initSidebarController();
       setupSortableTables();
       initBrandHomeNavigation();
+      initAiChatAssistant();
     });
   } else {
     initMaharashtraEmblems();
     initSidebarController();
     setupSortableTables();
     initBrandHomeNavigation();
+    initAiChatAssistant();
   }
 }
 

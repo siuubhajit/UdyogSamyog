@@ -13,46 +13,76 @@
     en: {
       title: "उद्योग सहाय्यक | AI Assistant",
       subtitle: "Grounded Statutory Guidance",
-      placeholder: "Ask about clearances, rules, or schemes...",
+      placeholder: "Ask about clearances, MPCB, MIDC, Fire, subsidies...",
       send: "Send",
       chips: [
         "What clearances do I need for my factory?",
-        "Explain MPCB Red vs Orange category",
-        "Am I eligible for PSI 2019 subsidies?",
-        "Statutory timeline under Right to Services Act"
+        "What are the setback requirements in MIDC?",
+        "Explain MPCB Red vs Orange category & fees",
+        "What is the water tank capacity for Fire NOC?",
+        "Am I eligible for PSI 2019 subsidies & stamp duty exemption?",
+        "What is deemed approval under Right to Services Act?",
+        "What documents are required for single window clearance?",
+        "How much air space per worker is required by DISH?"
       ],
       disclaimer: "Guidance only. Maharashtra Government departmental decisions are final and legally binding.",
     },
     mr: {
       title: "उद्योग सहाय्यक | AI सहाय्यक",
       subtitle: "अधिकृत शासकीय नियमांवर आधारित मार्गदर्शन",
-      placeholder: "परवानग्या, अनुदान किंवा नियमांबद्दल विचारा...",
+      placeholder: "परवानग्या, MPCB, MIDC, अग्निशमन, अनुदानाबद्दल विचारा...",
       send: "पाठवा",
       chips: [
         "नवीन कारखान्यासाठी कोणत्या परवानग्या लागतात?",
+        "एमआयडीसी (MIDC) मध्ये इमारतीचे अंतर (Setback) किती लागते?",
         "MPCB लाल आणि केशरी वर्गवारीतील फरक काय?",
-        "PSI 2019 अंतर्गत अनुदानाची पात्रता काय आहे?",
-        "लोकसेवा हमी कायद्यानुसार मंजुरीची मुदत किती?"
+        "अग्निशामक दलाच्या Fire NOC साठी पाण्याची टाकी किती क्षमतेची लागते?",
+        "PSI 2019 अंतर्गत भांडवली अनुदान आणि मुद्रांक शुल्क माफी कशी मिळेल?",
+        "लोकसेवा हमी कायद्यानुसार डीम्ड मंजुरी (Deemed Approval) कशी मिळते?",
+        "एकल खिडकी अर्जासाठी आवश्यक कागदपत्रांची यादी काय आहे?",
+        "कारखाना कायदा (DISH) अंतर्गत कामगार सुरक्षा व परवाना नियम काय आहेत?"
       ],
       disclaimer: "केवळ माहितीसाठी. महाराष्ट्र शासनाच्या संबंधित विभागाचे निर्णय अंतिम राहतील.",
     },
     hi: {
       title: "उद्योग सहायक | AI सहायक",
       subtitle: "आधिकारिक नियमों पर आधारित मार्गदर्शन",
-      placeholder: "अनुमति, सब्सिडी या नियमों के बारे में पूछें...",
+      placeholder: "अनुमति, MPCB, MIDC, अग्निशमन, सब्सिडी के बारे में पूछें...",
       send: "भेजें",
       chips: [
         "कारखाने के लिए कौन सी अनुमतियां आवश्यक हैं?",
-        "MPCB रेड और ऑरेंज श्रेणी में क्या अंतर है?",
-        "क्या मैं PSI 2019 सब्सिडी के लिए पात्र हूं?",
-        "सेवा अधिकार कानून के तहत निपटान की समय सीमा?"
+        "MIDC में भवन निर्माण और सेटबैक के क्या नियम हैं?",
+        "MPCB रेड और ऑरेंज श्रेणी में क्या अंतर और फीस है?",
+        "फायर एनओसी (Fire NOC) के लिए पानी के टैंक की क्षमता क्या है?",
+        "PSI 2019 के तहत सब्सिडी और स्टांप ड्यूटी छूट कैसे मिलेगी?",
+        "सेवा अधिकार अधिनियम के तहत डीम्ड मंजूरी (Deemed Approval) क्या है?",
+        "एकल खिड़की आवेदन के लिए आवश्यक दस्तावेजों की सूची क्या है?",
+        "कारखाना अधिनियम (DISH) के तहत श्रमिक सुरक्षा व लाइसेंस नियम क्या हैं?"
       ],
       disclaimer: "केवल मार्गदर्शन के लिए। महाराष्ट्र सरकार के विभागीय निर्णय अंतिम होंगे।",
     }
   };
 
+  function isFrontOrAuthPage() {
+    const path = (typeof window !== "undefined" && window.location.pathname) ? window.location.pathname.toLowerCase() : "";
+    return (
+      path === "/" ||
+      path.endsWith("/login.html") ||
+      path.endsWith("/login") ||
+      path.endsWith("/reset-password.html") ||
+      !!document.querySelector(".auth")
+    );
+  }
+
   function createChatDrawer() {
+    if (isFrontOrAuthPage()) return;
     if (document.getElementById("udyog-ai-chat-root")) return;
+    if (!document.body) {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", createChatDrawer);
+      }
+      return;
+    }
 
     const style = document.createElement("style");
     style.textContent = `
@@ -207,8 +237,26 @@
         border-radius: 4px;
         margin-top: 3px;
         margin-right: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #7dd3fc;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-top: 4px;
+        margin-right: 6px;
         font-weight: 600;
         text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .ai-citation-tag:hover {
+        background: #0284c7;
+        color: #ffffff;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
       }
       .ai-chat-chips {
         padding: 8px 12px;
@@ -368,6 +416,42 @@
     renderChips();
   }
 
+  // Global triggers
+  window.createChatDrawer = createChatDrawer;
+  window.openAiChat = function (initialQuestion) {
+    if (!document.getElementById("udyog-ai-chat-root")) {
+      createChatDrawer();
+    }
+    const b = document.getElementById("aiChatBox");
+    const inp = document.getElementById("aiChatInput");
+    if (b) {
+      b.classList.add("open");
+      if (initialQuestion && inp) {
+        inp.value = initialQuestion;
+        handleSend();
+      } else if (inp) {
+        inp.focus();
+      }
+    }
+  };
+  window.closeAiChat = function () {
+    const b = document.getElementById("aiChatBox");
+    if (b) b.classList.remove("open");
+  };
+  window.toggleAiChat = function () {
+    if (!document.getElementById("udyog-ai-chat-root")) {
+      createChatDrawer();
+    }
+    const b = document.getElementById("aiChatBox");
+    if (b) {
+      b.classList.toggle("open");
+      if (b.classList.contains("open")) {
+        const inp = document.getElementById("aiChatInput");
+        if (inp) inp.focus();
+      }
+    }
+  };
+
   function updateLanguageUI() {
     const i18n = CHAT_I18N[chatLang] || CHAT_I18N.en;
     document.getElementById("aiChatHeaderTitle").textContent = i18n.title;
@@ -462,8 +546,10 @@
       let citationsHtml = "";
       if (citations && citations.length > 0) {
         citationsHtml = `<div class="ai-citation-box"><strong>Official Citations:</strong><br>`;
+        citationsHtml = `<div class="ai-citation-box"><strong>Official Statutory Citations:</strong><br>`;
         citations.forEach((c) => {
           citationsHtml += `<a href="${c.url || '#'}" target="_blank" class="ai-citation-tag">📜 ${c.title}${c.section ? ' (' + c.section + ')' : ''}</a>`;
+          citationsHtml += formatCitationLink(c);
         });
         citationsHtml += `</div>`;
       }
@@ -492,8 +578,10 @@
         let citationsHtml = "";
         if (data.citations && data.citations.length > 0) {
           citationsHtml = `<div class="ai-citation-box"><strong>Official Citations:</strong><br>`;
+          citationsHtml = `<div class="ai-citation-box"><strong>Official Statutory Citations:</strong><br>`;
           data.citations.forEach((c) => {
             citationsHtml += `<a href="${c.url || '#'}" target="_blank" class="ai-citation-tag">📜 ${c.title}${c.section ? ' (' + c.section + ')' : ''}</a>`;
+            citationsHtml += formatCitationLink(c);
           });
           citationsHtml += `</div>`;
         }
@@ -503,6 +591,17 @@
         typingMsg.innerHTML = `<span style="color:#e63946;">Could not connect to AI service. Operating in offline mode.</span>`;
       }
     }
+  }
+
+  function formatCitationLink(c) {
+    if (!c) return "";
+    let url = (c.url ? String(c.url).trim() : "");
+    if (!url || url === "#" || url.includes("industries.maharashtra.gov.in")) {
+      url = "https://industry.maharashtra.gov.in/";
+    }
+    const title = c.title || "Statutory Industrial Policy";
+    const section = c.section ? ` (${c.section})` : "";
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="ai-citation-tag" title="Open official Government of Maharashtra portal (${url})">📜 ${title}${section} <span style="font-size:0.75rem;opacity:0.85;">↗</span></a>`;
   }
 
   function appendMessage(sender, content) {

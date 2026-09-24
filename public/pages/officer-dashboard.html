@@ -74,6 +74,9 @@
           <a href="analytics.html">
             <span class="sidebar-icon">&#128202;</span> Service Level Intelligence
           </a>
+          <a href="#" onclick="window.openAiChat ? window.openAiChat() : document.getElementById('aiChatFab')?.click(); return false;" title="Ask AI Statutory Copilot">
+            <span class="sidebar-icon">🤖</span> AI Copilot
+          </a>
         </aside>
 
         <main class="main">
@@ -553,5 +556,6 @@
         }
       });
     </script>
+    <script src="/js/ai-chat.js"></script>
   </body>
 </html>

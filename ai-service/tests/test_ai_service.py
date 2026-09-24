@@ -342,6 +342,93 @@ def test_chat_assistant_marathi():
     assert resp.status_code == 200
     data = resp.json()
     assert len(data["reply"]) > 0
+    assert len(data["citations"]) > 0
+
+
+def test_chat_applicant_mpcb_fee_and_categories():
+    payload = {
+        "message": "What is the fee for MPCB Consent and how are Red and Orange categories defined?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("MPCB" in c["title"] for c in data["citations"])
+    assert "MPCB" in data["reply"] or "Consent" in data["reply"]
+
+
+def test_chat_applicant_midc_setbacks():
+    payload = {
+        "message": "What are the building setback requirements in MIDC?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("MIDC" in c["title"] for c in data["citations"])
+    assert "setback" in data["reply"].lower() or "midc" in data["reply"].lower()
+
+
+def test_chat_applicant_dish_safety_norms():
+    payload = {
+        "message": "How much air space per worker is required by DISH under Factories Act?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("DISH" in c["title"] or "Factories" in c["title"] for c in data["citations"])
+
+
+def test_chat_applicant_fire_water_tank():
+    payload = {
+        "message": "What is the water storage tank capacity required for industrial Fire NOC?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("Fire" in c["title"] for c in data["citations"])
+
+
+def test_chat_applicant_psi_subsidy():
+    payload = {
+        "message": "What subsidies and stamp duty exemptions are provided under PSI 2019?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("Incentives" in c["title"] or "PSI" in c["title"] for c in data["citations"])
+
+
+def test_chat_applicant_deemed_approval():
+    payload = {
+        "message": "What is deemed approval under Section 10 of Right to Public Services Act?",
+        "language": "en",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["citations"]) > 0
+    assert any("Deemed Approval" in c["title"] or "Right to Public Services" in c["title"] for c in data["citations"])
+
+
+def test_chat_applicant_hindi_clearance_query():
+    payload = {
+        "message": "कारखाने के लिए कौन से दस्तावेज और अनुमतियां चाहिए?",
+        "language": "hi",
+    }
+    resp = client.post("/ai/chat", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["reply"]) > 0
+    assert len(data["citations"]) > 0
 
 
 def test_chat_assistant_injection_rejection():
@@ -351,6 +438,7 @@ def test_chat_assistant_injection_rejection():
     }
     resp = client.post("/ai/chat", json=payload)
     assert resp.status_code == 400
+
 
 
 # ── Module I: Admin Console & Operations ─────────────────────

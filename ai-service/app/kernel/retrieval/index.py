@@ -1,5 +1,6 @@
 """
 Hybrid Knowledge Retrieval Engine (Lexical + Semantic TF-IDF)
+Supports English, Marathi, and Hindi statutory queries.
 Enforces Section 4.5: Hybrid Retrieval, Similarity Floor, Grounding
 """
 import re
@@ -10,6 +11,39 @@ from app.kernel.retrieval.kb_store import KB_CHUNKS
 from app.config import settings
 
 
+def normalize_statutory_text(text: str) -> str:
+    """Normalize text preserving alphanumeric characters and Devanagari Unicode range."""
+    return re.sub(r"[^\w\s\u0900-\u097F]", " ", text.lower()).strip()
+
+
+def resolve_kb_url(chunk: Dict[str, Any]) -> str:
+    """Resolve official department URL for knowledge base chunks."""
+    raw_url = chunk.get("url")
+    if raw_url and raw_url != "#" and "industries.maharashtra.gov.in" not in raw_url:
+        return raw_url
+
+    issuer = (chunk.get("issuer") or "").lower()
+    title = (chunk.get("title") or "").lower()
+    tags = [t.lower() for t in chunk.get("tags", [])]
+
+    if "mpcb" in issuer or "pollution" in issuer or "mpcb" in tags:
+        return "https://mpcb.gov.in/"
+    if "midc" in issuer or "industrial development" in issuer or "midc" in tags:
+        return "https://www.midcindia.org/"
+    if "dish" in issuer or "factories" in title or "dish" in tags or "safety" in issuer:
+        return "https://industry.maharashtra.gov.in/"
+    if "fire" in issuer or "fire" in tags:
+        return "https://mahafireservice.gov.in/"
+    if "msins" in issuer or "startup" in tags:
+        return "https://msins.in/"
+    if "energy" in issuer or "electricity" in tags:
+        return "https://energy.maharashtra.gov.in/"
+    if "aaple" in issuer or "mrpsa" in tags or "public service" in title:
+        return "https://aaplesarkar.mahaonline.gov.in/"
+
+    return "https://industry.maharashtra.gov.in/"
+
+
 class KnowledgeRetriever:
     def __init__(self, chunks: Optional[List[Dict[str, Any]]] = None):
         self.chunks = chunks or KB_CHUNKS
@@ -18,6 +52,18 @@ class KnowledgeRetriever:
     def _fit(self):
         self.corpus = [f"{c.get('title', '')} {c.get('section', '')} {c.get('text', '')} {' '.join(c.get('tags', []))}" for c in self.chunks]
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), stop_words="english")
+        self.corpus = [
+            normalize_statutory_text(
+                f"{c.get('title', '')} {c.get('section', '')} {c.get('text', '')} {' '.join(c.get('tags', []))}"
+            )
+            for c in self.chunks
+        ]
+        # Token pattern matches English tokens and Devanagari words (Marathi/Hindi) of 2+ chars
+        self.vectorizer = TfidfVectorizer(
+            token_pattern=r"(?u)\b[\w\u0900-\u097F]{2,}\b",
+            ngram_range=(1, 2),
+            stop_words="english",
+        )
         self.tfidf_matrix = self.vectorizer.fit_transform(self.corpus)
 
     def refresh(self):
@@ -36,6 +82,7 @@ class KnowledgeRetriever:
         effective_limit = top_k if top_k is not None else limit
         floor = similarity_floor if similarity_floor is not None else settings.similarity_floor
         clean_query = re.sub(r"[^\w\s]", " ", query.lower()).strip()
+        clean_query = normalize_statutory_text(query)
         if not clean_query:
             return []
 
@@ -60,7 +107,26 @@ class KnowledgeRetriever:
                     "content": txt,
                     "issuer": chunk.get("issuer"),
                     "url": chunk.get("url", "https://industries.maharashtra.gov.in"),
+                    "url": resolve_kb_url(chunk),
                     "score": float(score),
+                })
+
+        # Fallback to highest scoring chunk if none crossed floor but max score > 0.05
+        if not results and len(scores) > 0:
+            max_idx = int(scores.argmax())
+            if scores[max_idx] >= 0.05:
+                chunk = self.chunks[max_idx]
+                txt = chunk.get("text", "")
+                results.append({
+                    "id": chunk.get("id"),
+                    "title": chunk.get("title"),
+                    "section": chunk.get("section"),
+                    "text": txt,
+                    "content": txt,
+                    "issuer": chunk.get("issuer"),
+                    "url": chunk.get("url", "https://industries.maharashtra.gov.in"),
+                    "url": resolve_kb_url(chunk),
+                    "score": float(scores[max_idx]),
                 })
 
         results.sort(key=lambda r: r["score"], reverse=True)

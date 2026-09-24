@@ -47,6 +47,9 @@
           <a href="tracker.html" class="active">
             <span class="sidebar-icon">⏱️</span> Approval & License Tracker
           </a>
+          <a href="#" onclick="window.openAiChat ? window.openAiChat() : document.getElementById('aiChatFab')?.click(); return false;" title="Ask AI Assistant about statutory rules, fees & clearances">
+            <span class="sidebar-icon">🤖</span> AI Copilot & Guidance
+          </a>
         </aside>
 
         <!-- Main Workspace -->
@@ -906,5 +909,6 @@
 
       init();
     </script>
+    <script src="/js/ai-chat.js"></script>
   </body>
 </html>

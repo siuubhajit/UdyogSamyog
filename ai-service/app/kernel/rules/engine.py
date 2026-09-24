@@ -124,7 +124,7 @@ class RulesEngine:
                 source = SourceCitation(
                     doc=src_data.get("doc", "Maharashtra Statutory Act"),
                     section=src_data.get("section", "General Provision"),
-                    url=src_data.get("url", "https://industries.maharashtra.gov.in"),
+                    url=src_data.get("url", "https://industry.maharashtra.gov.in/"),
                     last_verified=src_data.get("last_verified", "2026-09"),
                 )
                 try:
@@ -171,7 +171,7 @@ class RulesEngine:
             source = SourceCitation(
                 doc=src_data.get("doc", "Government Resolution"),
                 section=src_data.get("section", "Eligibility Clause"),
-                url=src_data.get("url", "https://industries.maharashtra.gov.in"),
+                url=src_data.get("url", "https://industry.maharashtra.gov.in/"),
                 last_verified=src_data.get("last_verified", "2026-09"),
             )
             sc_elig = SchemeEligibility(

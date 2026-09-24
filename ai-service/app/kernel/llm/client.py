@@ -125,6 +125,64 @@ class LocalFallbackClient(BaseLLMClient):
             "your application parameters have been reviewed. Please refer to MPCB Water & Air Act schedules, "
             "MIDC zoning regulations, and DISH factory safety compliance guidelines for official filing requirements."
         )
+        # Plain text generation fallback: synthesize from retrieved statutory context
+        is_mr = "Respond entirely in formal, polite Marathi" in (system_prompt or "") or "मराठीत" in (system_prompt or "")
+        is_hi = "Respond entirely in formal, polite Hindi" in (system_prompt or "") or "हिन्दी में" in (system_prompt or "")
+
+        # Extract statutory context from prompt
+        ctx_match = re.search(r"Official Statutory Context:\s*(.*?)(?=\n\nApplicant Query:|\Z)", prompt, re.DOTALL)
+        kb_context = ctx_match.group(1).strip() if ctx_match else ""
+
+        if not kb_context or kb_context.startswith("Not covered") or len(kb_context) < 15:
+            if is_mr:
+                return (
+                    "आपल्या विचारलेल्या प्रश्नासंदर्भात विशिष्ट नियम उपलब्ध शासकीय परिपत्रकांमध्ये आढळले नाहीत. "
+                    "कृपया उद्योग संचालनालय किंवा संबंधित विभागाच्या (MPCB, MIDC, DISH, Fire) अधिकृत संकेतस्थळास भेट द्या किंवा एकल खिडकी हेल्पलाईन १८००-१२०-८०४० वर संपर्क साधा."
+                )
+            elif is_hi:
+                return (
+                    "आपके द्वारा पूछे गए प्रश्न के संबंध में विशिष्ट दिशानिर्देश उपलब्ध दस्तावेजों में नहीं मिले हैं। "
+                    "कृपया संबंधित विभाग (MPCB, MIDC, DISH, Fire) के आधिकारिक पोर्टल पर जाएं या एकल खिड़की हेल्पलाइन 1800-120-8040 पर संपर्क करें।"
+                )
+            return (
+                "Based on Maharashtra Single-Window industrial statutory guidelines, clearances are processed across 3 coordinated phases. "
+                "For detailed regulations, please review the MPCB Water & Air Act requirements, MIDC industrial zoning rules, and Directorate of Industries schemes."
+            )
+
+        # Parse bracketed passages: [Title - Section]: Text
+        passages = []
+        pattern = r"\[(.*?)\s*-\s*(.*?)\]:\s*(.*?)(?=(?:\[.*?-\s*.*?\]:|\Z))"
+        for m in re.finditer(pattern, kb_context, re.DOTALL):
+            title = m.group(1).strip()
+            sec = m.group(2).strip()
+            body = m.group(3).strip()
+            passages.append({"title": title, "section": sec, "text": body})
+
+        if not passages:
+            passages = [{"title": "Maharashtra Statutory Clearance Standard", "section": "Provisions", "text": kb_context}]
+
+        if is_mr:
+            bullet_points = "\n".join([f"• **{p['title']}** ({p['section']}):\n  {p['text']}" for p in passages[:2]])
+            return (
+                f"महाराष्ट्र शासनाच्या अधिकृत नियमावली आणि एकल खिडकी मंजुरी प्रणालीनुसार (Udyog Samyog) खालील वैधानिक तरतुदी लागू होतात:\n\n"
+                f"{bullet_points}\n\n"
+                f"**पुढील कृती**: कृपया अर्जासोबत सर्व आवश्यक आराखडे व कागदपत्रे जोडून आपल्या डॅशबोर्डवरून विहित मुदतीत सादर करावीत."
+            )
+        elif is_hi:
+            bullet_points = "\n".join([f"• **{p['title']}** ({p['section']}):\n  {p['text']}" for p in passages[:2]])
+            return (
+                f"महाराष्ट्र सरकार के आधिकारिक नियमों और एकल खिड़की प्रणाली (Udyog Samyog) के अनुसार निम्नलिखित वैधानिक प्रावधान लागू होते हैं:\n\n"
+                f"{bullet_points}\n\n"
+                f"**अगला कदम**: कृपया अपने डैशबोर्ड के माध्यम से सभी आवश्यक नक्शे और वैधानिक दस्तावेज संलग्न करके आवेदन पूरा करें।"
+            )
+        else:
+            bullet_points = "\n\n".join([f"• **{p['title']}** [{p['section']}]:\n{p['text']}" for p in passages[:2]])
+            return (
+                f"Based on official Government of Maharashtra statutory clearance guidelines:\n\n"
+                f"{bullet_points}\n\n"
+                f"**Procedural Guidance**: Ensure your technical blueprints, asset valuation, and compliance plans are uploaded to your Dossier Vault to adhere to statutory Right to Public Services timelines."
+            )
+
 
 
 class HybridLLMClient:

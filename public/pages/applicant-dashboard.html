@@ -90,6 +90,9 @@
           <a href="tracker.html">
             <span class="sidebar-icon">⏱️</span> Approval & License Tracker
           </a>
+          <a href="#" onclick="window.openAiChat ? window.openAiChat() : document.getElementById('aiChatFab')?.click(); return false;" title="Ask AI Assistant about statutory rules, fees & clearances">
+            <span class="sidebar-icon">🤖</span> AI Copilot & Guidance
+          </a>
           <a
             href="#profileSection"
             onclick="
@@ -1142,5 +1145,6 @@
       window.toggleApprovalGuide = toggleApprovalGuide;
     </script>
     <script src="/js/clearance-timeline.js"></script>
+    <script src="/js/ai-chat.js"></script>
   </body>
 </html>

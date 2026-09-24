@@ -91,7 +91,11 @@ async def send_chat(
     is_fallback = False
     try:
         raw_text, fallback_used = await llm.generate(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
-        if fallback_used or not raw_text:
+        is_fallback = fallback_used
+        if raw_text and len(raw_text.strip()) > 20:
+            validated = validate_ai_output(raw_text)
+            reply = validated.sanitized_text
+        else:
             is_fallback = True
             if lang == "mr":
                 reply = "आपल्या अर्जाच्या संदर्भात महाराष्ट्र प्रदूषण नियंत्रण मंडळ (MPCB), एमआयडीसी (MIDC) आणि उद्योग संचालनालयाच्या मार्गदर्शक तत्त्वांनुसार अधिकृत कागदपत्रे तपासली जात आहेत. कृपया पोर्टलवरील संबंधित विभागाचे परिपत्रक पहा."
@@ -102,10 +106,6 @@ async def send_chat(
                     "Based on Maharashtra Single-Window industrial statutory guidelines, clearances are processed across 3 coordinated phases. "
                     "For detailed regulations, please review the MPCB Water & Air Act requirements, MIDC industrial zoning rules, and Directorate of Industries schemes."
                 )
-        else:
-            validated = validate_ai_output(raw_text)
-            reply = validated.sanitized_text
-            is_fallback = False
     except Exception:
         is_fallback = True
         reply = "Our statutory information engine is currently operating in offline mode. Please refer to the statutory documents section."
@@ -195,7 +195,11 @@ async def stream_chat(
     is_fallback = False
     try:
         raw_text, fallback_used = await llm.generate(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
-        if fallback_used or not raw_text:
+        is_fallback = fallback_used
+        if raw_text and len(raw_text.strip()) > 20:
+            validated = validate_ai_output(raw_text)
+            reply = validated.sanitized_text
+        else:
             is_fallback = True
             if lang == "mr":
                 reply = "आपल्या अर्जाच्या संदर्भात महाराष्ट्र प्रदूषण नियंत्रण मंडळ (MPCB), एमआयडीसी (MIDC) आणि उद्योग संचालनालयाच्या मार्गदर्शक तत्त्वांनुसार अधिकृत कागदपत्रे तपासली जात आहेत. कृपया पोर्टलवरील संबंधित विभागाचे परिपत्रक पहा."
@@ -206,10 +210,6 @@ async def stream_chat(
                     "Based on Maharashtra Single-Window industrial statutory guidelines, clearances are processed across 3 coordinated phases. "
                     "For detailed regulations, please review the MPCB Water & Air Act requirements, MIDC industrial zoning rules, and Directorate of Industries schemes."
                 )
-        else:
-            validated = validate_ai_output(raw_text)
-            reply = validated.sanitized_text
-            is_fallback = False
     except Exception:
         is_fallback = True
         reply = "Our statutory information engine is currently operating in offline mode. Please refer to the statutory documents section."
