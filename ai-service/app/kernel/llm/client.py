@@ -119,15 +119,54 @@ class LocalFallbackClient(BaseLLMClient):
                     "notes": ["Analysis grounded in MPCB, MIDC, and DISH statutory standards."]
                 })
 
-        # Plain text generation fallback
-        return (
-            "Based on the Maharashtra Single Window clearance guidelines and statutory industrial rules, "
-            "your application parameters have been reviewed. Please refer to MPCB Water & Air Act schedules, "
-            "MIDC zoning regulations, and DISH factory safety compliance guidelines for official filing requirements."
-        )
-        # Plain text generation fallback: synthesize from retrieved statutory context
+        # Plain text generation: check query type and synthesize from retrieved statutory context
         is_mr = "Respond entirely in formal, polite Marathi" in (system_prompt or "") or "मराठीत" in (system_prompt or "")
         is_hi = "Respond entirely in formal, polite Hindi" in (system_prompt or "") or "हिन्दी में" in (system_prompt or "")
+
+        # Extract applicant query from prompt
+        query_match = re.search(r"--- BEGIN UNTRUSTED [^-]+---\s*(.*?)\s*--- END UNTRUSTED", prompt, re.DOTALL)
+        if not query_match:
+            query_match = re.search(r"Applicant Query:\s*(.*?)(?:\n\nProvide|\Z)", prompt, re.DOTALL | re.IGNORECASE)
+        query_text = query_match.group(1).strip() if query_match else ""
+        query_clean = re.sub(r"[^\w\s]", "", query_text.lower()).strip()
+
+        # Handle simple greetings and conversational openings
+        greetings = {"hello", "hi", "hey", "namaskar", "namaste", "pranam", "good morning", "good afternoon", "good evening", "who are you", "help"}
+        if query_clean in greetings or any(query_clean.startswith(g + " ") for g in ["hello", "hi", "hey", "namaskar"]):
+            if is_mr:
+                return (
+                    "नमस्कार! उद्योग संयोग (Udyog Samyog) सहाय्यकामध्ये आपले स्वागत आहे. "
+                    "मी महाराष्ट्र शासनाच्या एकल खिडकी मंजुरी पोर्टलचा वैधानिक AI सहाय्यक आहे.\n\n"
+                    "आपण मला खालील बाबींवर प्रश्न विचारू शकता:\n"
+                    "• **MPCB**: पर्यावरण संमती (CTE/CTO), प्रदूषण श्रेणी (Red/Orange/Green/White), ETP आराखडा\n"
+                    "• **MIDC**: औद्योगिक भूखंड वाटप, सेटबॅक नियम, FSI आणि इमारत आराखडा मंजुरी\n"
+                    "• **DISH**: कारखाना नोंदणी व कामगार सुरक्षा अनुपालन\n"
+                    "• **फायर सर्व्हिसेस**: फायर लाइफ सेफ्टी एनओसी आणि अग्निशमन यंत्रणा\n"
+                    "• **उद्योग संचालनालय**: PSI 2019 प्रोत्साहन योजना व अनुदान\n\n"
+                    "आपल्या प्रकल्पाबाबतचा कोणताही प्रश्न येथे विचारा."
+                )
+            elif is_hi:
+                return (
+                    "नमस्कार! उद्योग संयोग (Udyog Samyog) सहायक में आपका स्वागत है। "
+                    "मैं महाराष्ट्र सरकार के सिंगल विंडो क्लीयरेंस पोर्टल का आधिकारिक AI सहायक हूँ।\n\n"
+                    "आप मुझसे निम्नलिखित विषयों पर प्रश्न पूछ सकते हैं:\n"
+                    "• **MPCB**: प्रदूषण नियंत्रण सहमति (CTE/CTO), श्रेणी (Red/Orange/Green/White), ETP नियम\n"
+                    "• **MIDC**: औद्योगिक भूखंड आवंटन, सेटबैक मानक, FSI एवं बिल्डिंग प्लान\n"
+                    "• **DISH**: कारखाना अधिनियम सुरक्षा एवं अनुपालन\n"
+                    "• **अग्निशमन**: फायर लाइफ सेफ्टी एनओसी (Provisional / Final)\n"
+                    "• **उद्योग निदेशालय**: PSI 2019 सब्सिडी एवं वित्तीय प्रोत्साहन\n\n"
+                    "कृपया अपना प्रश्न पूछें।"
+                )
+            return (
+                "Namaskar! Welcome to Udyog Samyog AI Statutory Assistant — Government of Maharashtra Single Window Portal.\n\n"
+                "I can guide you through statutory industrial clearances, including:\n"
+                "• **MPCB**: Pollution Consent (CTE/CTO), Categorization (Red/Orange/Green/White), ETP norms\n"
+                "• **MIDC**: Industrial plot allotment, building setback rules, FSI, and layout approvals\n"
+                "• **DISH**: Factories Act safety compliances and worker welfare plans\n"
+                "• **Directorate of Fire Services**: Provisional & Final Fire Life Safety NOC\n"
+                "• **Directorate of Industries**: Package Scheme of Incentives (PSI 2019) & capital subsidies\n\n"
+                "How can I assist you with your industrial clearance filings today?"
+            )
 
         # Extract statutory context from prompt
         ctx_match = re.search(r"Official Statutory Context:\s*(.*?)(?=\n\nApplicant Query:|\Z)", prompt, re.DOTALL)

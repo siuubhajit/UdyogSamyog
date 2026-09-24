@@ -96,12 +96,12 @@
         border: 2px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 8px 24px rgba(11, 37, 69, 0.35);
         border-radius: 50px;
-        padding: 12px 20px;
+        padding: 8px 13px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 5px;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.78rem;
         cursor: pointer;
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
         font-family: inherit;
@@ -343,9 +343,8 @@
     root.id = "udyog-ai-chat-root";
     root.innerHTML = `
       <div class="ai-chat-fab" id="aiChatFab" title="Open AI Statutory Assistant">
-        <span>🤖</span>
-        <span>AI Assistant | उद्योग सहाय्यक</span>
-        <span class="ai-chat-badge">LIVE</span>
+        <span style="font-size:1rem;">🤖</span>
+        <span>AI</span>
       </div>
 
       <div class="ai-chat-box" id="aiChatBox">
