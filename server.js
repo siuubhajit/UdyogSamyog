@@ -70,6 +70,7 @@ app.use(
   }),
 );
 
+app.use("/sample-pdfs", express.static(path.join(__dirname, "sample-pdfs")));
 app.use(express.static(path.join(__dirname, "public")));
 
 // Mount Modular Route Handlers

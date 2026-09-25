@@ -3133,10 +3133,7 @@ tbody tr:hover {
 }
 
 .checklist-item input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
   margin-top: 2px;
-  accent-color: var(--brand-emerald);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -5087,19 +5084,129 @@ body.dept-msins .dept-stripe {
   gap: 8px;
   margin: 12px 0;
 }
-.checklist-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 0.82rem;
-  color: var(--ink);
-  line-height: 1.4;
-  cursor: pointer;
+/* ═══════════════════════════════════════════════════════════════════
+   UNIVERSAL CRISP CHECKBOX & TICK MARK SYSTEM
+   ═══════════════════════════════════════════════════════════════════ */
+input[type="checkbox"]:not(.switch input) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 19px !important;
+  height: 19px !important;
+  min-width: 19px !important;
+  min-height: 19px !important;
+  border: 2px solid #94a3b8 !important;
+  border-radius: 4px !important;
+  background-color: #ffffff !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  transition: all 0.15s ease-in-out !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
-.checklist-item input[type="checkbox"] {
-  margin-top: 2px;
-  cursor: pointer;
-  accent-color: var(--dept-accent);
+
+input[type="checkbox"]:not(.switch input):hover {
+  border-color: #16a34a !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+input[type="checkbox"]:not(.switch input):checked {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3e%3cpolyline points='3.5 8.5 6.5 11.5 12.5 4.5'/%3e%3c/svg%3e") !important;
+  background-size: 85% 85% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4) !important;
+}
+
+input[type="checkbox"]:not(.switch input):focus-visible {
+  outline: 2px solid #22c55e !important;
+  outline-offset: 2px !important;
+}
+
+.checklist-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  border: 1.5px solid var(--line, #e2e8f0) !important;
+  background: var(--surface, #ffffff) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out !important;
+  user-select: none !important;
+  margin-bottom: 6px !important;
+  line-height: 1.4 !important;
+}
+
+.checklist-item:hover {
+  border-color: #94a3b8 !important;
+  background: var(--surface-card, #f8fafc) !important;
+}
+
+.checklist-item:has(input:checked),
+.checklist-item.checked {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-color: #16a34a !important;
+}
+
+.checklist-item:has(input:checked) .checklist-title,
+.checklist-item:has(input:checked) span,
+.checklist-item:has(input:checked) label {
+  color: #15803d !important;
+  font-weight: 600 !important;
+}
+
+/* Dark mode theme support */
+[data-theme="dark"] input[type="checkbox"]:not(.switch input),
+body.dark input[type="checkbox"]:not(.switch input) {
+  background-color: #1e293b !important;
+  border-color: #64748b !important;
+}
+
+[data-theme="dark"] input[type="checkbox"]:not(.switch input):hover,
+body.dark input[type="checkbox"]:not(.switch input):hover {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25) !important;
+}
+
+[data-theme="dark"] input[type="checkbox"]:not(.switch input):checked,
+body.dark input[type="checkbox"]:not(.switch input):checked {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+[data-theme="dark"] .checklist-item,
+body.dark .checklist-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .checklist-item:hover,
+body.dark .checklist-item:hover {
+  background: #334155 !important;
+  border-color: #475569 !important;
+}
+
+[data-theme="dark"] .checklist-item:has(input:checked),
+body.dark .checklist-item:has(input:checked),
+[data-theme="dark"] .checklist-item.checked,
+body.dark .checklist-item.checked {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: #22c55e !important;
+}
+
+[data-theme="dark"] .checklist-item:has(input:checked) .checklist-title,
+[data-theme="dark"] .checklist-item:has(input:checked) span,
+body.dark .checklist-item:has(input:checked) .checklist-title,
+body.dark .checklist-item:has(input:checked) span {
+  color: #4ade80 !important;
 }
 .decision-btn-row {
   display: flex;

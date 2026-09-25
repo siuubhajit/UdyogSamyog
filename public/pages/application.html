@@ -279,7 +279,7 @@
                     id="hazardous"
                     name="hazardous"
                     type="checkbox"
-                    style="width: 20px; height: 20px; margin-top: 0; accent-color: var(--ruby);"
+                    style="width: 20px; height: 20px; margin-top: 0;"
                   />
                   <span><b>Hazardous Chemicals or Waste:</b> Check if unit stores, processes, or generates hazardous raw materials or industrial toxic waste.</span>
                 </label>
@@ -394,6 +394,38 @@
                 </div>
               </div>
 
+              <!-- Statutory Sample Templates & Manual PDF Guidance -->
+              <div style="background: var(--surface-card); border: 1.5px solid #0284c7; border-left: 5px solid #0284c7; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                  <div>
+                    <div style="font-weight: 700; font-size: 0.92rem; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+                      <span>📚 Department Statutory Blueprint Samples &amp; Manual PDF Uploads</span>
+                      <span class="badge blue" style="font-size: 0.68rem;">Maharashtra EoDB Act</span>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 4px;">
+                      Applicants can manually upload verified PDF blueprints from their computer, or download official department layout samples as reference templates.
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <a href="/sample-pdfs/MPCB_Environmental_Management_Plan_Sample.pdf" target="_blank" download class="btn outline sm" style="font-size: 0.72rem; padding: 4px 8px; font-weight: 600;">
+                      📥 MPCB Sample
+                    </a>
+                    <a href="/sample-pdfs/MIDC_Site_Master_Layout_Blueprint_Sample.pdf" target="_blank" download class="btn outline sm" style="font-size: 0.72rem; padding: 4px 8px; font-weight: 600;">
+                      📥 MIDC Sample
+                    </a>
+                    <a href="/sample-pdfs/DISH_Factory_Safety_Hazard_Control_Sample.pdf" target="_blank" download class="btn outline sm" style="font-size: 0.72rem; padding: 4px 8px; font-weight: 600;">
+                      📥 DISH Sample
+                    </a>
+                    <a href="/sample-pdfs/FIRE_Hydrant_Evacuation_Scheme_Sample.pdf" target="_blank" download class="btn outline sm" style="font-size: 0.72rem; padding: 4px 8px; font-weight: 600;">
+                      📥 FIRE Sample
+                    </a>
+                    <a href="/sample-pdfs/MSINS_Project_Feasibility_Report_DPR_Sample.pdf" target="_blank" download class="btn outline sm" style="font-size: 0.72rem; padding: 4px 8px; font-weight: 600;">
+                      📥 DPR Sample
+                    </a>
+                  </div>
+                </div>
+              </div>
+
               <!-- 4 Departmental Mandatory Document Slots -->
               <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <!-- 1. MPCB -->
@@ -412,11 +444,16 @@
                     <div id="fileInfoMpcb" style="margin-top: 6px;"></div>
                   </div>
                   <div id="fileActionMpcb" style="margin-top: 10px;">
-                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputMpcb').click()">
-                      📁 Upload Environmental Plan PDF
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem; font-weight: 600;" onclick="document.getElementById('fileInputMpcb').click()">
+                      📤 Manual Upload Environmental Plan PDF
                     </button>
+                    <div style="text-align: center; margin-top: 6px;">
+                      <a href="/sample-pdfs/MPCB_Environmental_Management_Plan_Sample.pdf" target="_blank" download style="font-size: 0.72rem; color: var(--brand-emerald, #10b981); text-decoration: underline; font-weight: 600;">
+                        📥 Download Sample MPCB EMP (PDF)
+                      </a>
+                    </div>
                   </div>
-                  <input type="file" id="fileInputMpcb" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('environmental_plan', 'Environmental Management & Effluent Treatment Scheme', this)" />
+                  <input type="file" id="fileInputMpcb" accept=".pdf,application/pdf" style="display: none;" onchange="directPlanUpload('environmental_plan', 'Environmental Management & Effluent Treatment Scheme', this)" />
                 </div>
 
                 <!-- 2. MIDC -->
@@ -435,11 +472,16 @@
                     <div id="fileInfoMidc" style="margin-top: 6px;"></div>
                   </div>
                   <div id="fileActionMidc" style="margin-top: 10px;">
-                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputMidc').click()">
-                      📁 Upload Civil Plan PDF
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem; font-weight: 600;" onclick="document.getElementById('fileInputMidc').click()">
+                      📤 Manual Upload Civil Plan PDF
                     </button>
+                    <div style="text-align: center; margin-top: 6px;">
+                      <a href="/sample-pdfs/MIDC_Site_Master_Layout_Blueprint_Sample.pdf" target="_blank" download style="font-size: 0.72rem; color: var(--brand-emerald, #10b981); text-decoration: underline; font-weight: 600;">
+                        📥 Download Sample MIDC Blueprint (PDF)
+                      </a>
+                    </div>
                   </div>
-                  <input type="file" id="fileInputMidc" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('civil_plan', 'Civil Infrastructure & Building Layout Plan', this)" />
+                  <input type="file" id="fileInputMidc" accept=".pdf,application/pdf" style="display: none;" onchange="directPlanUpload('civil_plan', 'Civil Infrastructure & Building Layout Plan', this)" />
                 </div>
 
                 <!-- 3. DISH -->
@@ -458,11 +500,16 @@
                     <div id="fileInfoDish" style="margin-top: 6px;"></div>
                   </div>
                   <div id="fileActionDish" style="margin-top: 10px;">
-                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputDish').click()">
-                      📁 Upload Safety Blueprint PDF
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem; font-weight: 600;" onclick="document.getElementById('fileInputDish').click()">
+                      📤 Manual Upload Safety Blueprint PDF
                     </button>
+                    <div style="text-align: center; margin-top: 6px;">
+                      <a href="/sample-pdfs/DISH_Factory_Safety_Hazard_Control_Sample.pdf" target="_blank" download style="font-size: 0.72rem; color: var(--brand-emerald, #10b981); text-decoration: underline; font-weight: 600;">
+                        📥 Download Sample DISH Safety Plan (PDF)
+                      </a>
+                    </div>
                   </div>
-                  <input type="file" id="fileInputDish" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('factory_safety_plan', 'Factory Safety & Hazardous Materials Blueprint', this)" />
+                  <input type="file" id="fileInputDish" accept=".pdf,application/pdf" style="display: none;" onchange="directPlanUpload('factory_safety_plan', 'Factory Safety & Hazardous Materials Blueprint', this)" />
                 </div>
 
                 <!-- 4. Fire Services -->
@@ -481,11 +528,16 @@
                     <div id="fileInfoFire" style="margin-top: 6px;"></div>
                   </div>
                   <div id="fileActionFire" style="margin-top: 10px;">
-                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem;" onclick="document.getElementById('fileInputFire').click()">
-                      📁 Upload Fire Plan PDF
+                    <button type="button" class="btn outline sm" style="width: 100%; font-size: 0.75rem; font-weight: 600;" onclick="document.getElementById('fileInputFire').click()">
+                      📤 Manual Upload Fire Plan PDF
                     </button>
+                    <div style="text-align: center; margin-top: 6px;">
+                      <a href="/sample-pdfs/FIRE_Hydrant_Evacuation_Scheme_Sample.pdf" target="_blank" download style="font-size: 0.72rem; color: var(--brand-emerald, #10b981); text-decoration: underline; font-weight: 600;">
+                        📥 Download Sample Fire Evacuation Plan (PDF)
+                      </a>
+                    </div>
                   </div>
-                  <input type="file" id="fileInputFire" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="directPlanUpload('fire_safety_plan', 'Fire Hydrant & Evacuation Layout Plan', this)" />
+                  <input type="file" id="fileInputFire" accept=".pdf,application/pdf" style="display: none;" onchange="directPlanUpload('fire_safety_plan', 'Fire Hydrant & Evacuation Layout Plan', this)" />
                 </div>
               </div>
 
@@ -507,14 +559,19 @@
                       <option value="Other Statutory Supporting Document" data-plantype="">📑 Other Statutory Supporting Document</option>
                     </select>
                   </label>
-                  <label>Select Document File
-                    <input type="file" id="supportingDocInput" accept=".pdf,.jpg,.jpeg,.png" />
+                  <label>Select Document File (PDF / Images)
+                    <input type="file" id="supportingDocInput" accept=".pdf,application/pdf,.jpg,.jpeg,.png" />
                   </label>
                 </div>
                 <input type="hidden" id="planTypeInput" value="" />
-                <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                  <button type="button" class="btn outline sm" onclick="uploadSupportingDocument()">
-                    ⬆ Upload Supporting Document
+                <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <div style="font-size: 0.75rem; color: var(--ink-light);">
+                    Official Templates:
+                    <a href="/sample-pdfs/MIDC_Land_Allotment_Deed_Sample.pdf" target="_blank" download style="color: var(--brand-emerald, #10b981); text-decoration: underline; margin-left: 4px; font-weight: 600;">📥 Sample Land Deed (PDF)</a> ·
+                    <a href="/sample-pdfs/MSINS_Project_Feasibility_Report_DPR_Sample.pdf" target="_blank" download style="color: var(--brand-emerald, #10b981); text-decoration: underline; margin-left: 4px; font-weight: 600;">📥 Sample DPR Report (PDF)</a>
+                  </div>
+                  <button type="button" class="btn outline sm" style="font-weight: 600;" onclick="uploadSupportingDocument()">
+                    📤 Manual Upload Supporting Document
                   </button>
                 </div>
               </div>
@@ -609,7 +666,7 @@
               <!-- Statutory Declaration -->
               <div style="background: var(--surface-card); border: 1.5px solid var(--line-strong); border-radius: 8px; padding: 18px; margin-bottom: 24px;">
                 <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; margin-bottom: 0;">
-                  <input type="checkbox" id="statutoryDeclaration" style="width: 20px; height: 20px; margin-top: 3px; accent-color: var(--navy);" required />
+                  <input type="checkbox" id="statutoryDeclaration" style="width: 20px; height: 20px; margin-top: 3px;" required />
                   <span style="font-size: 0.85rem; line-height: 1.5; color: var(--ink);">
                     <b>Statutory Legal Declaration under Maharashtra Right to Public Services Act:</b><br />
                     I hereby solemnly affirm and declare that the information, technical specifications, and uploaded architectural/engineering blueprints submitted in this application are true, correct, and conform with Maharashtra Industrial Development Corporation bylaws, Pollution Control standards, and Fire Safety regulations.
@@ -1031,11 +1088,19 @@
           const hasDish = !!dishDoc;
           const hasFire = !!fireDoc;
 
+          const sampleMap = {
+            Mpcb: { file: "MPCB_Environmental_Management_Plan_Sample.pdf", label: "MPCB EMP" },
+            Midc: { file: "MIDC_Site_Master_Layout_Blueprint_Sample.pdf", label: "MIDC Layout" },
+            Dish: { file: "DISH_Factory_Safety_Hazard_Control_Sample.pdf", label: "DISH Safety" },
+            Fire: { file: "FIRE_Hydrant_Evacuation_Scheme_Sample.pdf", label: "Fire Scheme" }
+          };
+
           const updateDeptCard = (prefix, doc, docTitle) => {
             const b = document.getElementById(`statusBadge${prefix}`);
             const c = document.getElementById(`card${prefix}`);
             const info = document.getElementById(`fileInfo${prefix}`);
             const action = document.getElementById(`fileAction${prefix}`);
+            const s = sampleMap[prefix] || { file: "", label: "Sample" };
 
             if (doc) {
               if (b) {
@@ -1067,6 +1132,11 @@
                       🔄 Replace
                     </button>
                   </div>
+                  <div style="text-align:center; margin-top:6px;">
+                    <a href="/sample-pdfs/${s.file}" target="_blank" download style="font-size:0.7rem; color:var(--ink-muted); text-decoration:underline;">
+                      📥 View Sample Template PDF
+                    </a>
+                  </div>
                 `;
               }
             } else {
@@ -1081,9 +1151,14 @@
               if (info) info.innerHTML = "";
               if (action) {
                 action.innerHTML = `
-                  <button type="button" class="btn outline sm" style="width:100%; font-size:0.75rem;" onclick="document.getElementById('fileInput${prefix}').click()">
-                    📁 Upload ${docTitle} PDF
+                  <button type="button" class="btn outline sm" style="width:100%; font-size:0.75rem; font-weight:600;" onclick="document.getElementById('fileInput${prefix}').click()">
+                    📤 Manual Upload ${docTitle} PDF
                   </button>
+                  <div style="text-align:center; margin-top:6px;">
+                    <a href="/sample-pdfs/${s.file}" target="_blank" download style="font-size:0.72rem; color:var(--brand-emerald, #10b981); text-decoration:underline; font-weight:600;">
+                      📥 Download Sample ${s.label} (PDF)
+                    </a>
+                  </div>
                 `;
               }
             }
