@@ -85,5 +85,65 @@
     "status": "needs_review",
     "summary": "Identified as General Industrial Filing Document with 75% confidence. Extracted 2 key attributes.",
     "is_fallback": false
+  },
+  "6ab6bceb6289388fe8264587": {
+    "document_id": "6ab6bceb6289388fe8264587",
+    "doc_type": "General Industrial Filing Document",
+    "doc_type_confidence": 0.75,
+    "fields": {
+      "document_name": "BioTech_DPR_Feasibility_Report.pdf",
+      "document_nature": "Digital Document Attachment",
+      "verification_recommendation": "Visual inspection by scrutiny officer recommended"
+    },
+    "field_confidences": {
+      "document_name": 0.85,
+      "document_nature": 0.9,
+      "verification_recommendation": 0.8
+    },
+    "status": "needs_review",
+    "summary": "Identified as General Industrial Filing Document with 75% confidence (Digital Extraction). Extracted 3 key attributes.",
+    "is_fallback": false
+  },
+  "6ab6bceb6289388fe8264586": {
+    "document_id": "6ab6bceb6289388fe8264586",
+    "doc_type": "MPCB Environmental Consent / ETP Blueprint",
+    "doc_type_confidence": 0.93,
+    "fields": {
+      "issuing_authority": "Maharashtra Pollution Control Board",
+      "plan_nature": "Effluent Treatment & Emission Control",
+      "compliance_status": "Compliant Layout",
+      "water_balance_kld": "15",
+      "scan_type": "Digital Drawing"
+    },
+    "field_confidences": {
+      "issuing_authority": 1.0,
+      "plan_nature": 1.0,
+      "compliance_status": 1.0,
+      "water_balance_kld": 1.0,
+      "scan_type": 1.0
+    },
+    "status": "confirmed",
+    "summary": "Identified as MPCB Environmental Consent / ETP Blueprint with 93% confidence (Digital Extraction). Extracted 5 key attributes.",
+    "is_fallback": false,
+    "reviewed_by": "6aa6fc81ac6f8597c2b3e1a4"
+  },
+  "6ab6bf2d1f077b7bf9495096": {
+    "document_id": "6ab6bf2d1f077b7bf9495096",
+    "doc_type": "General Industrial Filing Document",
+    "doc_type_confidence": 0.75,
+    "fields": {
+      "document_name": "R S Aggarwal Mathematics Class 12.pdf",
+      "document_nature": "Digital Document Attachment",
+      "verification_recommendation": "Visual inspection by scrutiny officer recommended"
+    },
+    "field_confidences": {
+      "document_name": 1.0,
+      "document_nature": 1.0,
+      "verification_recommendation": 1.0
+    },
+    "status": "confirmed",
+    "summary": "Identified as General Industrial Filing Document with 75% confidence (Digital Extraction). Extracted 3 key attributes.",
+    "is_fallback": false,
+    "reviewed_by": "6aa6fc82ac6f8597c2b3e1a6"
   }
 }
