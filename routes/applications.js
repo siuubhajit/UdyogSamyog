@@ -148,8 +148,6 @@ router.post("/api/applications", auth, async (req, res) => {
       updated_at: new Date().toISOString(),
     });
 
-    await ensureApplicationStatutoryDocuments(newApp, req.session.user.id);
-
     emitEvent({
       event_type: "application_submitted",
       application_id: newApp._id,
@@ -480,9 +478,6 @@ router.get("/api/applications/:id", auth, async (req, res) => {
     try {
       stageStatuses = JSON.parse(a.stage_statuses || "{}");
     } catch (_) {}
-
-    // Ensure statutory documents are present in dossier
-    await ensureApplicationStatutoryDocuments(a, a.user_id);
 
     // Fetch documents
     let documents = await Document.find({ application_id: appId })
