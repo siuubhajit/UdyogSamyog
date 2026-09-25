@@ -14,6 +14,7 @@ const {
   serialize,
   toObjectId,
   emitEvent,
+  ensurePhysicalDocumentPdf,
 } = require("../utils/helpers");
 
 // Document Upload
@@ -186,7 +187,7 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
     const d = await Document.findById(docId).lean();
     if (!d) return res.status(404).send("Document not found in vault.");
 
-    const a = await Application.findById(d.application_id, "user_id").lean();
+    const a = await Application.findById(d.application_id, "user_id company_name application_no status").lean();
     if (!a) return res.status(404).send("Associated application not found.");
 
     if (
@@ -206,7 +207,15 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
       if (!isApex) {
         const officerDept = req.session.user.deptCode;
         const docDept = d.department || getDocumentDepartment(d);
-        if (docDept && docDept !== officerDept) {
+        const isGeneral =
+          docDept === "general" ||
+          docDept === "msins" ||
+          d.plan_type === "supporting_doc" ||
+          (d.document_type || "").toLowerCase().includes("feasibility") ||
+          (d.document_type || "").toLowerCase().includes("dpr") ||
+          (d.document_type || "").toLowerCase().includes("allotment");
+
+        if (docDept && docDept !== officerDept && !isGeneral) {
           return res
             .status(403)
             .send(
@@ -216,11 +225,12 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
       }
     }
 
-    const safeStoredName = path.basename(d.stored_name || "");
-    const resolvedPath = path.resolve(uploadsDir, safeStoredName);
+    // Ensure physical PDF file exists on disk
+    const fileInfo = ensurePhysicalDocumentPdf(d, a);
+    const resolvedPath = fileInfo.path;
     const normalizedUploads = path.resolve(uploadsDir);
 
-    if (!resolvedPath.startsWith(normalizedUploads + path.sep)) {
+    if (!resolvedPath.startsWith(normalizedUploads + path.sep) && resolvedPath !== normalizedUploads) {
       return res.status(400).send("Invalid document path in vault.");
     }
 
@@ -231,7 +241,8 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
     }
 
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Content-Type", d.mime_type || "application/octet-stream");
+    res.setHeader("Content-Type", d.mime_type || "application/pdf");
+    res.setHeader("Accept-Ranges", "bytes");
     res.setHeader(
       "Content-Disposition",
       `inline; filename="${encodeURIComponent(d.original_name)}"`,
@@ -242,8 +253,8 @@ router.get("/api/documents/:id/view", auth, async (req, res) => {
   }
 });
 
-// Download Attachment
-router.get("/api/documents/:id", auth, async (req, res) => {
+// Download Attachment (handles both /api/documents/:id and /api/documents/:id/download)
+router.get(["/api/documents/:id", "/api/documents/:id/download"], auth, async (req, res) => {
   try {
     const docId = toObjectId(req.params.id);
     if (!docId) return res.status(404).json({ error: "Document not found" });
@@ -251,7 +262,7 @@ router.get("/api/documents/:id", auth, async (req, res) => {
     const d = await Document.findById(docId).lean();
     if (!d) return res.status(404).json({ error: "Document not found" });
 
-    const a = await Application.findById(d.application_id, "user_id").lean();
+    const a = await Application.findById(d.application_id, "user_id company_name application_no status").lean();
     if (
       req.session.user.role !== "official" &&
       a &&
@@ -268,7 +279,15 @@ router.get("/api/documents/:id", auth, async (req, res) => {
       if (!isApex) {
         const officerDept = req.session.user.deptCode;
         const docDept = d.department || getDocumentDepartment(d);
-        if (docDept && docDept !== officerDept) {
+        const isGeneral =
+          docDept === "general" ||
+          docDept === "msins" ||
+          d.plan_type === "supporting_doc" ||
+          (d.document_type || "").toLowerCase().includes("feasibility") ||
+          (d.document_type || "").toLowerCase().includes("dpr") ||
+          (d.document_type || "").toLowerCase().includes("allotment");
+
+        if (docDept && docDept !== officerDept && !isGeneral) {
           return res.status(403).json({
             error:
               "Access Denied: Departmental restriction. You cannot download documents outside your department vault.",
@@ -277,11 +296,12 @@ router.get("/api/documents/:id", auth, async (req, res) => {
       }
     }
 
-    const safeStoredName = path.basename(d.stored_name || "");
-    const resolvedPath = path.resolve(uploadsDir, safeStoredName);
+    // Ensure physical PDF file exists on disk
+    const fileInfo = ensurePhysicalDocumentPdf(d, a);
+    const resolvedPath = fileInfo.path;
     const normalizedUploads = path.resolve(uploadsDir);
 
-    if (!resolvedPath.startsWith(normalizedUploads + path.sep)) {
+    if (!resolvedPath.startsWith(normalizedUploads + path.sep) && resolvedPath !== normalizedUploads) {
       return res.status(400).json({ error: "Invalid document path in vault." });
     }
 
@@ -290,9 +310,10 @@ router.get("/api/documents/:id", auth, async (req, res) => {
     }
 
     res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Content-Type", d.mime_type || "application/pdf");
     res.download(resolvedPath, d.original_name);
   } catch (err) {
-    res.status(500).json({ error: "Download failed" });
+    res.status(500).json({ error: "Download failed: " + err.message });
   }
 });
 

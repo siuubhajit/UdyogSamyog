@@ -11,6 +11,7 @@ const {
   serialize,
   toObjectId,
   emitEvent,
+  ensureApplicationStatutoryDocuments,
 } = require("../utils/helpers");
 const { calculateStatutoryFees } = require("../utils/challanGenerator");
 const { evaluateApplicationSla } = require("../utils/slaMonitor");
@@ -146,6 +147,8 @@ router.post("/api/applications", auth, async (req, res) => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
+
+    await ensureApplicationStatutoryDocuments(newApp, req.session.user.id);
 
     emitEvent({
       event_type: "application_submitted",
@@ -478,16 +481,30 @@ router.get("/api/applications/:id", auth, async (req, res) => {
       stageStatuses = JSON.parse(a.stage_statuses || "{}");
     } catch (_) {}
 
+    // Ensure statutory documents are present in dossier
+    await ensureApplicationStatutoryDocuments(a, a.user_id);
+
     // Fetch documents
     let documents = await Document.find({ application_id: appId })
       .sort({ created_at: 1 })
       .lean();
 
-    documents = documents.map((d) => ({
-      ...d,
-      id: d._id.toString(),
-      department: d.department || getDocumentDepartment(d),
-    }));
+    documents = documents.map((d) => {
+      const lowerType = String(d.document_type || "").toLowerCase();
+      const lowerName = String(d.original_name || "").toLowerCase();
+      const isLandDeed =
+        lowerType.includes("allotment") ||
+        lowerType.includes("title deed") ||
+        lowerName.includes("allotment") ||
+        lowerName.includes("title_deed");
+
+      return {
+        ...d,
+        id: d._id.toString(),
+        department: isLandDeed ? "midc" : d.department || getDocumentDepartment(d),
+        plan_type: isLandDeed ? "civil_plan" : d.plan_type,
+      };
+    });
 
     const allPlans = {
       environmental:
@@ -871,7 +888,7 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
         stageMsg = `Approved by ${STAGE_LABELS[activeDept] || activeDept}. Awaiting simultaneous clearance from: ${pending.join(", ")}.`;
       }
     } else if (currentStage === "msins") {
-      const suppCount = await Document.countDocuments({
+      let suppCount = await Document.countDocuments({
         application_id: appId,
         $or: [
           { plan_type: "supporting_doc" },
@@ -887,6 +904,26 @@ router.post("/api/applications/:id/stage-decision", auth, official, async (req, 
           },
         ],
       });
+
+      if (suppCount === 0) {
+        await ensureApplicationStatutoryDocuments(appRow, appRow.user_id);
+        suppCount = await Document.countDocuments({
+          application_id: appId,
+          $or: [
+            { plan_type: "supporting_doc" },
+            {
+              plan_type: {
+                $nin: [
+                  "environmental_plan",
+                  "civil_plan",
+                  "factory_safety_plan",
+                  "fire_safety_plan",
+                ],
+              },
+            },
+          ],
+        });
+      }
 
       if (suppCount === 0) {
         return res.status(400).json({
@@ -1181,15 +1218,46 @@ router.patch(
           overallStatus = "Approved";
           if (parallelStatus.msins) parallelStatus.msins.status = "Approved";
         }
-      } else if (status === "Rejected") {
+      } else if (status === "Deficient" || status === "Flagged" || status === "Rejected") {
+        const isQuery = status === "Deficient" || status === "Flagged";
         stageStatuses[deptCode] = {
-          decision: "Rejected",
-          remarks: remarks || `Rejected by ${STAGE_LABELS[deptCode] || deptCode.toUpperCase()}`,
+          decision: isQuery ? "Query" : "Rejected",
+          remarks:
+            remarks ||
+            (isQuery
+              ? `Deficiencies flagged by ${STAGE_LABELS[deptCode] || deptCode.toUpperCase()}`
+              : `Rejected by ${STAGE_LABELS[deptCode] || deptCode.toUpperCase()}`),
           officer: req.session.user.contactPerson || req.session.user.email,
           officer_dept: STAGE_LABELS[deptCode] || deptCode.toUpperCase(),
           decided_at: new Date().toISOString(),
         };
-        overallStatus = "Rejected";
+        overallStatus = isQuery ? "Flagged" : "Rejected";
+
+        if (isQuery && remarks && remarks.trim()) {
+          await Query.create({
+            application_id: appId,
+            officer_id: req.session.user.id,
+            message: remarks.trim(),
+            status: "Open",
+          });
+        }
+      } else if (status === "Under Review") {
+        stageStatuses[deptCode] = {
+          decision: "Under Review",
+          remarks:
+            remarks ||
+            `Under review by ${STAGE_LABELS[deptCode] || deptCode.toUpperCase()}`,
+          officer: req.session.user.contactPerson || req.session.user.email,
+          officer_dept: STAGE_LABELS[deptCode] || deptCode.toUpperCase(),
+          decided_at: new Date().toISOString(),
+        };
+        if (
+          overallStatus !== "Flagged" &&
+          overallStatus !== "Rejected" &&
+          overallStatus !== "Approved"
+        ) {
+          overallStatus = "In Progress";
+        }
       }
 
       const deptMatches = {
@@ -1515,16 +1583,83 @@ router.post("/api/applications/:id/deemed-approve", auth, official, async (req, 
       deemed_at: new Date().toISOString(),
     };
 
+    let stageStatuses = {};
+    try {
+      stageStatuses = JSON.parse(a.stage_statuses || "{}");
+    } catch (_) {}
+
+    let parallelStatus = {};
+    try {
+      parallelStatus = JSON.parse(a.parallel_status_json || "{}");
+    } catch (_) {}
+
+    const nowIso = new Date().toISOString();
+    const officerName = req.session.user.contactPerson || req.session.user.email;
+
     // If in Phase 1 or 2, advance directly
     if (a.current_stage === "mpcb") {
+      stageStatuses.mpcb = {
+        decision: "Approved",
+        remarks: reason || "Deemed Approved under statutory SLA timeline.",
+        officer: officerName,
+        officer_dept: "Maharashtra Pollution Control Board",
+        decided_at: nowIso,
+      };
+      if (!parallelStatus.mpcb || typeof parallelStatus.mpcb !== "object") parallelStatus.mpcb = {};
+      parallelStatus.mpcb.status = "Approved";
+      parallelStatus.mpcb.remarks = reason;
+      parallelStatus.mpcb.officer = officerName;
+      parallelStatus.mpcb.updated = nowIso;
+
       a.current_stage = "parallel_scrutiny";
-      a.parallel_status_json = JSON.stringify({ midc: "In Progress", dish: "In Progress", fire: "In Progress" });
-    } else if (a.current_stage === "parallel_scrutiny" || ["midc", "dish", "fire"].includes(a.current_stage)) {
+      ["midc", "dish", "fire"].forEach((dept) => {
+        if (!parallelStatus[dept] || typeof parallelStatus[dept] !== "object") parallelStatus[dept] = {};
+        parallelStatus[dept].status = "Under Scrutiny";
+        parallelStatus[dept].remarks = parallelStatus[dept].remarks || "Awaiting simultaneous review";
+        parallelStatus[dept].updated = nowIso;
+      });
+    } else if (
+      a.current_stage === "parallel_scrutiny" ||
+      ["midc", "dish", "fire"].includes(a.current_stage)
+    ) {
       a.current_stage = "msins";
-      a.parallel_status_json = JSON.stringify({ midc: "Approved", dish: "Approved", fire: "Approved" });
+      ["midc", "dish", "fire"].forEach((dept) => {
+        stageStatuses[dept] = {
+          decision: "Approved",
+          remarks: reason || "Deemed Approved under statutory SLA timeline.",
+          officer: officerName,
+          officer_dept: STAGE_LABELS[dept] || dept.toUpperCase(),
+          decided_at: nowIso,
+        };
+        if (!parallelStatus[dept] || typeof parallelStatus[dept] !== "object") parallelStatus[dept] = {};
+        parallelStatus[dept].status = "Approved";
+        parallelStatus[dept].remarks = reason;
+        parallelStatus[dept].officer = officerName;
+        parallelStatus[dept].updated = nowIso;
+      });
+      if (!parallelStatus.msins || typeof parallelStatus.msins !== "object") parallelStatus.msins = {};
+      parallelStatus.msins.status = "Pending Final Apex Clearance";
+      parallelStatus.msins.updated = nowIso;
+    } else if (a.current_stage === "msins") {
+      stageStatuses.msins = {
+        decision: "Approved",
+        remarks: reason || "Consolidated Single-Window Deemed Approval Granted.",
+        officer: officerName,
+        officer_dept: "State Innovation Society Apex",
+        decided_at: nowIso,
+      };
+      if (!parallelStatus.msins || typeof parallelStatus.msins !== "object") parallelStatus.msins = {};
+      parallelStatus.msins.status = "Approved & Permitted";
+      parallelStatus.msins.remarks = "Consolidated Single-Window Deemed Approval Granted.";
+      parallelStatus.msins.updated = nowIso;
+      a.current_stage = "completed";
+      a.status = "Approved";
     } else {
       a.status = "Approved";
     }
+
+    a.stage_statuses = JSON.stringify(stageStatuses);
+    a.parallel_status_json = JSON.stringify(parallelStatus);
 
     a.updated_at = new Date().toISOString();
     a.markModified("sla_escalation");

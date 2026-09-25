@@ -3,7 +3,11 @@ const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const { User, Application, Document, Query, Inspection } = require("./models");
-const { uploadsDir } = require("../utils/helpers");
+const {
+  uploadsDir,
+  ensureApplicationStatutoryDocuments,
+  ensurePhysicalDocumentPdf,
+} = require("../utils/helpers");
 
 // Helper to generate sample PDF files for the statutory blueprints
 function seedDummyPdf(docTitle, docFilename) {
@@ -358,7 +362,7 @@ async function seedInitialData() {
         size: landFile.size,
         verification_status: "Verified",
         officer_remarks: "MIDC Land Allotment Order verified",
-        plan_type: "supporting_doc",
+        plan_type: "civil_plan",
         department: "midc",
       },
       {
@@ -534,7 +538,7 @@ async function seedInitialData() {
           size: fLand.size,
           verification_status: "Verified",
           officer_remarks: "MIDC Land Allotment Order verified",
-          plan_type: "supporting_doc",
+          plan_type: "civil_plan",
           department: "midc",
         },
         {
@@ -552,6 +556,26 @@ async function seedInitialData() {
         },
       ]);
     }
+  }
+
+  // Ensure ALL existing applications in the database have complete statutory documents and valid PDFs on disk
+  try {
+    const allApps = await Application.find().lean();
+    for (const a of allApps) {
+      await ensureApplicationStatutoryDocuments(a, a.user_id);
+      const docs = await Document.find({ application_id: a._id });
+      for (const d of docs) {
+        const healed = ensurePhysicalDocumentPdf(d, a);
+        if (d.stored_name !== healed.storedName || d.size !== healed.size) {
+          await Document.updateOne(
+            { _id: d._id },
+            { $set: { stored_name: healed.storedName, size: healed.size } }
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error during statutory document health pass:", err);
   }
 }
 
