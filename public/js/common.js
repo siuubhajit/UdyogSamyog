@@ -189,6 +189,31 @@ function updateChecklistCounter(prefix, total) {
   const checkboxes = document.querySelectorAll(`.${prefix}-chk`);
   const totalCount = total || checkboxes.length || 1;
   const checked = Array.from(checkboxes).filter((cb) => cb.checked).length;
+
+  checkboxes.forEach((cb) => {
+    const badge = document.getElementById(`badge_${cb.id}`) || cb.closest(".checklist-item, .checklist-item-row")?.querySelector(".chk-tick-badge");
+    const card = cb.closest(".checklist-item, .checklist-item-row");
+    if (badge) {
+      if (cb.checked) {
+        badge.className = "chk-tick-badge ticked";
+        badge.innerHTML = `<span class="tick-icon">✓</span> <span class="status-text">Ticked</span>`;
+        if (card) {
+          card.classList.add("ticked");
+          card.style.borderColor = "#16a34a";
+          card.style.background = "rgba(22, 163, 74, 0.08)";
+        }
+      } else {
+        badge.className = "chk-tick-badge unticked";
+        badge.innerHTML = `<span class="tick-icon">○</span> <span class="status-text">Unticked</span>`;
+        if (card) {
+          card.classList.remove("ticked");
+          card.style.borderColor = "var(--line, #e2e8f0)";
+          card.style.background = "var(--surface, #ffffff)";
+        }
+      }
+    }
+  });
+
   const counterEl = document.getElementById(`${prefix}ChecklistCounter`);
   if (counterEl) {
     if (checked === totalCount) {

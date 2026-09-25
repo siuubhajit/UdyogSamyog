@@ -403,10 +403,16 @@
           window._curChecklistCount = cfg.checklist.length;
           document.getElementById("deptChecklist").innerHTML = cfg.checklist
             .map(
-              (i) => `
-            <label class="checklist-item">
-              <input type="checkbox" class="gen-chk" onchange="updateChecklistCounter('gen', ${cfg.checklist.length})" />
-              <span>${escapeHtml(i)}</span>
+              (i, idx) => `
+            <label class="checklist-item statutory-chk-card" for="genChk_${idx}">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                <input type="checkbox" class="gen-chk" id="genChk_${idx}" onchange="updateChecklistCounter('gen', ${cfg.checklist.length})" style="cursor:pointer;" />
+                <span class="chk-item-title" style="font-size:0.85rem;line-height:1.4;color:var(--ink);">${escapeHtml(i)}</span>
+              </div>
+              <div class="chk-tick-badge unticked" id="badge_genChk_${idx}" title="Click to toggle statutory verification">
+                <span class="tick-icon">○</span>
+                <span class="status-text">Unticked</span>
+              </div>
             </label>
           `,
             )

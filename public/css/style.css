@@ -5130,35 +5130,86 @@ input[type="checkbox"]:not(.switch input):focus-visible {
   outline-offset: 2px !important;
 }
 
-.checklist-item {
+.checklist-item,
+.checklist-item.statutory-chk-card,
+.statutory-chk-card {
   display: flex !important;
-  align-items: flex-start !important;
-  gap: 10px !important;
-  padding: 8px 12px !important;
-  border-radius: 6px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
   border: 1.5px solid var(--line, #e2e8f0) !important;
   background: var(--surface, #ffffff) !important;
   cursor: pointer !important;
   transition: all 0.15s ease-in-out !important;
   user-select: none !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 7px !important;
   line-height: 1.4 !important;
+  box-sizing: border-box !important;
 }
 
-.checklist-item:hover {
+.checklist-item:hover,
+.checklist-item.statutory-chk-card:hover,
+.statutory-chk-card:hover {
   border-color: #94a3b8 !important;
   background: var(--surface-card, #f8fafc) !important;
 }
 
+/* Right-side tick mark feature badge */
+.chk-tick-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 4px 10px !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  flex-shrink: 0 !important;
+  border: 1.5px solid #fca5a5 !important;
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08) !important;
+}
+
+.chk-tick-badge .tick-icon {
+  font-size: 0.82rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+}
+
+.chk-tick-badge.ticked,
+.checklist-item:has(input:checked) .chk-tick-badge,
+.statutory-chk-card.ticked .chk-tick-badge {
+  border-color: #16a34a !important;
+  background: #16a34a !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(22, 163, 74, 0.35) !important;
+}
+
+.chk-tick-badge.unticked {
+  border-color: #fca5a5 !important;
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
 .checklist-item:has(input:checked),
-.checklist-item.checked {
+.checklist-item.checked,
+.statutory-chk-card.ticked {
   background: rgba(22, 163, 74, 0.08) !important;
   border-color: #16a34a !important;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.12) !important;
 }
 
 .checklist-item:has(input:checked) .checklist-title,
+.checklist-item:has(input:checked) .chk-item-title,
 .checklist-item:has(input:checked) span,
-.checklist-item:has(input:checked) label {
+.checklist-item:has(input:checked) label,
+.statutory-chk-card.ticked .chk-item-title {
   color: #15803d !important;
   font-weight: 600 !important;
 }
@@ -5183,28 +5234,54 @@ body.dark input[type="checkbox"]:not(.switch input):checked {
 }
 
 [data-theme="dark"] .checklist-item,
-body.dark .checklist-item {
+[data-theme="dark"] .statutory-chk-card,
+body.dark .checklist-item,
+body.dark .statutory-chk-card {
   background: #1e293b !important;
   border-color: #334155 !important;
 }
 
 [data-theme="dark"] .checklist-item:hover,
-body.dark .checklist-item:hover {
+[data-theme="dark"] .statutory-chk-card:hover,
+body.dark .checklist-item:hover,
+body.dark .statutory-chk-card:hover {
   background: #334155 !important;
   border-color: #475569 !important;
+}
+
+[data-theme="dark"] .chk-tick-badge,
+[data-theme="dark"] .chk-tick-badge.unticked,
+body.dark .chk-tick-badge,
+body.dark .chk-tick-badge.unticked {
+  background: rgba(220, 38, 38, 0.18) !important;
+  border-color: rgba(248, 113, 113, 0.45) !important;
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .chk-tick-badge.ticked,
+[data-theme="dark"] .checklist-item:has(input:checked) .chk-tick-badge,
+body.dark .chk-tick-badge.ticked,
+body.dark .checklist-item:has(input:checked) .chk-tick-badge {
+  background: #16a34a !important;
+  border-color: #22c55e !important;
+  color: #ffffff !important;
 }
 
 [data-theme="dark"] .checklist-item:has(input:checked),
 body.dark .checklist-item:has(input:checked),
 [data-theme="dark"] .checklist-item.checked,
-body.dark .checklist-item.checked {
+body.dark .checklist-item.checked,
+[data-theme="dark"] .statutory-chk-card.ticked,
+body.dark .statutory-chk-card.ticked {
   background: rgba(34, 197, 94, 0.14) !important;
   border-color: #22c55e !important;
 }
 
 [data-theme="dark"] .checklist-item:has(input:checked) .checklist-title,
+[data-theme="dark"] .checklist-item:has(input:checked) .chk-item-title,
 [data-theme="dark"] .checklist-item:has(input:checked) span,
 body.dark .checklist-item:has(input:checked) .checklist-title,
+body.dark .checklist-item:has(input:checked) .chk-item-title,
 body.dark .checklist-item:has(input:checked) span {
   color: #4ade80 !important;
 }

@@ -40,9 +40,15 @@ function openDepartmentDecisionModal({
     checklistContainer.innerHTML = (deptConfig.checklist || [])
       .map(
         (item, idx) => `
-      <label class="checklist-item-row" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;user-select:none;">
-        <input type="checkbox" class="dept-decision-chk" id="deptChk_${idx}" style="width:17px;height:17px;margin-top:2px;accent-color:${deptConfig.accentColor || "var(--navy)"};" />
-        <span style="font-size:0.85rem;line-height:1.4;color:var(--color-text-primary, var(--ink));">${escapeHtml(item)}</span>
+      <label class="checklist-item statutory-chk-card" for="deptChk_${idx}">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;">
+          <input type="checkbox" class="dept-decision-chk" id="deptChk_${idx}" style="cursor:pointer;" />
+          <span class="chk-item-title" style="font-size:0.85rem;line-height:1.4;color:var(--color-text-primary, var(--ink));font-weight:500;">${escapeHtml(item)}</span>
+        </div>
+        <div class="chk-tick-badge unticked" id="badge_deptChk_${idx}" title="Click to toggle statutory verification">
+          <span class="tick-icon">○</span>
+          <span class="status-text">Unticked</span>
+        </div>
       </label>
     `,
       )
@@ -60,22 +66,55 @@ function openDepartmentDecisionModal({
     remarksInput.placeholder = `Provide specific observations, statutory conditions, or query requirements...`;
   }
 
-  // Bind checkbox counter
-  const chks = modal.querySelectorAll(".dept-decision-chk");
-  chks.forEach((cb) => {
-    cb.addEventListener("change", () => {
-      const checked = Array.from(chks).filter((c) => c.checked).length;
-      if (counterEl) {
-        counterEl.textContent =
-          checked === chks.length
-            ? `✅ All ${checked} statutory criteria verified (100%)`
-            : `${checked} of ${chks.length} verified`;
-        counterEl.style.color =
-          checked === chks.length
-            ? "var(--color-success, var(--ok-ink))"
-            : "var(--color-warning, var(--warn-ink))";
+  const updateDecisionChecklistUI = () => {
+    const chks = modal.querySelectorAll(".dept-decision-chk");
+    const checked = Array.from(chks).filter((c) => c.checked).length;
+    chks.forEach((cb) => {
+      const badge = document.getElementById(`badge_${cb.id}`) || cb.closest(".checklist-item")?.querySelector(".chk-tick-badge");
+      const card = cb.closest(".checklist-item");
+      if (badge) {
+        if (cb.checked) {
+          badge.className = "chk-tick-badge ticked";
+          badge.innerHTML = `<span class="tick-icon">✓</span> <span class="status-text">Ticked</span>`;
+          if (card) {
+            card.classList.add("ticked");
+            card.style.borderColor = "#16a34a";
+            card.style.background = "rgba(22, 163, 74, 0.08)";
+          }
+        } else {
+          badge.className = "chk-tick-badge unticked";
+          badge.innerHTML = `<span class="tick-icon">○</span> <span class="status-text">Unticked</span>`;
+          if (card) {
+            card.classList.remove("ticked");
+            card.style.borderColor = "var(--color-border, #e2e8f0)";
+            card.style.background = "var(--color-surface-card, #ffffff)";
+          }
+        }
       }
     });
+
+    if (counterEl) {
+      counterEl.textContent =
+        checked === chks.length
+          ? `✅ All ${checked} statutory criteria verified (100%)`
+          : `${checked} of ${chks.length} verified`;
+      counterEl.style.color =
+        checked === chks.length
+          ? "var(--color-success, var(--ok-ink))"
+          : "var(--color-warning, var(--warn-ink))";
+    }
+
+    const toggleBtn = document.getElementById("decisionToggleAllBtn");
+    if (toggleBtn) {
+      toggleBtn.textContent =
+        checked === chks.length && chks.length > 0 ? "Deselect All" : "Select All";
+    }
+  };
+
+  // Bind checkbox counter and badge updates
+  const chks = modal.querySelectorAll(".dept-decision-chk");
+  chks.forEach((cb) => {
+    cb.addEventListener("change", updateDecisionChecklistUI);
   });
 
   if (window.Modal) {
@@ -88,7 +127,31 @@ function openDepartmentDecisionModal({
 function toggleAllDecisionChecklist() {
   const chks = document.querySelectorAll(".dept-decision-chk");
   const allChecked = Array.from(chks).every((c) => c.checked);
-  chks.forEach((c) => (c.checked = !allChecked));
+  chks.forEach((c) => {
+    c.checked = !allChecked;
+    const badge = document.getElementById(`badge_${c.id}`) || c.closest(".checklist-item")?.querySelector(".chk-tick-badge");
+    const card = c.closest(".checklist-item");
+    if (badge) {
+      if (c.checked) {
+        badge.className = "chk-tick-badge ticked";
+        badge.innerHTML = `<span class="tick-icon">✓</span> <span class="status-text">Ticked</span>`;
+        if (card) {
+          card.classList.add("ticked");
+          card.style.borderColor = "#16a34a";
+          card.style.background = "rgba(22, 163, 74, 0.08)";
+        }
+      } else {
+        badge.className = "chk-tick-badge unticked";
+        badge.innerHTML = `<span class="tick-icon">○</span> <span class="status-text">Unticked</span>`;
+        if (card) {
+          card.classList.remove("ticked");
+          card.style.borderColor = "var(--color-border, #e2e8f0)";
+          card.style.background = "var(--color-surface-card, #ffffff)";
+        }
+      }
+    }
+  });
+
   const counterEl = document.getElementById("decisionChecklistCounter");
   if (counterEl) {
     const checked = !allChecked ? chks.length : 0;
